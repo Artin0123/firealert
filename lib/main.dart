@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(const MyApp());
@@ -55,7 +57,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  String jsonData = ''; // 用於顯示 JSON 資料的文字
   int _counter = 0;
+  Future<Map<String, dynamic>> fetchData() async {
+    final url = Uri.parse('http://140.138.150.29:38080/service/alertAPI/'); // 將你的網址替換成實際的 URL
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final decodedData = json.decode(response.body);
+        // 更新狀態以顯示 JSON 資料
+        setState(() {
+          jsonData = json.encode(decodedData); // 將 JSON 資料轉換為字串
+        });
+        return decodedData;
+      } else {
+        throw Exception('Failed to fetch data. Error: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Error during HTTP request: $e');
+    }
+  }
 
   void _incrementCounter() {
     setState(() {
@@ -116,8 +139,20 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 16,
             ),
             ElevatedButton(
-              child: const Text("normal"),
-              onPressed: () {},
+              onPressed: () async {
+                try {
+                  await fetchData();
+                } catch (e) {
+                  print(e);
+                }
+              },
+              child: Text('取得 JSON 資料'),
+            ),
+            SizedBox(height: 20), // 加入一些間距
+            Text(
+              jsonData,
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 16),
             ),
             Container(
               constraints: BoxConstraints(
