@@ -58,22 +58,29 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String jsonData = ''; // 用於顯示 JSON 資料的文字
+  String updatetime = '';
+  String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.parse('http://140.138.150.29:38080/service/alertAPI/'); // 將你的網址替換成實際的 URL
-
+    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
-
       if (response.statusCode == 200) {
-        final decodedData = json.decode(response.body);
-        // 更新狀態以顯示 JSON 資料
-        setState(() {
-          jsonData = json.encode(decodedData); // 將 JSON 資料轉換為字串
-        });
-        return decodedData;
+        // 如果服務器返回一個 OK 響應，則解析 JSON。
+        Map<String, dynamic> jsonData = jsonDecode(response.body);
+
+        // 使用鍵來訪問對應的值
+        updatetime = jsonData['0_update_stamp'];
+        if (jsonData['isAlert'] is bool) {
+          bool isAlertBool = jsonData['alert'];
+          isAlert = isAlertBool.toString();
+        } else {
+          throw Exception('Expected a bool but got ${jsonData['alert'].runtimeType}');
+        }
+        return jsonData; // 返回解析後的 JSON 數據
       } else {
-        throw Exception('Failed to fetch data. Error: ${response.statusCode}');
+        // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
+        throw Exception('Key "0_update_stamp" not found in the JSON data');
       }
     } catch (e) {
       throw Exception('Error during HTTP request: $e');
@@ -140,20 +147,19 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             ElevatedButton(
               onPressed: () async {
-                try {
-                  await fetchData();
-                } catch (e) {
-                  print(e);
-                }
+                await fetchData();
+                setState(() {}); // 更新狀態
               },
-              child: Text('取得 JSON 資料'),
+              child: const Text('取得資料'),
             ),
+            Text(updatetime),
+            Text(isAlert),
             SizedBox(height: 20), // 加入一些間距
-            Text(
-              jsonData,
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 16),
-            ),
+            // Text(
+            //   jsonData,
+            //   textAlign: TextAlign.center,
+            //   style: TextStyle(fontSize: 16),
+            // ),
             Container(
               constraints: BoxConstraints(
                 minHeight: 40, //minimum height
