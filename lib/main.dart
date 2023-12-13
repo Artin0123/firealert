@@ -68,8 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String isTemperature = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http(
-        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -85,8 +84,8 @@ class _MyHomePageState extends State<MyHomePage> {
           isLocation = detail['location'];
           isTimestamp = detail['time_stamp'];
           Map<String, dynamic> sensors = detail['sensors'];
-          isAirquality = sensors['air_quality'].toStringAsFixed(4);
-          isTemperature = sensors['temperature'].toStringAsFixed(4);
+          isAirquality = sensors['air_quality'].toStringAsFixed(2);
+          isTemperature = sensors['temperature'].toStringAsFixed(2);
         }
         return jsonData; // 返回解析後的 JSON 數據
       } else {
@@ -163,7 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('取得資料'),
             ),
-            Text(updatetime),
+            Text('更新時間： $updatetime'),
             Text(isAlert),
             Text(isEvent),
             Text(isLocation),
