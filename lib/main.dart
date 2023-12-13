@@ -62,8 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http(
-        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -72,14 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         // 使用鍵來訪問對應的值
         updatetime = jsonData['0_update_stamp'];
-        String buffer = jsonData['alert'].toString();
-        if (buffer == "true") {
-          // bool isAlertBool = jsonData['alert'];
-          isAlert = buffer;
-        } else {
-          throw Exception(
-              'Expected a bool but got ${jsonData['alert'].runtimeType}');
-        }
+        isAlert = jsonData['alert'].toString();
         return jsonData; // 返回解析後的 JSON 數據
       } else {
         // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
