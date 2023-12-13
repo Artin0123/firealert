@@ -60,6 +60,10 @@ class _MyHomePageState extends State<MyHomePage> {
   String jsonData = ''; // 用於顯示 JSON 資料的文字
   String updatetime = '';
   String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
+  String isEvent = '';
+  String isLevel = '';
+  String isLocation = '';
+  String isTimestamp = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
     final url = Uri.http(
@@ -73,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // 使用鍵來訪問對應的值
         updatetime = jsonData['0_update_stamp'];
         isAlert = jsonData['alert'].toString();
+        isEvent = jsonData['details']['event'].toString();
         return jsonData; // 返回解析後的 JSON 數據
       } else {
         // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
@@ -150,6 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Text(updatetime),
             Text(isAlert),
+            Text(isEvent),
             SizedBox(height: 20), // 加入一些間距
             // Text(
             //   jsonData,
