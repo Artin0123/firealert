@@ -68,7 +68,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String isTemperature = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http(
+        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -86,6 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
           Map<String, dynamic> sensors = detail['sensors'];
           isAirquality = sensors['air_quality'].toStringAsFixed(2);
           isTemperature = sensors['temperature'].toStringAsFixed(2);
+
+          //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+          List<dynamic> capture_image = detail['capture_media'];
+          String captureMediaJson = jsonEncode(capture_image);
+          String request = "http://192.168.0.13/apis/index.php";
+          String buffer = "access_code=$captureMediaJson";
+          Uri image_url = Uri.parse(request);
         }
         return jsonData; // 返回解析後的 JSON 數據
       } else {
