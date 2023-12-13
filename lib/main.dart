@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // 使用鍵來訪問對應的值
         updatetime = jsonData['0_update_stamp'];
         isAlert = jsonData['alert'].toString();
-        isEvent = jsonData['details']['event'].toString();
+
         return jsonData; // 返回解析後的 JSON 數據
       } else {
         // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
