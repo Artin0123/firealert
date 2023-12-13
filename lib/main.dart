@@ -85,8 +85,8 @@ class _MyHomePageState extends State<MyHomePage> {
           isLocation = detail['location'];
           isTimestamp = detail['time_stamp'];
           Map<String, dynamic> sensors = detail['sensors'];
-          isAirquality = sensors['air_quality'].toString();
-          isTemperature = sensors['temperature'].toString();
+          isAirquality = sensors['air_quality'].toStringAsFixed(4);
+          isTemperature = sensors['temperature'].toStringAsFixed(4);
         }
         return jsonData; // 返回解析後的 JSON 數據
       } else {
