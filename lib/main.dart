@@ -64,6 +64,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String isLevel = '';
   String isLocation = '';
   String isTimestamp = '';
+  String isAirquality = '';
+  String isTemperature = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
     final url = Uri.http(
@@ -82,6 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
           isEvent = detail['event'];
           isLocation = detail['location'];
           isTimestamp = detail['time_stamp'];
+          Map<String, dynamic> sensors = detail['sensors'];
+          isAirquality = sensors['air_quality'].toString();
+          isTemperature = sensors['temperature'].toString();
         }
         return jsonData; // 返回解析後的 JSON 數據
       } else {
@@ -161,6 +166,10 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(updatetime),
             Text(isAlert),
             Text(isEvent),
+            Text(isLocation),
+            Text(isTimestamp),
+            Text(isAirquality),
+            Text(isTemperature),
             SizedBox(height: 20), // 加入一些間距
             // Text(
             //   jsonData,
