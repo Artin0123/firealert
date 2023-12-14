@@ -60,16 +60,15 @@ class _MyHomePageState extends State<MyHomePage> {
   String jsonData = ''; // 用於顯示 JSON 資料的文字
   String updatetime = '';
   String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
-  String isEvent = '';
-  String isLevel = '';
-  String isLocation = '';
-  String isTimestamp = '';
-  String isAirquality = '';
-  String isTemperature = '';
+  String events = '';
+  String levels = '';
+  String locations = '';
+  String timestamps = '';
+  String airqualitys = '';
+  String temperatures = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http(
-        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -81,12 +80,13 @@ class _MyHomePageState extends State<MyHomePage> {
         isAlert = jsonData['alert'].toString();
         List<dynamic> details = jsonData['details'];
         for (var detail in details) {
-          isEvent = detail['event'];
-          isLocation = detail['location'];
-          isTimestamp = detail['time_stamp'];
+          events = detail['event'];
+          levels = detail['level'].toString();
+          locations = detail['location'];
+          timestamps = detail['time_stamp'];
           Map<String, dynamic> sensors = detail['sensors'];
-          isAirquality = sensors['air_quality'].toStringAsFixed(2);
-          isTemperature = sensors['temperature'].toStringAsFixed(2);
+          airqualitys = sensors['air_quality'].toStringAsFixed(2);
+          temperatures = sensors['temperature'].toStringAsFixed(2);
 
           //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -155,7 +155,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times3:',
+              'You have pushed the button this many times:',
             ),
             Text(
               '$_counter',
@@ -171,19 +171,17 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('取得資料'),
             ),
-            Text('更新時間： $updatetime'),
-            Text(isAlert),
-            Text(isEvent),
-            Text(isLocation),
-            Text(isTimestamp),
-            Text(isAirquality),
-            Text(isTemperature),
-            SizedBox(height: 20), // 加入一些間距
-            // Text(
-            //   jsonData,
-            //   textAlign: TextAlign.center,
-            //   style: TextStyle(fontSize: 16),
-            // ),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
+              // Text(''),
+              // Text('事件種類: $events'),
+              // Text('事件等級: $levels'),
+              // Text('感測器位置: $locations'),
+              // Text('事件時間: $timestamps'),
+              // Text('氣體數值: $airqualitys'),
+              // Text('溫度: $temperatures'),
+            ),
             Container(
               constraints: BoxConstraints(
                 minHeight: 40, //minimum height
@@ -199,6 +197,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _incrementCounter,
                 child: const Text("normal"),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // 当按钮按下时，跳转到新页面
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SecondPage()),
+                );
+              },
+              child: Text('打開新頁面'),
             )
           ],
         ),
@@ -208,6 +216,26 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class SecondPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Second Page'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Center(
+        child: Text('这是第二个页面'),
+      ),
     );
   }
 }
