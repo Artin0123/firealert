@@ -71,6 +71,9 @@ class _MyHomePageState extends State<MyHomePage> {
   String airqualitys = '';
   String temperatures = '';
   int _counter = 0;
+  String apiUrl = 'http://192.168.0.13/apis/index.php';
+  String accessCode = '';
+  Uint8List? imageData;
   Future<Map<String, dynamic>> fetchData() async {
     final url = Uri.http(
         '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
@@ -96,10 +99,11 @@ class _MyHomePageState extends State<MyHomePage> {
           //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
           List<dynamic> capture_image = detail['capture_media'];
-          String captureMediaJson = jsonEncode(capture_image[0]);
-          String request = "http://192.168.0.13/apis/index.php";
-          String buffer = "access_code=$captureMediaJson";
-          Uri image_url = Uri.parse(request);
+          String captureMediaJson = capture_image[0];
+          getImage(captureMediaJson);
+          //String request = "http://192.168.0.13/apis/index.php";
+          //String buffer = "access_code=$captureMediaJson";
+          //Uri image_url = Uri.parse(request);
         }
         return jsonData; // 返回解析後的 JSON 數據
       } else {
@@ -112,9 +116,36 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> getImage(String buffer) async {
-    String apiUrl = 'http://192.168.0.13/apis/index.php';
-    String accessCode = buffer;
-    Uint8List? imageData;
+    accessCode = buffer;
+    Map<String, String> payload = {'access_code': accessCode};
+
+    // Encode the payload to x-www-form-urlencoded format
+    //String encodedPayload = Uri.encodeQueryComponent(payload.toString());
+
+    // Make the HTTP POST request
+    http.Response response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: payload,
+    );
+
+    // Check if the request was successful (status code 200)
+    if (response.statusCode == 200) {
+      // Check if the content type is 'image/jpeg'
+      if (response.headers['content-type'] == 'image/jpeg') {
+        // Decode the response body as Uint8List (bytes)
+        setState(() {
+          imageData = response.bodyBytes;
+        });
+      } else {
+        print('Unexpected content type: ${response.headers['content-type']}');
+      }
+    } else {
+      print('HTTP request failed with status: ${response}');
+      print('Response body: ${response.body}');
+    }
   }
 
   void _incrementCounter() {
@@ -219,6 +250,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 );
               },
               child: Text('打開新頁面'),
+            ),
+            Container(
+              child: imageData != null
+                  ? Image.memory(
+                      imageData!,
+                      width: 300,
+                      height: 300,
+                      fit: BoxFit.cover,
+                    )
+                  : CircularProgressIndicator(),
             )
           ],
         ),
