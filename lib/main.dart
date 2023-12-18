@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:convert' show utf8;
+
+import 'package:http/retry.dart';
 
 void main() {
   runApp(const MyApp());
@@ -60,6 +63,12 @@ class _MyHomePageState extends State<MyHomePage> {
   String jsonData = ''; // 用於顯示 JSON 資料的文字
   String updatetime = '';
   String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
+  String events = '';
+  String levels = '';
+  String locations = '';
+  String timestamps = '';
+  String airqualitys = '';
+  String temperatures = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
     final url = Uri.http(
@@ -73,6 +82,24 @@ class _MyHomePageState extends State<MyHomePage> {
         // 使用鍵來訪問對應的值
         updatetime = jsonData['0_update_stamp'];
         isAlert = jsonData['alert'].toString();
+        List<dynamic> details = jsonData['details'];
+        for (var detail in details) {
+          events = detail['event'];
+          levels = detail['level'].toString();
+          locations = detail['location'];
+          timestamps = detail['time_stamp'];
+          Map<String, dynamic> sensors = detail['sensors'];
+          airqualitys = sensors['air_quality'].toStringAsFixed(2);
+          temperatures = sensors['temperature'].toStringAsFixed(2);
+
+          //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+          List<dynamic> capture_image = detail['capture_media'];
+          String captureMediaJson = jsonEncode(capture_image[0]);
+          String request = "http://192.168.0.13/apis/index.php";
+          String buffer = "access_code=$captureMediaJson";
+          Uri image_url = Uri.parse(request);
+        }
         return jsonData; // 返回解析後的 JSON 數據
       } else {
         // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
@@ -148,14 +175,18 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               child: const Text('取得資料'),
             ),
-            Text(updatetime),
-            Text(isAlert),
-            SizedBox(height: 20), // 加入一些間距
-            // Text(
-            //   jsonData,
-            //   textAlign: TextAlign.center,
-            //   style: TextStyle(fontSize: 16),
-            // ),
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert',
+                  textAlign: TextAlign.left),
+              // Text(''),
+              // Text('事件種類: $events'),
+              // Text('事件等級: $levels'),
+              // Text('感測器位置: $locations'),
+              // Text('事件時間: $timestamps'),
+              // Text('氣體數值: $airqualitys'),
+              // Text('溫度: $temperatures'),
+            ),
             Container(
               constraints: BoxConstraints(
                 minHeight: 40, //minimum height
@@ -171,6 +202,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _incrementCounter,
                 child: const Text("normal"),
               ),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                // 当按钮按下时，跳转到新页面
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => SecondPage()),
+                );
+              },
+              child: Text('打開新頁面'),
             )
           ],
         ),
@@ -180,6 +221,26 @@ class _MyHomePageState extends State<MyHomePage> {
         tooltip: 'Increment',
         child: const Icon(Icons.add),
       ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class SecondPage extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Second Page'),
+        leading: IconButton(
+          icon: Icon(Icons.close),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: Center(
+        child: Text('这是第二个页面'),
+      ),
     );
   }
 }
