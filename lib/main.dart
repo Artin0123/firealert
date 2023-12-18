@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:convert' show utf8;
+
+import 'package:http/retry.dart';
 
 void main() {
   runApp(const MyApp());
@@ -68,7 +71,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String temperatures = '';
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http(
+        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -91,7 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
           //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
           List<dynamic> capture_image = detail['capture_media'];
-          String captureMediaJson = jsonEncode(capture_image);
+          String captureMediaJson = jsonEncode(capture_image[0]);
           String request = "http://192.168.0.13/apis/index.php";
           String buffer = "access_code=$captureMediaJson";
           Uri image_url = Uri.parse(request);
@@ -104,6 +108,18 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       throw Exception('Error during HTTP request: $e');
     }
+  }
+
+  Future<String> getImage() async {
+    final response = await http.post(
+      Uri.parse('https:youraddress.com/api'),
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      encoding: Encoding.getByName('utf-8'),
+      body: {"title": "title"},
+    );
+    return;
   }
 
   void _incrementCounter() {
@@ -173,7 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Container(
               alignment: Alignment.centerLeft,
-              child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
+              child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert',
+                  textAlign: TextAlign.left),
               // Text(''),
               // Text('事件種類: $events'),
               // Text('事件等級: $levels'),
