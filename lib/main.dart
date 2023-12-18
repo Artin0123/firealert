@@ -110,18 +110,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-  Future<String> getImage() async {
-    final response = await http.post(
-      Uri.parse('https:youraddress.com/api'),
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-      encoding: Encoding.getByName('utf-8'),
-      body: {"title": "title"},
-    );
-    return;
-  }
-
   void _incrementCounter() {
     setState(() {
       // This call to setState tells the Flutter framework that something has
