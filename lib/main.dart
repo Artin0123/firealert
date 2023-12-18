@@ -62,7 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
   int _counter = 0;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http(
+        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
