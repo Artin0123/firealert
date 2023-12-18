@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:typed_data';
 import 'dart:convert' show utf8;
 
 import 'package:http/retry.dart';
@@ -108,6 +109,12 @@ class _MyHomePageState extends State<MyHomePage> {
     } catch (e) {
       throw Exception('Error during HTTP request: $e');
     }
+  }
+
+  Future<void> getImage(String buffer) async {
+    String apiUrl = 'http://192.168.0.13/apis/index.php';
+    String accessCode = buffer;
+    Uint8List? imageData;
   }
 
   void _incrementCounter() {
