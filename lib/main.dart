@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:http/retry.dart';
 
 void main() {
   runApp(const MyApp());
@@ -31,10 +32,11 @@ class MyApp extends StatelessWidget {
         //
         // This works for code too, not just values: Most code changes can be
         // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme:
+            ColorScheme.fromSeed(seedColor: Color.fromARGB(255, 26, 92, 136)),
         useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: '火災事件列表'),
     );
   }
 }
@@ -72,7 +74,8 @@ class _MyHomePageState extends State<MyHomePage> {
   String accessCode = '';
   Uint8List? imageData;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http(
+        '140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -171,7 +174,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Center(
+            child: Text('火災事件列表')), //title: Center(child: Text('火災事件列表')),
       ),
       body: Center(
         // Center is a layout widget. It takes a single child and positions it
@@ -193,7 +197,11 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             const Text(
-              'You have pushed the button this many times:',
+              '火災',
+              style: TextStyle(
+                fontSize: 20, // Set the desired font size
+                color: Colors.black,
+              ),
             ),
             Text(
               '$_counter',
@@ -211,7 +219,8 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             Container(
               alignment: Alignment.centerLeft,
-              child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
+              child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert',
+                  textAlign: TextAlign.left),
               // Text(''),
               // Text('事件種類: $events'),
               // Text('事件等級: $levels'),
@@ -273,7 +282,7 @@ class SecondPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Second Page'),
+        title: Center(child: Text('Second Page')),
         leading: IconButton(
           icon: Icon(Icons.close),
           onPressed: () {
