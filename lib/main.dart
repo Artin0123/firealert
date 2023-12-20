@@ -94,8 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
           //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-          List<dynamic> capture_image = detail['capture_media'];
-          String captureMediaJson = capture_image[0];
+          List<dynamic> captureImage = detail['capture_media'];
+          String captureMediaJson = captureImage[0];
           getImage(captureMediaJson);
           //String request = "http://192.168.0.13/apis/index.php";
           //String buffer = "access_code=$captureMediaJson";
@@ -136,11 +136,11 @@ class _MyHomePageState extends State<MyHomePage> {
           imageData = response.bodyBytes;
         });
       } else {
-        print('Unexpected content type: ${response.headers['content-type']}');
+        debugPrint('Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
-      print('HTTP request failed with status: ${response}');
-      print('Response body: ${response.body}');
+      debugPrint('HTTP request failed with status: $response');
+      debugPrint('Response body: ${response.body}');
     }
   }
 
@@ -244,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   MaterialPageRoute(builder: (context) => SecondPage()),
                 );
               },
-              child: Text('打開新頁面'),
+              child: const Text('打開新頁面'),
             ),
             Container(
               child: imageData != null
@@ -254,7 +254,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       height: 300,
                       fit: BoxFit.cover,
                     )
-                  : CircularProgressIndicator(),
+                  : const CircularProgressIndicator(),
             )
           ],
         ),
