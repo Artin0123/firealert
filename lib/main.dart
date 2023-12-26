@@ -147,11 +147,11 @@ class _Pageone extends State<PageOne> {
   String airqualitys = '';
   String temperatures = '';
   // int _counter = 0;
-  String apiUrl = 'http://192.168.0.13/apis/index.php';
+  String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
   String accessCode = '';
   Uint8List? imageData;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL
+    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -230,7 +230,7 @@ class _Pageone extends State<PageOne> {
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       // Center is a layout widget. It takes a single child and positions it
       // in the middle of the parent.
-      body: Center(
+      body: SingleChildScrollView(
         child: Column(
             // Column is also a layout widget. It takes a list of children and
             // arranges them vertically. By default, it sizes itself to fit its
