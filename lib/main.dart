@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
+import 'dart:async';
 
 void main() {
   runApp(const MyApp());
@@ -322,9 +323,11 @@ class _Pageone extends State<PageOne> {
                   )),
               ElevatedButton(
                 onPressed: () async {
-                  await fetchData();
-                  getImage(captureMediaJson);
-                  setState(() {}); // 更新狀態
+                  if (_selected == false) {
+                    await fetchData();
+                    getImage(captureMediaJson);
+                    setState(() {}); // 更新狀態
+                  }
                 },
                 child: const Text('取得資料'),
               ),
@@ -382,6 +385,14 @@ class PageThree extends StatefulWidget {
   State<PageThree> createState() => _Pagethree();
 }
 
+void startDataPolling() {
+  const Duration pollInterval = const Duration(seconds: 3);
+  Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
+    // 发送数据请求到服务器
+    fetchData();
+  });
+}
+
 class _Pagethree extends State<PageThree> {
   @override
   Widget build(BuildContext context) {
@@ -393,7 +404,7 @@ class _Pagethree extends State<PageThree> {
           onTap: () {
             setState(() {
               // This is called when the user toggles the switch.
-              _selected = !_selected;
+              _selected = !_selected; //true 自動更新
               //自動更新
             });
           },
@@ -414,6 +425,7 @@ class _Pagethree extends State<PageThree> {
               // This is called when the user toggles the switch.
               setState(() {
                 _selected = value!;
+                startDataPolling();
               });
             },
             value: _selected,
