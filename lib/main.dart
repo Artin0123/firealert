@@ -348,37 +348,6 @@ class _Pageone extends State<PageOne> {
                       )
                     : const CircularProgressIndicator(),
               ),
-              ListTile(
-                selected: _selected,
-                onTap: () {
-                  setState(() {
-                    // This is called when the user toggles the switch.
-                    _selected = !_selected;
-                    //自動更新
-                  });
-                },
-                // This sets text color and icon color to red when list tile is disabled and
-                // green when list tile is selected, otherwise sets it to black.
-                iconColor:
-                    MaterialStateColor.resolveWith((Set<MaterialState> states) {
-                  if (states.contains(MaterialState.selected)) {
-                    return Colors.green;
-                  }
-                  return Colors.black;
-                }),
-                leading: const Icon(Icons.person),
-                title: const Text('Headline'),
-                subtitle: Text('Enabled: , Selected: $_selected'),
-                trailing: Switch(
-                  onChanged: (bool? value) {
-                    // This is called when the user toggles the switch.
-                    setState(() {
-                      _selected = value!;
-                    });
-                  },
-                  value: _selected,
-                ),
-              )
             ]),
       ),
     );
@@ -418,7 +387,39 @@ class _Pagethree extends State<PageThree> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-      children: [],
+      children: [
+        ListTile(
+          selected: _selected,
+          onTap: () {
+            setState(() {
+              // This is called when the user toggles the switch.
+              _selected = !_selected;
+              //自動更新
+            });
+          },
+          // This sets text color and icon color to red when list tile is disabled and
+          // green when list tile is selected, otherwise sets it to black.
+          iconColor:
+              MaterialStateColor.resolveWith((Set<MaterialState> states) {
+            if (states.contains(MaterialState.selected)) {
+              return Colors.green;
+            }
+            return Colors.black;
+          }),
+          leading: const Icon(Icons.person),
+          title: const Text('Headline'),
+          subtitle: Text('Enabled: , Selected: $_selected'),
+          trailing: Switch(
+            onChanged: (bool? value) {
+              // This is called when the user toggles the switch.
+              setState(() {
+                _selected = value!;
+              });
+            },
+            value: _selected,
+          ),
+        )
+      ],
     ));
   }
 }
