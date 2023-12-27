@@ -366,13 +366,11 @@ class PageThree extends StatefulWidget {
 
 class _Pagethree extends State<PageThree> {
   bool _selected = false;
-  bool _enabled = true;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
           children: [ListTile(
-            enabled: _enabled,
           selected: _selected,
           onTap: () {
             setState(() {
@@ -383,20 +381,6 @@ class _Pagethree extends State<PageThree> {
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
           iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
-              return Colors.red;
-            }
-            if (states.contains(MaterialState.selected)) {
-              return Colors.green;
-            }
-            return Colors.black;
-          }),
-          // This sets text color and icon color to red when list tile is disabled and
-          // green when list tile is selected, otherwise sets it to black.
-          textColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
-            if (states.contains(MaterialState.disabled)) {
-              return Colors.red;
-            }
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -404,15 +388,15 @@ class _Pagethree extends State<PageThree> {
           }),
           leading: const Icon(Icons.person),
           title: const Text('Headline'),
-          subtitle: Text('Enabled: $_enabled, Selected: $_selected'),
+          subtitle: Text('Enabled: , Selected: $_selected'),
           trailing: Switch(
             onChanged: (bool? value) {
               // This is called when the user toggles the switch.
               setState(() {
-                _enabled = value!;
+                _selected = value!;
               });
             },
-            value: _enabled,
+            value: _selected,
           ),
           )],
     ));
