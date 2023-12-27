@@ -271,19 +271,31 @@ class _Pageone extends State<PageOne> {
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          child: Text('位置: $locations\n時間: $timestamps\n上次警報更新時間: $updatetime\n是否有警報: $isAlert\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures', textAlign: TextAlign.left),
+                          child: Text(
+                              '位置: $locations\n時間: $timestamps\n上次警報更新時間: $updatetime\n是否有警報: $isAlert\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures',
+                              textAlign: TextAlign.left),
                         ),
                       ),
                       const SizedBox(height: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          // 当按钮按下时，跳转到新页面
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) => const SecondPage()),
-                          );
-                        },
-                        child: const Text('查看詳情'),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton(
+                            onPressed: () {
+                              // 当按钮按下时，跳转到新页面
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => const SecondPage()),
+                              );
+                            },
+                            child: const Text('查看詳情'),
+                          ),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text('通報119'),
+                          )
+                        ],
                       ),
                       const SizedBox(height: 10),
                     ],
