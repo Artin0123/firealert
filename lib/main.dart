@@ -197,12 +197,12 @@ Future<Map<String, dynamic>> fetchData() async {
 
 class _Pageone extends State<PageOne> {
   //getImage(captureMediaJson);
-  Future<Map<String, dynamic>> update() {
-    Future<Map<String, dynamic>> buffer;
-    buffer = fetchData();
-    //getImage(captureMediaJson);
-    return buffer;
-  }
+  // Future<Map<String, dynamic>> update() {
+  //   Future<Map<String, dynamic>> buffer;
+  //   buffer = fetchData();
+  //   //getImage(captureMediaJson);
+  //   return buffer;
+  // }
 
   Future<void> getImage(String buffer) async {
     accessCode = buffer;
@@ -226,6 +226,7 @@ class _Pageone extends State<PageOne> {
       if (response.headers['content-type'] == 'image/jpeg') {
         // Decode the response body as Uint8List (bytes)
         setState(() {
+          //有問題
           imageData = response.bodyBytes;
         });
       } else {
@@ -321,7 +322,7 @@ class _Pageone extends State<PageOne> {
                   )),
               ElevatedButton(
                 onPressed: () async {
-                  await update();
+                  await fetchData();
                   getImage(captureMediaJson);
                   setState(() {}); // 更新狀態
                 },
