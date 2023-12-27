@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -97,8 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('火災事件列表',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: pages[currentIndex],
@@ -154,8 +152,7 @@ class _Pageone extends State<PageOne> {
   String accessCode = '';
   Uint8List? imageData;
   Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080',
-        'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
+    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
     try {
       final response = await http.get(url);
       if (response.statusCode == 200) {
@@ -220,8 +217,7 @@ class _Pageone extends State<PageOne> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint(
-            'Unexpected content type: ${response.headers['content-type']}');
+        debugPrint('Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -270,9 +266,7 @@ class _Pageone extends State<PageOne> {
                   child: Column(
                     children: [
                       const ListTile(
-                        title: Text('火災',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20)),
+                        title: Text('火災', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -292,8 +286,7 @@ class _Pageone extends State<PageOne> {
                               // 当按钮按下时，跳转到新页面
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SecondPage()),
+                                MaterialPageRoute(builder: (context) => const SecondPage()),
                               );
                             },
                             child: const Text('查看詳情'),
@@ -372,9 +365,57 @@ class PageThree extends StatefulWidget {
 }
 
 class _Pagethree extends State<PageThree> {
+  bool _selected = false;
+  bool _enabled = true;
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return Scaffold(
+        body: Column(
+          children: [ListTile(
+            enabled: _enabled,
+          selected: _selected,
+          onTap: () {
+            setState(() {
+              // This is called when the user toggles the switch.
+              _selected = !_selected;
+            });
+          },
+          // This sets text color and icon color to red when list tile is disabled and
+          // green when list tile is selected, otherwise sets it to black.
+          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return Colors.red;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return Colors.green;
+            }
+            return Colors.black;
+          }),
+          // This sets text color and icon color to red when list tile is disabled and
+          // green when list tile is selected, otherwise sets it to black.
+          textColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+            if (states.contains(MaterialState.disabled)) {
+              return Colors.red;
+            }
+            if (states.contains(MaterialState.selected)) {
+              return Colors.green;
+            }
+            return Colors.black;
+          }),
+          leading: const Icon(Icons.person),
+          title: const Text('Headline'),
+          subtitle: Text('Enabled: $_enabled, Selected: $_selected'),
+          trailing: Switch(
+            onChanged: (bool? value) {
+              // This is called when the user toggles the switch.
+              setState(() {
+                _enabled = value!;
+              });
+            },
+            value: _enabled,
+          ),
+          )],
+    ));
   }
 }
 
@@ -390,8 +431,7 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: const Center(),
