@@ -96,7 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: pages[currentIndex],
@@ -137,59 +138,69 @@ class PageOne extends StatefulWidget {
   State<PageOne> createState() => _Pageone();
 }
 
-class _Pageone extends State<PageOne> {
-  String jsonData = ''; // 用於顯示 JSON 資料的文字
-  String updatetime = '';
-  String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
-  String events = '';
-  String levels = '';
-  String locations = '';
-  String timestamps = '';
-  String airqualitys = '';
-  String temperatures = '';
-  // int _counter = 0;
-  String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
-  String accessCode = '';
-  Uint8List? imageData;
-  Future<Map<String, dynamic>> fetchData() async {
-    final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        // 如果服務器返回一個 OK 響應，則解析 JSON。
-        Map<String, dynamic> jsonData = jsonDecode(response.body);
+String jsonData = ''; // 用於顯示 JSON 資料的文字
+String updatetime = '';
+String isAlert = ''; // 新增一個用於存儲 isAlert 的變量
+String events = '';
+String levels = '';
+String locations = '';
+String timestamps = '';
+String airqualitys = '';
+String temperatures = '';
+// int _counter = 0;
+String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
+String accessCode = '';
+Uint8List? imageData;
+bool _selected = false;
+String captureMediaJson = '';
+Future<Map<String, dynamic>> fetchData() async {
+  final url = Uri.http('140.138.150.29:38080',
+      'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
+  try {
+    final response = await http.get(url);
+    if (response.statusCode == 200) {
+      // 如果服務器返回一個 OK 響應，則解析 JSON。
+      Map<String, dynamic> jsonData = jsonDecode(response.body);
 
-        // 使用鍵來訪問對應的值
-        updatetime = jsonData['0_update_stamp'];
-        isAlert = jsonData['alert'].toString();
-        List<dynamic> details = jsonData['details'];
-        for (var detail in details) {
-          events = detail['event'];
-          levels = detail['level'].toString();
-          locations = detail['location'];
-          timestamps = detail['time_stamp'];
-          Map<String, dynamic> sensors = detail['sensors'];
-          airqualitys = sensors['air_quality'].toStringAsFixed(2);
-          temperatures = sensors['temperature'].toStringAsFixed(2);
+      // 使用鍵來訪問對應的值
+      updatetime = jsonData['0_update_stamp'];
+      isAlert = jsonData['alert'].toString();
+      List<dynamic> details = jsonData['details'];
+      for (var detail in details) {
+        events = detail['event'];
+        levels = detail['level'].toString();
+        locations = detail['location'];
+        timestamps = detail['time_stamp'];
+        Map<String, dynamic> sensors = detail['sensors'];
+        airqualitys = sensors['air_quality'].toStringAsFixed(2);
+        temperatures = sensors['temperature'].toStringAsFixed(2);
 
-          //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-          List<dynamic> captureImage = detail['capture_media'];
-          String captureMediaJson = captureImage[0];
-          getImage(captureMediaJson);
-          //String request = "http://192.168.0.13/apis/index.php";
-          //String buffer = "access_code=$captureMediaJson";
-          //Uri image_url = Uri.parse(request);
-        }
-        return jsonData; // 返回解析後的 JSON 數據
-      } else {
-        // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
-        throw Exception('Key "0_update_stamp" not found in the JSON data');
+        List<dynamic> captureImage = detail['capture_media'];
+        captureMediaJson = captureImage[0];
+
+        //String request = "http://192.168.0.13/apis/index.php";
+        //String buffer = "access_code=$captureMediaJson";
+        //Uri image_url = Uri.parse(request);
       }
-    } catch (e) {
-      // 如果發生錯誤，則拋出一個異常。
-      throw Exception(e.toString());
+      return jsonData; // 返回解析後的 JSON 數據
+    } else {
+      // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
+      throw Exception('Key "0_update_stamp" not found in the JSON data');
     }
+  } catch (e) {
+    // 如果發生錯誤，則拋出一個異常。
+    throw Exception(e.toString());
+  }
+}
+
+class _Pageone extends State<PageOne> {
+  //getImage(captureMediaJson);
+  String update() {
+    fetchData();
+    getImage(captureMediaJson);
+    return '';
   }
 
   Future<void> getImage(String buffer) async {
@@ -217,7 +228,8 @@ class _Pageone extends State<PageOne> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint('Unexpected content type: ${response.headers['content-type']}');
+        debugPrint(
+            'Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -266,7 +278,9 @@ class _Pageone extends State<PageOne> {
                   child: Column(
                     children: [
                       const ListTile(
-                        title: Text('火災', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                        title: Text('火災',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -286,7 +300,8 @@ class _Pageone extends State<PageOne> {
                               // 当按钮按下时，跳转到新页面
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const SecondPage()),
+                                MaterialPageRoute(
+                                    builder: (context) => const SecondPage()),
                               );
                             },
                             child: const Text('查看詳情'),
@@ -305,7 +320,7 @@ class _Pageone extends State<PageOne> {
                   )),
               ElevatedButton(
                 onPressed: () async {
-                  await fetchData();
+                  await update();
                   setState(() {}); // 更新狀態
                 },
                 child: const Text('取得資料'),
@@ -329,6 +344,37 @@ class _Pageone extends State<PageOne> {
                         fit: BoxFit.cover,
                       )
                     : const CircularProgressIndicator(),
+              ),
+              ListTile(
+                selected: _selected,
+                onTap: () {
+                  setState(() {
+                    // This is called when the user toggles the switch.
+                    _selected = !_selected;
+                    //自動更新
+                  });
+                },
+                // This sets text color and icon color to red when list tile is disabled and
+                // green when list tile is selected, otherwise sets it to black.
+                iconColor:
+                    MaterialStateColor.resolveWith((Set<MaterialState> states) {
+                  if (states.contains(MaterialState.selected)) {
+                    return Colors.green;
+                  }
+                  return Colors.black;
+                }),
+                leading: const Icon(Icons.person),
+                title: const Text('Headline'),
+                subtitle: Text('Enabled: , Selected: $_selected'),
+                trailing: Switch(
+                  onChanged: (bool? value) {
+                    // This is called when the user toggles the switch.
+                    setState(() {
+                      _selected = value!;
+                    });
+                  },
+                  value: _selected,
+                ),
               )
             ]),
       ),
@@ -365,40 +411,11 @@ class PageThree extends StatefulWidget {
 }
 
 class _Pagethree extends State<PageThree> {
-  bool _selected = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
-          children: [ListTile(
-          selected: _selected,
-          onTap: () {
-            setState(() {
-              // This is called when the user toggles the switch.
-              _selected = !_selected;
-            });
-          },
-          // This sets text color and icon color to red when list tile is disabled and
-          // green when list tile is selected, otherwise sets it to black.
-          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
-              return Colors.green;
-            }
-            return Colors.black;
-          }),
-          leading: const Icon(Icons.person),
-          title: const Text('Headline'),
-          subtitle: Text('Enabled: , Selected: $_selected'),
-          trailing: Switch(
-            onChanged: (bool? value) {
-              // This is called when the user toggles the switch.
-              setState(() {
-                _selected = value!;
-              });
-            },
-            value: _selected,
-          ),
-          )],
+      children: [],
     ));
   }
 }
@@ -415,10 +432,13 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
-      body: const Center(),
+      body: Center(
+        child: Text('$locations'),
+      ),
     );
   }
 }
