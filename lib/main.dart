@@ -370,6 +370,7 @@ class PageTwo extends StatefulWidget {
   const PageTwo({super.key});
   @override
   State<PageTwo> createState() => _Pagetwo();
+  //State<PageTwo> createState() => _Pageone();
 }
 
 class _Pagetwo extends State<PageTwo> {
@@ -387,6 +388,7 @@ class PageThree extends StatefulWidget {
 
 class _Pagethree extends State<PageThree> {
   late Timer periodicTimer;
+
   @override
   void startDataPolling() async {
     const Duration pollInterval = const Duration(seconds: 3);
@@ -395,6 +397,7 @@ class _Pagethree extends State<PageThree> {
       if (_selected) {
         // Only fetch data if auto-update is enabled
         fetchData();
+        _Pageone();
       }
     });
   }
@@ -429,6 +432,7 @@ class _Pagethree extends State<PageThree> {
           leading: const Icon(Icons.person),
           title: const Text('Headline'),
           subtitle: Text('Enabled: , Selected: $_selected'),
+
           trailing: Switch(
             onChanged: (bool? value) {
               // This is called when the user toggles the switch.
