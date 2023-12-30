@@ -385,16 +385,25 @@ class PageThree extends StatefulWidget {
   State<PageThree> createState() => _Pagethree();
 }
 
-void startDataPolling() {
-  const Duration pollInterval = const Duration(seconds: 3);
-  Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
-    // 发送数据请求到服务器
-    fetchData();
-  });
-}
-
 class _Pagethree extends State<PageThree> {
+  late Timer periodicTimer;
   @override
+  void startDataPolling() async {
+    const Duration pollInterval = const Duration(seconds: 3);
+    periodicTimer = Timer.periodic(pollInterval, (Timer t) {
+      // 发送数据请求到服务器
+      if (_selected) {
+        // Only fetch data if auto-update is enabled
+        fetchData();
+      }
+    });
+  }
+
+  void dispose() {
+    periodicTimer.cancel(); // Cancel the timer when the widget is disposed
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -425,7 +434,9 @@ class _Pagethree extends State<PageThree> {
               // This is called when the user toggles the switch.
               setState(() {
                 _selected = value!;
-                startDataPolling();
+                if (_selected) {
+                  startDataPolling();
+                }
               });
             },
             value: _selected,
