@@ -154,6 +154,7 @@ String accessCode = '';
 Uint8List? imageData;
 bool _selected = false;
 String captureMediaJson = '';
+Map<String, dynamic> dataFromSecondPage = Map();
 Future<Map<String, dynamic>> fetchData() async {
   final url = Uri.http('140.138.150.29:38080',
       'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
@@ -162,7 +163,7 @@ Future<Map<String, dynamic>> fetchData() async {
     if (response.statusCode == 200) {
       // 如果服務器返回一個 OK 響應，則解析 JSON。
       Map<String, dynamic> jsonData = jsonDecode(response.body);
-
+      dataFromSecondPage = jsonData;
       // 使用鍵來訪問對應的值
       updatetime = jsonData['0_update_stamp'];
       isAlert = jsonData['alert'].toString();
@@ -204,6 +205,8 @@ class _Pageone extends State<PageOne> {
   //   //getImage(captureMediaJson);
   //   return buffer;
   // }
+  Map<String, dynamic> updateFirstPageData = Map();
+  
 
   Future<void> getImage(String buffer) async {
     accessCode = buffer;
@@ -262,11 +265,19 @@ class _Pageone extends State<PageOne> {
             // action in the IDE, or press "p" in the console), to see the
             // wireframe for each widget.
             // mainAxisAlignment: MainAxisAlignment.center,
+            final result = await Navigator.push(
+              MaterialPageRoute(
+                builder: (context) => SecondPage(
+                  updateFirstPageData: dataFromSecondPage,
+                ),
+              )
+              );
             children: <Widget>[
               // Text(
               //   '$_counter',
               //   style: Theme.of(context).textTheme.headlineMedium,
               // ),
+              
               Card(
                   elevation: 6,
                   margin: const EdgeInsets.all(16),
@@ -331,6 +342,7 @@ class _Pageone extends State<PageOne> {
                 },
                 child: const Text('取得資料'),
               ),
+              
               // Container(
               //   alignment: Alignment.centerLeft,
               //   child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
@@ -381,7 +393,9 @@ class _Pagetwo extends State<PageTwo> {
 }
 
 class PageThree extends StatefulWidget {
-  const PageThree({super.key});
+  const PageThree({Key? key, required this.updateFirstPageData})
+      : super(key: key);
+  final Function(Map<String, dynamic>) updateFirstPageData;
   @override
   State<PageThree> createState() => _Pagethree();
 }
@@ -397,7 +411,8 @@ class _Pagethree extends State<PageThree> {
       if (_selected) {
         // Only fetch data if auto-update is enabled
         fetchData();
-        _Pageone();
+        widget.updateFirstPageData(dataFromSecondPage);
+        Navigator.pop(context, dataFromSecondPage);
       }
     });
   }
