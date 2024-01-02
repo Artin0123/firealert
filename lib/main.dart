@@ -97,8 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('火災事件列表',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: pages[currentIndex],
@@ -154,16 +153,14 @@ String accessCode = '';
 Uint8List? imageData;
 bool _selected = false;
 String captureMediaJson = '';
-Map<String, dynamic> dataFromSecondPage = Map();
 Future<Map<String, dynamic>> fetchData() async {
-  final url = Uri.http('140.138.150.29:38080',
-      'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
+  final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
   try {
     final response = await http.get(url);
     if (response.statusCode == 200) {
       // 如果服務器返回一個 OK 響應，則解析 JSON。
       Map<String, dynamic> jsonData = jsonDecode(response.body);
-      dataFromSecondPage = jsonData;
+
       // 使用鍵來訪問對應的值
       updatetime = jsonData['0_update_stamp'];
       isAlert = jsonData['alert'].toString();
@@ -205,8 +202,6 @@ class _Pageone extends State<PageOne> {
   //   //getImage(captureMediaJson);
   //   return buffer;
   // }
-  Map<String, dynamic> updateFirstPageData = Map();
-  
 
   Future<void> getImage(String buffer) async {
     accessCode = buffer;
@@ -234,8 +229,7 @@ class _Pageone extends State<PageOne> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint(
-            'Unexpected content type: ${response.headers['content-type']}');
+        debugPrint('Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -265,19 +259,11 @@ class _Pageone extends State<PageOne> {
             // action in the IDE, or press "p" in the console), to see the
             // wireframe for each widget.
             // mainAxisAlignment: MainAxisAlignment.center,
-            final result = await Navigator.push(
-              MaterialPageRoute(
-                builder: (context) => SecondPage(
-                  updateFirstPageData: dataFromSecondPage,
-                ),
-              )
-              );
             children: <Widget>[
               // Text(
               //   '$_counter',
               //   style: Theme.of(context).textTheme.headlineMedium,
               // ),
-              
               Card(
                   elevation: 6,
                   margin: const EdgeInsets.all(16),
@@ -292,9 +278,7 @@ class _Pageone extends State<PageOne> {
                   child: Column(
                     children: [
                       const ListTile(
-                        title: Text('火災',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20)),
+                        title: Text('火災', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -314,8 +298,7 @@ class _Pageone extends State<PageOne> {
                               // 当按钮按下时，跳转到新页面
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => const SecondPage()),
+                                MaterialPageRoute(builder: (context) => const SecondPage()),
                               );
                             },
                             child: const Text('查看詳情'),
@@ -342,7 +325,6 @@ class _Pageone extends State<PageOne> {
                 },
                 child: const Text('取得資料'),
               ),
-              
               // Container(
               //   alignment: Alignment.centerLeft,
               //   child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
@@ -382,7 +364,6 @@ class PageTwo extends StatefulWidget {
   const PageTwo({super.key});
   @override
   State<PageTwo> createState() => _Pagetwo();
-  //State<PageTwo> createState() => _Pageone();
 }
 
 class _Pagetwo extends State<PageTwo> {
@@ -393,35 +374,21 @@ class _Pagetwo extends State<PageTwo> {
 }
 
 class PageThree extends StatefulWidget {
-  const PageThree({Key? key, required this.updateFirstPageData})
-      : super(key: key);
-  final Function(Map<String, dynamic>) updateFirstPageData;
+  const PageThree({super.key});
   @override
   State<PageThree> createState() => _Pagethree();
 }
 
+void startDataPolling() {
+  const Duration pollInterval = const Duration(seconds: 3);
+  Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
+    // 发送数据请求到服务器
+    fetchData();
+  });
+}
+
 class _Pagethree extends State<PageThree> {
-  late Timer periodicTimer;
-
   @override
-  void startDataPolling() async {
-    const Duration pollInterval = const Duration(seconds: 3);
-    periodicTimer = Timer.periodic(pollInterval, (Timer t) {
-      // 发送数据请求到服务器
-      if (_selected) {
-        // Only fetch data if auto-update is enabled
-        fetchData();
-        widget.updateFirstPageData(dataFromSecondPage);
-        Navigator.pop(context, dataFromSecondPage);
-      }
-    });
-  }
-
-  void dispose() {
-    periodicTimer.cancel(); // Cancel the timer when the widget is disposed
-    super.dispose();
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -437,8 +404,7 @@ class _Pagethree extends State<PageThree> {
           },
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
-          iconColor:
-              MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -447,15 +413,12 @@ class _Pagethree extends State<PageThree> {
           leading: const Icon(Icons.person),
           title: const Text('Headline'),
           subtitle: Text('Enabled: , Selected: $_selected'),
-
           trailing: Switch(
             onChanged: (bool? value) {
               // This is called when the user toggles the switch.
               setState(() {
                 _selected = value!;
-                if (_selected) {
-                  startDataPolling();
-                }
+                startDataPolling();
               });
             },
             value: _selected,
@@ -478,8 +441,7 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
