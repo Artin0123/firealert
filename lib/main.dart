@@ -97,7 +97,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: pages[currentIndex],
@@ -154,7 +155,8 @@ Uint8List? imageData;
 bool _selected = false;
 String captureMediaJson = '';
 Future<Map<String, dynamic>> fetchData() async {
-  final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
+  final url = Uri.http('140.138.150.29:38080',
+      'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
   try {
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -229,7 +231,8 @@ class _Pageone extends State<PageOne> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint('Unexpected content type: ${response.headers['content-type']}');
+        debugPrint(
+            'Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -278,7 +281,9 @@ class _Pageone extends State<PageOne> {
                   child: Column(
                     children: [
                       const ListTile(
-                        title: Text('火災', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                        title: Text('火災',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -298,7 +303,8 @@ class _Pageone extends State<PageOne> {
                               // 当按钮按下时，跳转到新页面
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const SecondPage()),
+                                MaterialPageRoute(
+                                    builder: (context) => const SecondPage()),
                               );
                             },
                             child: const Text('查看詳情'),
@@ -404,7 +410,8 @@ class _Pagethree extends State<PageThree> {
           },
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
-          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          iconColor:
+              MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -441,7 +448,8 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
