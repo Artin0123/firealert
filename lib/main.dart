@@ -375,7 +375,30 @@ class PageTwo extends StatefulWidget {
 class _Pagetwo extends State<PageTwo> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold();
+    return const Scaffold(
+        //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
+        body: SingleChildScrollView(
+            child: Column(children: <Widget>[
+      Card(
+        color: Colors.white,
+        child: ListTile(
+          leading: Icon(
+            Icons.search,
+            color: Colors.blue,
+          ),
+          title: TextField(
+            //controller: controller,
+            decoration: InputDecoration(
+              hintText: '溫度感測器、空氣感測器',
+              hintStyle: TextStyle(
+                color: Colors.blue,
+              ),
+              border: InputBorder.none,
+            ),
+          ),
+        ),
+      ),
+    ])));
   }
 }
 
