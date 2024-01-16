@@ -375,12 +375,12 @@ class PageTwo extends StatefulWidget {
 class _Pagetwo extends State<PageTwo> {
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
+    return Scaffold(
         //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
       Card(
-        color: Colors.white,
+        color: Colors.black,
         child: ListTile(
           leading: Icon(
             Icons.search,
@@ -395,6 +395,18 @@ class _Pagetwo extends State<PageTwo> {
               ),
               border: InputBorder.none,
             ),
+          ),
+        ),
+      ),
+      Card(
+        elevation: 6,
+        margin: const EdgeInsets.all(16),
+        color: const Color.fromARGB(255, 253, 208, 223),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+          side: const BorderSide(
+            color: Color.fromARGB(248, 237, 127, 167),
+            width: 2.0,
           ),
         ),
       ),
