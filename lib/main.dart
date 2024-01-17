@@ -524,8 +524,10 @@ class _Pagethree extends State<PageThree> {
             onTap: () {
               setState(() {
                 // This is called when the user toggles the switch.
-                // _selected = !_selected; //true 自動更新
-                //自動更新
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => NextPage()),
+                );
               });
             },
             leading: const Icon(Icons.person),
@@ -535,6 +537,56 @@ class _Pagethree extends State<PageThree> {
   }
 }
 
+class NextPage extends StatelessWidget {
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('登入'),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.person),
+                  labelText: "名字 *",
+                  //hintText: "使用者名稱",
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: Icon(Icons.remove_red_eye),
+                  labelText: "密碼 *",
+                  //hintText: "最好6個字",
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 52.0,
+            ),
+            // SizedBox(
+            //   width: MediaQuery.of(context).size.width - 48.0,
+            //   height: 48.0,
+            //   child: RaisedButton(
+            //     child: Text("Login"),
+            //     onPressed: () {},
+            //   ),
+            // ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+// class _NextPage extends State<NextPage>{
+
+// }
 class SecondPage extends StatefulWidget {
   const SecondPage({super.key});
   @override
