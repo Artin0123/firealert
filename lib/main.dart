@@ -520,7 +520,16 @@ class _Pagethree extends State<PageThree> {
                 });
               }),
         ),
-        ListTile(leading: const Icon(Icons.person), title: Text('登入'))
+        ListTile(
+            onTap: () {
+              setState(() {
+                // This is called when the user toggles the switch.
+                // _selected = !_selected; //true 自動更新
+                //自動更新
+              });
+            },
+            leading: const Icon(Icons.person),
+            title: Text('登入'))
       ],
     ));
   }
