@@ -551,7 +551,7 @@ class NextPage extends StatelessWidget {
               child: TextFormField(
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: "名字 *",
+                  labelText: "使用者名稱 *",
                   //hintText: "使用者名稱",
                 ),
               ),
@@ -570,14 +570,19 @@ class NextPage extends StatelessWidget {
             SizedBox(
               height: 52.0,
             ),
-            // SizedBox(
-            //   width: MediaQuery.of(context).size.width - 48.0,
-            //   height: 48.0,
-            //   child: RaisedButton(
-            //     child: Text("Login"),
-            //     onPressed: () {},
-            //   ),
-            // ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width - 1000.0,
+              height: 70.0,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      const Color.fromARGB(
+                          255, 164, 199, 228)), // Change to your desired color
+                ),
+                child: Text("登入", style: TextStyle(fontSize: 20)),
+                onPressed: () {},
+              ),
+            ),
           ],
         ),
       ),
