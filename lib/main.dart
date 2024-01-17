@@ -153,6 +153,7 @@ String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
 String accessCode = '';
 Uint8List? imageData;
 bool _selected = false;
+bool con_notify = false;
 String captureMediaJson = '';
 Future<Map<String, dynamic>> fetchData() async {
   final url = Uri.http('140.138.150.29:38080',
@@ -399,17 +400,55 @@ class _Pagetwo extends State<PageTwo> {
         ),
       ),
       Card(
-        elevation: 6,
-        margin: const EdgeInsets.all(16),
-        color: const Color.fromARGB(255, 253, 208, 223),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0),
-          side: const BorderSide(
-            color: Color.fromARGB(248, 237, 127, 167),
-            width: 2.0,
+          elevation: 6,
+          margin: const EdgeInsets.all(16),
+          color: const Color.fromARGB(255, 253, 208, 223),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: const BorderSide(
+              color: Color.fromARGB(248, 237, 127, 167),
+              width: 2.0,
+            ),
           ),
-        ),
-      ),
+          child: Column(children: [
+            const ListTile(
+              title: Text('溫度感應器',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: Text('是否異常:\n感測器id :\n' '溫度: $temperatures\n',
+                    textAlign: TextAlign.left),
+              ),
+            ),
+          ])),
+      Card(
+          elevation: 6,
+          margin: const EdgeInsets.all(16),
+          color: Color.fromARGB(255, 208, 239, 253),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: const BorderSide(
+              color: Color.fromARGB(248, 127, 193, 237),
+              width: 2.0,
+            ),
+          ),
+          child: Column(children: [
+            const ListTile(
+              title: Text('空氣感應器',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+            ),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                child: Text('是否異常:\n感測器id :\n' '氣體數值: $airqualitys\n',
+                    textAlign: TextAlign.left),
+              ),
+            ),
+          ])),
     ])));
   }
 }
