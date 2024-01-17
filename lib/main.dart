@@ -509,8 +509,9 @@ class _Pagethree extends State<PageThree> {
           leading: const Icon(Icons.access_alarm),
           title: Text(
             "設備通知",
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
+          subtitle: Text('設備異常是否開啟通知'),
           trailing: Switch(
               value: con_notify,
               onChanged: (value) {
