@@ -381,7 +381,7 @@ class _Pagetwo extends State<PageTwo> {
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
       Card(
-        color: Colors.black,
+        color: Colors.white38,
         child: ListTile(
           leading: Icon(
             Icons.search,
@@ -390,7 +390,7 @@ class _Pagetwo extends State<PageTwo> {
           title: TextField(
             //controller: controller,
             decoration: InputDecoration(
-              hintText: '溫度感測器、空氣感測器',
+              hintText: '',
               hintStyle: TextStyle(
                 color: Colors.blue,
               ),
@@ -504,6 +504,20 @@ class _Pagethree extends State<PageThree> {
             },
             value: _selected,
           ),
+        ),
+        ListTile(
+          leading: const Icon(Icons.access_alarm),
+          title: Text(
+            "設備通知",
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          ),
+          trailing: Switch(
+              value: con_notify,
+              onChanged: (value) {
+                setState(() {
+                  con_notify = value;
+                });
+              }),
         )
       ],
     ));
