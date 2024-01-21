@@ -379,16 +379,25 @@ class _Pagetwo extends State<PageTwo> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('搜尋'),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.search),
-            onPressed: () {
-              showSearch(context: context, delegate: SearchBarDelegate());
-            },
-          )
-        ],
-      ), //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
+        title: TextField(
+          //controller: searchController,
+          onTap: () async {
+            // Show search bar and get user input
+            final String query = await showSearch(
+              context: context,
+              delegate: SearchBarDelegate(),
+            );
+
+            // Handle search query
+          },
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            prefixIcon: Icon(Icons.search),
+          ),
+        ),
+      ),
+
+      //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       //     body: SingleChildScrollView(
       //         child: Column(children: <Widget>[
       //   Card(
