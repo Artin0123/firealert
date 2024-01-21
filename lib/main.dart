@@ -478,11 +478,7 @@ class SearchBarDelegate extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
     //输入框之前的部件
     return IconButton(
-      tooltip: 'Back',
-      icon: AnimatedIcon(
-        icon: AnimatedIcons.menu_arrow,
-        progress: transitionAnimation,
-      ),
+      icon: Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
       },
