@@ -147,8 +147,8 @@ String events = '';
 String levels = '';
 String locations = '';
 String timestamps = '';
-String airqualitys = '';
-String temperatures = '';
+String airqualitys = '45.2356';
+String temperatures = '78.2356';
 // int _counter = 0;
 String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
 String accessCode = '';
@@ -377,6 +377,29 @@ class PageTwo extends StatefulWidget {
 class _Pagetwo extends State<PageTwo> {
   List<String> items = [];
   TextEditingController searchController = TextEditingController();
+  var buffer = new Map();
+
+  void updateList() async {
+    // Fetch data and update the list
+    //Map<String, dynamic> newData = await fetchData();
+
+    setState(() {
+      //items = newData;
+      items.add(airqualitys);
+      items.add(temperatures);
+      buffer[123] = airqualitys;
+      buffer[456] = temperatures;
+    });
+  }
+
+  void filterItems(String query) {
+    // Filter items based on the search query
+    setState(() {
+      items = items
+          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+          .toList();
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -388,9 +411,11 @@ class _Pagetwo extends State<PageTwo> {
             // Show search bar and get user input
             final String query = await showSearch(
               context: context,
-              delegate: SearchBarDelegate(),
+              delegate: SearchBarDelegate(buffer),
             );
-
+            if (query != null) {
+              filterItems(query);
+            }
             // Handle search query
           },
           decoration: InputDecoration(
@@ -478,6 +503,9 @@ class _Pagetwo extends State<PageTwo> {
 }
 
 class SearchBarDelegate extends SearchDelegate {
+  var dic = new Map();
+
+  SearchBarDelegate(this.dic);
   Widget buildLeading(BuildContext context) {
     //输入框之前的部件
     return IconButton(
@@ -505,10 +533,13 @@ class SearchBarDelegate extends SearchDelegate {
   Widget buildResults(BuildContext context) {
     //顯示搜索結果
     return ListView.builder(
-      itemCount: Random().nextInt(10),
+      itemCount: dic.length,
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text('result $index'),
+          title: Text(dic[index]),
+          onTap: () {
+            close(context, dic[index]);
+          },
         );
       },
     );
@@ -516,13 +547,17 @@ class SearchBarDelegate extends SearchDelegate {
 
   Widget buildSuggestions(BuildContext context) {
     //搜索建議
+    // List<String> buffer = [];
+    // for (int i = 0; i < dic.length; i++) {
+    //   String key=dic.
+    // }
     return ListView(
       children: <Widget>[
-        ListTile(title: Text('Suggest 01')),
-        ListTile(title: Text('Suggest 02')),
-        ListTile(title: Text('Suggest 03')),
-        ListTile(title: Text('Suggest 04')),
-        ListTile(title: Text('Suggest 05')),
+        // ListTile(title: Text('Suggest 01')),
+        // ListTile(title: Text('Suggest 02')),
+        // ListTile(title: Text('Suggest 03')),
+        // ListTile(title: Text('Suggest 04')),
+        // ListTile(title: Text('Suggest 05')),
       ],
     );
   }
