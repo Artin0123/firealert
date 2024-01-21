@@ -375,6 +375,9 @@ class PageTwo extends StatefulWidget {
 }
 
 class _Pagetwo extends State<PageTwo> {
+  List<String> items = [];
+  TextEditingController searchController = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
