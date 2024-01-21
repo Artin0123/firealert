@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
+import 'dart:math';
 
 void main() {
   runApp(const MyApp());
@@ -377,156 +378,144 @@ class _Pagetwo extends State<PageTwo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('Search and Update Example'), actions: [
-      IconButton(
-          icon: Icon(Icons.search),
-          onPressed: () async {
-            final String query = await showSearch(
-              context: context,
-              delegate: SearchBarDelegate(items),
-            );
-            if (query != null) {
-              filterItems(query);
-            }
-          })
-    ]) //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
-        //     body: SingleChildScrollView(
-        //         child: Column(children: <Widget>[
-        //   Card(
-        //     color: Colors.white38,
-        //     child: ListTile(
-        //       leading: Icon(
-        //         Icons.search,
-        //         color: Colors.blue,
-        //       ),
-        //       title: TextField(
-        //         //controller: controller,
-        //         decoration: InputDecoration(
-        //           hintText: '',
-        //           hintStyle: TextStyle(
-        //             color: Colors.blue,
-        //           ),
-        //           border: InputBorder.none,
-        //         ),
-        //       ),
-        //     ),
-        //   ),
-        //   Card(
-        //       elevation: 6,
-        //       margin: const EdgeInsets.all(16),
-        //       color: const Color.fromARGB(255, 253, 208, 223),
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(10.0),
-        //         side: const BorderSide(
-        //           color: Color.fromARGB(248, 237, 127, 167),
-        //           width: 2.0,
-        //         ),
-        //       ),
-        //       child: Column(children: [
-        //         const ListTile(
-        //           title: Text('溫度感應器',
-        //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        //         ),
-        //         Align(
-        //           alignment: Alignment.centerLeft,
-        //           child: Padding(
-        //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        //             child: Text('是否異常:\n感測器id :\n' '溫度: $temperatures\n',
-        //                 textAlign: TextAlign.left),
-        //           ),
-        //         ),
-        //       ])),
-        //   Card(
-        //       elevation: 6,
-        //       margin: const EdgeInsets.all(16),
-        //       color: Color.fromARGB(255, 208, 239, 253),
-        //       shape: RoundedRectangleBorder(
-        //         borderRadius: BorderRadius.circular(10.0),
-        //         side: const BorderSide(
-        //           color: Color.fromARGB(248, 127, 193, 237),
-        //           width: 2.0,
-        //         ),
-        //       ),
-        //       child: Column(children: [
-        //         const ListTile(
-        //           title: Text('空氣感應器',
-        //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-        //         ),
-        //         Align(
-        //           alignment: Alignment.centerLeft,
-        //           child: Padding(
-        //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-        //             child: Text('是否異常:\n感測器id :\n' '氣體數值: $airqualitys\n',
-        //                 textAlign: TextAlign.left),
-        //           ),
-        //         ),
-        //       ])),
-        // ]))
-        );
+      appBar: AppBar(
+        title: Text('搜尋'),
+        actions: <Widget>[
+          IconButton(
+            icon: Icon(Icons.search),
+            onPressed: () {
+              showSearch(context: context, delegate: SearchBarDelegate());
+            },
+          )
+        ],
+      ), //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
+      //     body: SingleChildScrollView(
+      //         child: Column(children: <Widget>[
+      //   Card(
+      //     color: Colors.white38,
+      //     child: ListTile(
+      //       leading: Icon(
+      //         Icons.search,
+      //         color: Colors.blue,
+      //       ),
+      //       title: TextField(
+      //         //controller: controller,
+      //         decoration: InputDecoration(
+      //           hintText: '',
+      //           hintStyle: TextStyle(
+      //             color: Colors.blue,
+      //           ),
+      //           border: InputBorder.none,
+      //         ),
+      //       ),
+      //     ),
+      //   ),
+      //   Card(
+      //       elevation: 6,
+      //       margin: const EdgeInsets.all(16),
+      //       color: const Color.fromARGB(255, 253, 208, 223),
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(10.0),
+      //         side: const BorderSide(
+      //           color: Color.fromARGB(248, 237, 127, 167),
+      //           width: 2.0,
+      //         ),
+      //       ),
+      //       child: Column(children: [
+      //         const ListTile(
+      //           title: Text('溫度感應器',
+      //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+      //         ),
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Padding(
+      //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      //             child: Text('是否異常:\n感測器id :\n' '溫度: $temperatures\n',
+      //                 textAlign: TextAlign.left),
+      //           ),
+      //         ),
+      //       ])),
+      //   Card(
+      //       elevation: 6,
+      //       margin: const EdgeInsets.all(16),
+      //       color: Color.fromARGB(255, 208, 239, 253),
+      //       shape: RoundedRectangleBorder(
+      //         borderRadius: BorderRadius.circular(10.0),
+      //         side: const BorderSide(
+      //           color: Color.fromARGB(248, 127, 193, 237),
+      //           width: 2.0,
+      //         ),
+      //       ),
+      //       child: Column(children: [
+      //         const ListTile(
+      //           title: Text('空氣感應器',
+      //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+      //         ),
+      //         Align(
+      //           alignment: Alignment.centerLeft,
+      //           child: Padding(
+      //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+      //             child: Text('是否異常:\n感測器id :\n' '氣體數值: $airqualitys\n',
+      //                 textAlign: TextAlign.left),
+      //           ),
+      //         ),
+      //       ])),
+      // ]))
+    );
   }
 }
 
-class SearchBarDelegate extends SearchDelegate<String> {
-  final List<String> items;
-
-  SearchBarDelegate(this.items);
-
-  @override
-  List<Widget> buildActions(BuildContext context) {
-    return [
-      IconButton(
-        icon: Icon(Icons.clear),
-        onPressed: () {
-          query = '';
-        },
-      ),
-    ];
-  }
-
-  @override
+class SearchBarDelegate extends SearchDelegate {
   Widget buildLeading(BuildContext context) {
+    //输入框之前的部件
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      tooltip: 'Back',
+      icon: AnimatedIcon(
+        icon: AnimatedIcons.menu_arrow,
+        progress: transitionAnimation,
+      ),
       onPressed: () {
         close(context, null);
       },
     );
   }
 
-  @override
+  List<Widget> buildActions(BuildContext context) {
+    //輸入時的物件
+    return [
+      IconButton(
+        tooltip: 'Clear',
+        icon: const Icon(Icons.clear),
+        onPressed: () {
+          query = '';
+          showSuggestions(context);
+        },
+      )
+    ];
+  }
+
   Widget buildResults(BuildContext context) {
+    //顯示搜索結果
     return ListView.builder(
-      itemCount: items.length,
+      itemCount: Random().nextInt(10),
       itemBuilder: (context, index) {
         return ListTile(
-          title: Text(items[index]),
-          onTap: () {
-            close(context, items[index]);
-          },
+          title: Text('result $index'),
         );
       },
     );
   }
 
-  @override
   Widget buildSuggestions(BuildContext context) {
-    final List<String> suggestionList = query.isEmpty
-        ? items
-        : items
-            .where((item) => item.toLowerCase().contains(query.toLowerCase()))
-            .toList();
-
-    return ListView.builder(
-      itemCount: suggestionList.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(suggestionList[index]),
-          onTap: () {
-            query = suggestionList[index];
-            showResults(context);
-          },
-        );
-      },
+    //搜索建議
+    return ListView(
+      children: <Widget>[
+        ListTile(title: Text('Suggest 01')),
+        ListTile(title: Text('Suggest 02')),
+        ListTile(title: Text('Suggest 03')),
+        ListTile(title: Text('Suggest 04')),
+        ListTile(title: Text('Suggest 05')),
+      ],
     );
   }
 }
