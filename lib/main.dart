@@ -541,7 +541,7 @@ class _Pagetwo extends State<PageTwo> {
 
 class SearchBarDelegate extends SearchDelegate {
   var dic = new Map();
-
+  List<String> result = [];
   SearchBarDelegate(this.dic);
   Widget buildLeading(BuildContext context) {
     //输入框之前的部件
@@ -569,21 +569,21 @@ class SearchBarDelegate extends SearchDelegate {
 
   Widget buildResults(BuildContext context) {
     //顯示搜索結果
-    List<Widget> resultTiles = [];
 
-    dic.forEach((key, value) {
-      resultTiles.add(
-        ListTile(
-          title: Text(value),
-          onTap: () {
-            close(context, value);
-          },
-        ),
-      );
-    });
+    List<String> buffer = [];
+    if (!result.isEmpty) {
+      buffer.add(result[0]);
+      buffer.add(result[1]);
+      result.clear();
+    }
 
-    return ListView(
-      children: resultTiles,
+    return ListTile(
+      title: Text('id :${buffer[0]}:\n${buffer[1]}'),
+      onTap: () {
+        // 处理结果的点击事件
+        // 这里你可以进行页面跳转或其他操作
+        //close(context, buffer);
+      },
     );
   }
 
@@ -598,7 +598,9 @@ class SearchBarDelegate extends SearchDelegate {
           title: Text('id $key: $value'),
           onTap: () {
             // 按下選中的項目
-            query = key; // 將選中項目放進query
+            query = key + ' ' + value; // 將選中項目放進query
+            result.add(key);
+            result.add(value);
             showResults(context);
           },
         );
