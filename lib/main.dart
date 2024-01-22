@@ -569,16 +569,21 @@ class SearchBarDelegate extends SearchDelegate {
 
   Widget buildResults(BuildContext context) {
     //顯示搜索結果
-    return ListView.builder(
-      itemCount: dic.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(dic[index]),
+    List<Widget> resultTiles = [];
+
+    dic.forEach((key, value) {
+      resultTiles.add(
+        ListTile(
+          title: Text(value),
           onTap: () {
-            close(context, dic[index]);
+            close(context, value);
           },
-        );
-      },
+        ),
+      );
+    });
+
+    return ListView(
+      children: resultTiles,
     );
   }
 
