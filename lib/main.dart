@@ -154,7 +154,7 @@ String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
 String accessCode = '';
 Uint8List? imageData;
 bool _selected = false;
-bool con_notify = false;
+bool con_notify = true;
 String captureMediaJson = '';
 Future<Map<String, dynamic>> fetchData() async {
   final url = Uri.http('140.138.150.29:38080',
