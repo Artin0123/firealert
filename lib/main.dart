@@ -406,101 +406,127 @@ class _Pagetwo extends State<PageTwo> {
     buffer[123] = airqualitys; //先預設值
     buffer[456] = temperatures;
     return Scaffold(
-      appBar: AppBar(
-        title: TextField(
-          //controller: searchController,
-          onTap: () async {
-            // Show search bar and get user input
-            final query = await showSearch(
-              context: context,
-              delegate: SearchBarDelegate(buffer),
-            );
-            if (query != null) {
-              filterItems(query);
-            }
-            // Handle search query
-          },
-          decoration: InputDecoration(
-            hintText: 'Search...',
-            prefixIcon: Icon(Icons.search),
+        appBar: AppBar(
+          title: TextField(
+            //controller: searchController,
+            onTap: () async {
+              // Show search bar and get user input
+              final query = await showSearch(
+                context: context,
+                delegate: SearchBarDelegate(buffer),
+              );
+              if (query != null) {
+                filterItems(query);
+              }
+              // Handle search query
+            },
+            decoration: InputDecoration(
+              hintText: 'Search...',
+              prefixIcon: Icon(Icons.search),
+            ),
           ),
         ),
-      ),
-
-      //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
-      //     body: SingleChildScrollView(
-      //         child: Column(children: <Widget>[
-      //   Card(
-      //     color: Colors.white38,
-      //     child: ListTile(
-      //       leading: Icon(
-      //         Icons.search,
-      //         color: Colors.blue,
-      //       ),
-      //       title: TextField(
-      //         //controller: controller,
-      //         decoration: InputDecoration(
-      //           hintText: '',
-      //           hintStyle: TextStyle(
-      //             color: Colors.blue,
-      //           ),
-      //           border: InputBorder.none,
-      //         ),
-      //       ),
-      //     ),
-      //   ),
-      //   Card(
-      //       elevation: 6,
-      //       margin: const EdgeInsets.all(16),
-      //       color: const Color.fromARGB(255, 253, 208, 223),
-      //       shape: RoundedRectangleBorder(
-      //         borderRadius: BorderRadius.circular(10.0),
-      //         side: const BorderSide(
-      //           color: Color.fromARGB(248, 237, 127, 167),
-      //           width: 2.0,
-      //         ),
-      //       ),
-      //       child: Column(children: [
-      //         const ListTile(
-      //           title: Text('溫度感應器',
-      //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-      //         ),
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Padding(
-      //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-      //             child: Text('是否異常:\n感測器id :\n' '溫度: $temperatures\n',
-      //                 textAlign: TextAlign.left),
-      //           ),
-      //         ),
-      //       ])),
-      //   Card(
-      //       elevation: 6,
-      //       margin: const EdgeInsets.all(16),
-      //       color: Color.fromARGB(255, 208, 239, 253),
-      //       shape: RoundedRectangleBorder(
-      //         borderRadius: BorderRadius.circular(10.0),
-      //         side: const BorderSide(
-      //           color: Color.fromARGB(248, 127, 193, 237),
-      //           width: 2.0,
-      //         ),
-      //       ),
-      //       child: Column(children: [
-      //         const ListTile(
-      //           title: Text('空氣感應器',
-      //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
-      //         ),
-      //         Align(
-      //           alignment: Alignment.centerLeft,
-      //           child: Padding(
-      //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-      //             child: Text('是否異常:\n感測器id :\n' '氣體數值: $airqualitys\n',
-      //                 textAlign: TextAlign.left),
-      //           ),
-      //         ),
-      //       ])),
-      // ]))
-    );
+        body: ListView.builder(
+            itemCount: buffer.length,
+            itemBuilder: (context, index) {
+              int key = buffer.keys.elementAt(index);
+              String sensorTitle = '';
+              String exper = '';
+              if (index % 2 == 0) {
+                sensorTitle = '溫度感測器';
+                exper = '溫度';
+              } else {
+                sensorTitle = '空氣感測器';
+                exper = '濕度';
+              }
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      '$sensorTitle',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    subtitle:
+                        Text('感測器 id : $key\n$exper: ${buffer[key]}\n有無異常:'),
+                  ),
+                  Divider(), // 添加分隔線
+                ],
+              );
+            })
+        //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
+        //     body: SingleChildScrollView(
+        //         child: Column(children: <Widget>[
+        //   Card(
+        //     color: Colors.white38,
+        //     child: ListTile(
+        //       leading: Icon(
+        //         Icons.search,
+        //         color: Colors.blue,
+        //       ),
+        //       title: TextField(
+        //         //controller: controller,
+        //         decoration: InputDecoration(
+        //           hintText: '',
+        //           hintStyle: TextStyle(
+        //             color: Colors.blue,
+        //           ),
+        //           border: InputBorder.none,
+        //         ),
+        //       ),
+        //     ),
+        //   ),
+        //   Card(
+        //       elevation: 6,
+        //       margin: const EdgeInsets.all(16),
+        //       color: const Color.fromARGB(255, 253, 208, 223),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(10.0),
+        //         side: const BorderSide(
+        //           color: Color.fromARGB(248, 237, 127, 167),
+        //           width: 2.0,
+        //         ),
+        //       ),
+        //       child: Column(children: [
+        //         const ListTile(
+        //           title: Text('溫度感應器',
+        //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        //         ),
+        //         Align(
+        //           alignment: Alignment.centerLeft,
+        //           child: Padding(
+        //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+        //             child: Text('是否異常:\n感測器id :\n' '溫度: $temperatures\n',
+        //                 textAlign: TextAlign.left),
+        //           ),
+        //         ),
+        //       ])),
+        //   Card(
+        //       elevation: 6,
+        //       margin: const EdgeInsets.all(16),
+        //       color: Color.fromARGB(255, 208, 239, 253),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(10.0),
+        //         side: const BorderSide(
+        //           color: Color.fromARGB(248, 127, 193, 237),
+        //           width: 2.0,
+        //         ),
+        //       ),
+        //       child: Column(children: [
+        //         const ListTile(
+        //           title: Text('空氣感應器',
+        //               style: TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+        //         ),
+        //         Align(
+        //           alignment: Alignment.centerLeft,
+        //           child: Padding(
+        //             padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+        //             child: Text('是否異常:\n感測器id :\n' '氣體數值: $airqualitys\n',
+        //                 textAlign: TextAlign.left),
+        //           ),
+        //         ),
+        //       ])),
+        // ]))
+        );
   }
 }
 
