@@ -411,7 +411,7 @@ class _Pagetwo extends State<PageTwo> {
           //controller: searchController,
           onTap: () async {
             // Show search bar and get user input
-            final String query = await showSearch(
+            final query = await showSearch(
               context: context,
               delegate: SearchBarDelegate(buffer),
             );
