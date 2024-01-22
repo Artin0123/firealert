@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 void main() {
   runApp(const MyApp());
