@@ -403,6 +403,8 @@ class _Pagetwo extends State<PageTwo> {
 
   @override
   Widget build(BuildContext context) {
+    buffer[123] = airqualitys; //先預設值
+    buffer[456] = temperatures;
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -547,18 +549,20 @@ class SearchBarDelegate extends SearchDelegate {
 
   Widget buildSuggestions(BuildContext context) {
     //搜索建議
-    // List<String> buffer = [];
-    // for (int i = 0; i < dic.length; i++) {
-    //   String key=dic.
-    // }
     return ListView(
-      children: <Widget>[
-        // ListTile(title: Text('Suggest 01')),
-        // ListTile(title: Text('Suggest 02')),
-        // ListTile(title: Text('Suggest 03')),
-        // ListTile(title: Text('Suggest 04')),
-        // ListTile(title: Text('Suggest 05')),
-      ],
+      children: dic.entries.map((MapEntry<dynamic, dynamic> entry) {
+        String key = entry.key.toString();
+        String value = entry.value.toString();
+
+        return ListTile(
+          title: Text('id $key: $value'),
+          onTap: () {
+            // 按下選中的項目
+            query = key; // 將選中項目放進query
+            showResults(context);
+          },
+        );
+      }).toList(),
     );
   }
 }
