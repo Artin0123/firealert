@@ -439,18 +439,27 @@ class _Pagetwo extends State<PageTwo> {
                 sensorTitle = '空氣感測器';
                 exper = '濕度';
               }
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(
-                      '$sensorTitle',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    subtitle:
-                        Text('感測器 id : $key\n$exper: ${buffer[key]}\n有無異常:'),
+              return Card(
+                elevation: 6,
+                margin: const EdgeInsets.all(16),
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        '$sensorTitle',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        '感測器 id: $key\n$exper: ${buffer[key]}\n有無異常:',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                    ],
                   ),
-                  Divider(), // 添加分隔線
-                ],
+                ),
               );
             })
         //backgroundColor: const Color.fromARGB(240, 255, 255, 245),
