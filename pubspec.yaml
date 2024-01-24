@@ -29,7 +29,8 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   http: ^1.1.2
-  flutter_local_notifications: ^9.1.6
+  web_socket_channel: ^2.4.0
+  flutter_local_notifications: ^16.3.2
   flutter:
     sdk: flutter
 
