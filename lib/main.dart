@@ -85,6 +85,40 @@ class _MyHomePageState extends State<MyHomePage> {
   //     _counter++;
   //   });
   // }
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  void initState() {
+    super.initState();
+
+    // 初始化本地通知插件
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = DarwinInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> sendNotification() async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      '設備異常通知',
+      '溫度感器異常!',
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -592,41 +626,6 @@ void startDataPolling() {
 }
 
 class _Pagethree extends State<PageThree> {
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
-  void initState() {
-    super.initState();
-
-    // 初始化本地通知插件
-    var initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = DarwinInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
-  }
-
-  Future<void> sendNotification() async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: iOSPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      '設備異常通知',
-      '溫度感器異常!',
-      platformChannelSpecifics,
-      payload: 'item x',
-    );
-  }
-
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -675,11 +674,6 @@ class _Pagethree extends State<PageThree> {
               onChanged: (value) {
                 setState(() {
                   con_notify = value;
-                  if (con_notify == true) {
-                    if (temperatures.compareTo("0") > 0) {
-                      sendNotification();
-                    }
-                  }
                 });
               }),
         ),
