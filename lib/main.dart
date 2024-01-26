@@ -102,7 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: pages[currentIndex],
@@ -160,7 +161,8 @@ bool _selected = false;
 bool con_notify = true;
 String captureMediaJson = '';
 Future<Map<String, dynamic>> fetchData() async {
-  final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
+  final url = Uri.http('140.138.150.29:38080',
+      'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
   try {
     final response = await http.get(url);
     if (response.statusCode == 200) {
@@ -239,7 +241,8 @@ class _Pageone extends State<PageOne> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint('Unexpected content type: ${response.headers['content-type']}');
+        debugPrint(
+            'Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -288,7 +291,9 @@ class _Pageone extends State<PageOne> {
                   child: Column(
                     children: [
                       const ListTile(
-                        title: Text('火災', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                        title: Text('火災',
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
                       Align(
                         alignment: Alignment.centerLeft,
@@ -308,7 +313,8 @@ class _Pageone extends State<PageOne> {
                               // 当按钮按下时，跳转到新页面
                               Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (context) => const SecondPage()),
+                                MaterialPageRoute(
+                                    builder: (context) => const SecondPage()),
                               );
                             },
                             child: const Text('查看詳情'),
@@ -338,7 +344,8 @@ class _Pageone extends State<PageOne> {
               Form(
                 child: TextFormField(
                   controller: _controller,
-                  decoration: const InputDecoration(labelText: 'Send a message'),
+                  decoration:
+                      const InputDecoration(labelText: 'Send a message'),
                 ),
               ),
               const SizedBox(height: 24),
@@ -427,7 +434,9 @@ class _Pagetwo extends State<PageTwo> {
   void filterItems(String query) {
     // Filter items based on the search query
     setState(() {
-      items = items.where((item) => item.toLowerCase().contains(query.toLowerCase())).toList();
+      items = items
+          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
 
@@ -479,7 +488,8 @@ class _Pagetwo extends State<PageTwo> {
                     children: [
                       Text(
                         '$sensorTitle',
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 18),
                       ),
                       SizedBox(height: 8),
                       Text(
@@ -582,7 +592,41 @@ void startDataPolling() {
 }
 
 class _Pagethree extends State<PageThree> {
-  @override
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  void initState() {
+    super.initState();
+
+    // 初始化本地通知插件
+    var initializationSettingsAndroid =
+        AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = DarwinInitializationSettings();
+    var initializationSettings = InitializationSettings(
+        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> sendNotification() async {
+    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+
+    await flutterLocalNotificationsPlugin.show(
+      0,
+      '設備異常通知',
+      '溫度感器異常!',
+      platformChannelSpecifics,
+      payload: 'item x',
+    );
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -598,7 +642,8 @@ class _Pagethree extends State<PageThree> {
           },
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
-          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          iconColor:
+              MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -630,6 +675,11 @@ class _Pagethree extends State<PageThree> {
               onChanged: (value) {
                 setState(() {
                   con_notify = value;
+                  if (con_notify == true) {
+                    if (temperatures.compareTo("0") > 0) {
+                      sendNotification();
+                    }
+                  }
                 });
               }),
         ),
@@ -688,7 +738,9 @@ class NextPage extends StatelessWidget {
               height: 70.0,
               child: ElevatedButton(
                 style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 164, 199, 228)), // Change to your desired color
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                      const Color.fromARGB(
+                          255, 164, 199, 228)), // Change to your desired color
                 ),
                 child: Text("登入", style: TextStyle(fontSize: 20)),
                 onPressed: () {},
@@ -715,7 +767,8 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
