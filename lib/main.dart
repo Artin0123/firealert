@@ -4,45 +4,32 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
-import 'dart:math';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/status.dart' as status;
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+    return ChangeNotifierProvider(
+      create: (context) => AppDataProvider(),
+      child: MaterialApp(
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+          useMaterial3: true,
+        ),
+        debugShowCheckedModeBanner: false,
+        home: const MyHomePage(title: 'Flutter Demo Home Page'),
       ),
-      debugShowCheckedModeBanner: false,
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
@@ -169,6 +156,26 @@ class _MyHomePageState extends State<MyHomePage> {
       //   child: const Icon(Icons.add),
       // ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+}
+
+class AppDataProvider extends ChangeNotifier {
+  //共用記憶體
+  StreamController<bool> notification = StreamController<bool>();
+  StreamController<String> param2Controller = StreamController<String>();
+
+  bool selection = true;
+  void updateParam1(bool newValue) {
+    selection = newValue;
+    notification.sink.add(selection);
+    selection = con_notify;
+    notifyListeners();
+  }
+
+  void dispose() {
+    notification.close();
+    param2Controller.close();
+    super.dispose();
   }
 }
 
@@ -403,6 +410,7 @@ class _Pageone extends State<PageOne> {
               //   Text('氣體數值: $airqualitys'),
               //   Text('溫度: $temperatures'),
               // ),
+
               Container(
                 child: imageData != null
                     ? Image.memory(
@@ -413,6 +421,26 @@ class _Pageone extends State<PageOne> {
                       )
                     : const CircularProgressIndicator(),
               ),
+
+              // StreamBuilder<bool>(
+              //   stream: context.read<AppDataProvider>().notification.stream,
+              //   builder: (context, snapshot) {
+              //     try {
+              //       bool? notified = snapshot.data;
+
+              //       return Text(
+              //         'Notification: ${notified ?? false}',
+              //         style: TextStyle(fontSize: 18),
+              //       );
+              //     } catch (e, stackTrace) {
+              //       print('Caught an exception: $e');
+              //       print('Stack trace: $stackTrace');
+
+              //       // Return a default or error UI if needed
+              //       return Text('Error occurred');
+              //     }
+              //   },
+              // ),
             ]),
       ),
     );
@@ -479,62 +507,63 @@ class _Pagetwo extends State<PageTwo> {
     buffer[123] = airqualitys; //先預設值
     buffer[456] = temperatures;
     return Scaffold(
-        appBar: AppBar(
-          title: TextField(
-            //controller: searchController,
-            onTap: () async {
-              // Show search bar and get user input
-              final query = await showSearch(
-                context: context,
-                delegate: SearchBarDelegate(buffer),
-              );
-              if (query != null) {
-                filterItems(query);
-              }
-              // Handle search query
-            },
-            decoration: InputDecoration(
-              hintText: 'Search...',
-              prefixIcon: Icon(Icons.search),
-            ),
+      appBar: AppBar(
+        title: TextField(
+          //controller: searchController,
+          onTap: () async {
+            // Show search bar and get user input
+            final query = await showSearch(
+              context: context,
+              delegate: SearchBarDelegate(buffer),
+            );
+            if (query != null) {
+              filterItems(query);
+            }
+            // Handle search query
+          },
+          decoration: InputDecoration(
+            hintText: 'Search...',
+            prefixIcon: Icon(Icons.search),
           ),
         ),
-        body: ListView.builder(
-            itemCount: buffer.length,
-            itemBuilder: (context, index) {
-              int key = buffer.keys.elementAt(index);
-              String sensorTitle = '';
-              String exper = '';
-              if (index % 2 == 0) {
-                sensorTitle = '溫度感測器';
-                exper = '溫度';
-              } else {
-                sensorTitle = '空氣感測器';
-                exper = '濕度';
-              }
-              return Card(
-                elevation: 6,
-                margin: const EdgeInsets.all(16),
-                child: Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '$sensorTitle',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        '感測器 id: $key\n$exper: ${buffer[key]}\n有無異常:',
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
-                  ),
+      ),
+      body: ListView.builder(
+          itemCount: buffer.length,
+          itemBuilder: (context, index) {
+            int key = buffer.keys.elementAt(index);
+            String sensorTitle = '';
+            String exper = '';
+            if (index % 2 == 0) {
+              sensorTitle = '溫度感測器';
+              exper = '溫度';
+            } else {
+              sensorTitle = '空氣感測器';
+              exper = '濕度';
+            }
+            return Card(
+              elevation: 6,
+              margin: const EdgeInsets.all(16),
+              child: Padding(
+                padding: const EdgeInsets.all(16),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '$sensorTitle',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      '感測器 id: $key\n$exper: ${buffer[key]}\n有無異常:',
+                      style: TextStyle(fontSize: 16),
+                    ),
+                  ],
                 ),
-              );
-            }));
+              ),
+            );
+          }),
+    );
   }
 }
 
@@ -627,6 +656,7 @@ void startDataPolling() {
 
 class _Pagethree extends State<PageThree> {
   Widget build(BuildContext context) {
+    var appDataProvider = Provider.of<AppDataProvider>(context, listen: false);
     return Scaffold(
         body: Column(
       children: [
@@ -668,14 +698,29 @@ class _Pagethree extends State<PageThree> {
             "設備通知",
             //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
           ),
-          subtitle: Text('設備異常是否開啟通知'),
-          trailing: Switch(
-              value: con_notify,
-              onChanged: (value) {
-                setState(() {
-                  con_notify = value;
-                });
-              }),
+          subtitle: Text("設備通知是否開啟"),
+          trailing: StreamBuilder<bool>(
+            stream: appDataProvider.notification.stream,
+            builder: (context, snapshot) {
+              try {
+                bool? notified = snapshot.data;
+
+                return Switch(
+                  value: notified ?? true,
+                  onChanged: (value) {
+                    appDataProvider.notification.sink.add(value);
+                    // setState(() {
+                    //   con_notify = value;
+                    // });
+                  },
+                );
+              } catch (e, stackTrace) {
+                print('Caught an exception: $e');
+                print('Stack trace: $stackTrace');
+                return Text('Error occurred');
+              }
+            },
+          ),
         ),
         ListTile(
             onTap: () {
