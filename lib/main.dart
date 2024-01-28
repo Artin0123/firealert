@@ -86,27 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
-  Future<void> sendNotification() async {
-    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-      'your channel id',
-      'your channel name',
-      importance: Importance.max,
-      priority: Priority.high,
-    );
-    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
-    var platformChannelSpecifics = NotificationDetails(
-        android: androidPlatformChannelSpecifics,
-        iOS: iOSPlatformChannelSpecifics);
-
-    await flutterLocalNotificationsPlugin.show(
-      0,
-      '設備異常通知',
-      '溫度感器異常!',
-      platformChannelSpecifics,
-      payload: 'item x',
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -176,6 +155,27 @@ class AppDataProvider extends ChangeNotifier {
     // 如果你想往 Stream 中添加新的值，使用 add 方法
     _updateNotificationController.add(_selection);
     notifyListeners();
+  }
+
+  void sendNotification() async {
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
+      'your channel id',
+      'your channel name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
+    var platformChannelSpecifics = NotificationDetails(
+        android: androidPlatformChannelSpecifics,
+        iOS: iOSPlatformChannelSpecifics);
+
+    // await flutterLocalNotificationsPlugin.show(
+    //   0,
+    //   '設備異常通知',
+    //   '溫度感器異常!',
+    //   platformChannelSpecifics,
+    //   payload: 'item x',
+    // );
   }
 
   @override
@@ -442,6 +442,15 @@ class _Pageone extends State<PageOne> {
                         fit: BoxFit.cover,
                       )
                     : const CircularProgressIndicator(),
+              ),
+              Consumer<AppDataProvider>(
+                builder: (context, appDataProvider, child) {
+                  bool? counter1 = appDataProvider.selection;
+                  return Text(
+                    '通知: ${counter1 ?? 0}',
+                    style: const TextStyle(fontSize: 24),
+                  );
+                },
               ),
             ]),
       ),
