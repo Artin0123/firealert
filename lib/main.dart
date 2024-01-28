@@ -6,15 +6,14 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/status.dart' as status;
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -74,26 +73,27 @@ class _MyHomePageState extends State<MyHomePage> {
   // }
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+  @override
   void initState() {
     super.initState();
 
     // 初始化本地通知插件
     var initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = DarwinInitializationSettings();
+        const AndroidInitializationSettings('app_icon');
+    var initializationSettingsIOS = const DarwinInitializationSettings();
     var initializationSettings = InitializationSettings(
         android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   Future<void> sendNotification() async {
-    var androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
       'your channel id',
       'your channel name',
       importance: Importance.max,
       priority: Priority.high,
     );
-    var iOSPlatformChannelSpecifics = DarwinNotificationDetails();
+    var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
     var platformChannelSpecifics = NotificationDetails(
         android: androidPlatformChannelSpecifics,
         iOS: iOSPlatformChannelSpecifics);
@@ -161,7 +161,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  StreamController<bool> _updateNotificationController =
+  final StreamController<bool> _updateNotificationController =
       StreamController<bool>();
 
   bool _selection = true;
@@ -257,10 +257,10 @@ class _Pageone extends State<PageOne> {
   //   //getImage(captureMediaJson);
   //   return buffer;
   // }
-  final TextEditingController _controller = TextEditingController();
-  final _channel = WebSocketChannel.connect(
-    Uri.parse('ws://59.102.142.103:9988'),
-  );
+  // final TextEditingController _controller = TextEditingController();
+  // final _channel = WebSocketChannel.connect(
+  //   Uri.parse('ws://59.102.142.103:9988'),
+  // );
 
   Future<void> getImage(String buffer) async {
     accessCode = buffer;
@@ -388,40 +388,40 @@ class _Pageone extends State<PageOne> {
                 },
                 child: const Text('取得資料'),
               ),
-              Form(
-                child: TextFormField(
-                  controller: _controller,
-                  decoration:
-                      const InputDecoration(labelText: 'Send a message'),
-                ),
-              ),
-              const SizedBox(height: 24),
-              StreamBuilder(
-                stream: _channel.stream,
-                builder: (context, snapshot) {
-                  try {
-                    if (snapshot.hasError) {
-                      // Handle the error here
-                      return Text('Error: ${snapshot.error}');
-                    }
+              // Form(
+              //   child: TextFormField(
+              //     controller: _controller,
+              //     decoration:
+              //         const InputDecoration(labelText: 'Send a message'),
+              //   ),
+              // ),
+              // const SizedBox(height: 24),
+              // StreamBuilder(
+              //   stream: _channel.stream,
+              //   builder: (context, snapshot) {
+              //     try {
+              //       if (snapshot.hasError) {
+              //         // Handle the error here
+              //         return Text('Error: ${snapshot.error}');
+              //       }
 
-                    if (!snapshot.hasData) {
-                      // Handle the case where there is no data yet
-                      return Text('No data available');
-                    }
+              //       if (!snapshot.hasData) {
+              //         // Handle the case where there is no data yet
+              //         return const Text('No data available');
+              //       }
 
-                    // Process and display the data
-                    return Text('${snapshot.data}');
-                  } catch (error) {
-                    // Handle any unexpected errors
-                    return Text('Unexpected error: $error');
-                  }
-                },
-              ),
-              ElevatedButton(
-                onPressed: _sendMessage,
-                child: const Icon(Icons.send),
-              ),
+              //       // Process and display the data
+              //       return Text('${snapshot.data}');
+              //     } catch (error) {
+              //       // Handle any unexpected errors
+              //       return Text('Unexpected error: $error');
+              //     }
+              //   },
+              // ),
+              // ElevatedButton(
+              //   onPressed: _sendMessage,
+              //   child: const Icon(Icons.send),
+              // ),
               // Container(
               //   alignment: Alignment.centerLeft,
               //   child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
@@ -448,18 +448,18 @@ class _Pageone extends State<PageOne> {
     );
   }
 
-  void _sendMessage() {
-    if (_controller.text.isNotEmpty) {
-      _channel.sink.add(_controller.text);
-    }
-  }
+  // void _sendMessage() {
+  //   if (_controller.text.isNotEmpty) {
+  //     _channel.sink.add(_controller.text);
+  //   }
+  // }
 
-  @override
-  void dispose() {
-    _channel.sink.close();
-    _controller.dispose();
-    super.dispose();
-  }
+  // @override
+  // void dispose() {
+  //   _channel.sink.close();
+  //   _controller.dispose();
+  //   super.dispose();
+  // }
 }
 
 void launchPhone(String Phonenumber) async {
@@ -480,7 +480,7 @@ class PageTwo extends StatefulWidget {
 class _Pagetwo extends State<PageTwo> {
   List<String> items = [];
   TextEditingController searchController = TextEditingController();
-  var buffer = new Map();
+  var buffer = {};
 
   void updateList() async {
     // Fetch data and update the list
@@ -523,7 +523,7 @@ class _Pagetwo extends State<PageTwo> {
             }
             // Handle search query
           },
-          decoration: InputDecoration(
+          decoration: const InputDecoration(
             hintText: 'Search...',
             prefixIcon: Icon(Icons.search),
           ),
@@ -551,14 +551,14 @@ class _Pagetwo extends State<PageTwo> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      '$sensorTitle',
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                      sensorTitle,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 18),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       '感測器 id: $key\n$exper: ${buffer[key]}\n有無異常:',
-                      style: TextStyle(fontSize: 16),
+                      style: const TextStyle(fontSize: 16),
                     ),
                   ],
                 ),
@@ -570,19 +570,21 @@ class _Pagetwo extends State<PageTwo> {
 }
 
 class SearchBarDelegate extends SearchDelegate {
-  var dic = new Map();
+  var dic = {};
   List<String> result = [];
   SearchBarDelegate(this.dic);
+  @override
   Widget buildLeading(BuildContext context) {
     //输入框之前的部件
     return IconButton(
-      icon: Icon(Icons.arrow_back),
+      icon: const Icon(Icons.arrow_back),
       onPressed: () {
         close(context, null);
       },
     );
   }
 
+  @override
   List<Widget> buildActions(BuildContext context) {
     //輸入時的物件
     return [
@@ -597,11 +599,12 @@ class SearchBarDelegate extends SearchDelegate {
     ];
   }
 
+  @override
   Widget buildResults(BuildContext context) {
     //顯示搜索結果
 
     List<String> buffer = [];
-    if (!result.isEmpty) {
+    if (result.isNotEmpty) {
       buffer.add(result[0]);
       buffer.add(result[1]);
       result.clear();
@@ -620,6 +623,7 @@ class SearchBarDelegate extends SearchDelegate {
     );
   }
 
+  @override
   Widget buildSuggestions(BuildContext context) {
     //搜索建議
     return ListView(
@@ -631,7 +635,7 @@ class SearchBarDelegate extends SearchDelegate {
           title: Text('id $key: $value'),
           onTap: () {
             // 按下選中的項目
-            query = key + ' ' + value; // 將選中項目放進query
+            query = '$key $value'; // 將選中項目放進query
             result.add(key);
             result.add(value);
             showResults(context);
@@ -649,7 +653,7 @@ class PageThree extends StatefulWidget {
 }
 
 void startDataPolling() {
-  const Duration pollInterval = const Duration(seconds: 3);
+  const Duration pollInterval = Duration(seconds: 3);
   Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
     // 发送数据请求到服务器
     fetchData();
@@ -657,6 +661,7 @@ void startDataPolling() {
 }
 
 class _Pagethree extends State<PageThree> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -695,11 +700,11 @@ class _Pagethree extends State<PageThree> {
         ),
         ListTile(
             leading: const Icon(Icons.access_alarm),
-            title: Text(
+            title: const Text(
               "設備通知",
               //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
             ),
-            subtitle: Text("設備通知是否開啟"),
+            subtitle: const Text("設備通知是否開啟"),
             trailing: Consumer<AppDataProvider>(
               builder: (context, appDataProvider, child) {
                 return Switch(
@@ -720,12 +725,12 @@ class _Pagethree extends State<PageThree> {
                 // This is called when the user toggles the switch.
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => NextPage()),
+                  MaterialPageRoute(builder: (context) => const NextPage()),
                 );
               });
             },
             leading: const Icon(Icons.person),
-            title: Text('登入')),
+            title: const Text('登入')),
         // StreamBuilder<bool>(
         //   stream: context.read<AppDataProvider>().updateNotificationStream,
         //   builder: (context, snapshot) {
@@ -742,16 +747,20 @@ class _Pagethree extends State<PageThree> {
 }
 
 class NextPage extends StatelessWidget {
+  const NextPage({super.key});
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('登入'),
+        title: const Text('登入'),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: <Widget>[
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.person),
@@ -761,7 +770,8 @@ class NextPage extends StatelessWidget {
               ),
             ),
             Container(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 decoration: const InputDecoration(
                   prefixIcon: Icon(Icons.lock),
@@ -771,7 +781,7 @@ class NextPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 52.0,
             ),
             SizedBox(
@@ -783,7 +793,7 @@ class NextPage extends StatelessWidget {
                       const Color.fromARGB(
                           255, 164, 199, 228)), // Change to your desired color
                 ),
-                child: Text("登入", style: TextStyle(fontSize: 20)),
+                child: const Text("登入", style: TextStyle(fontSize: 20)),
                 onPressed: () {},
               ),
             ),
@@ -792,7 +802,7 @@ class NextPage extends StatelessWidget {
                 bool? counter1 = appDataProvider.selection;
                 return Text(
                   '通知: ${counter1 ?? 0}',
-                  style: TextStyle(fontSize: 24),
+                  style: const TextStyle(fontSize: 24),
                 );
               },
             ),
@@ -822,7 +832,7 @@ class _SecondPageState extends State<SecondPage> {
         centerTitle: true,
       ),
       body: Center(
-        child: Text('$locations'),
+        child: Text(locations),
       ),
     );
   }
