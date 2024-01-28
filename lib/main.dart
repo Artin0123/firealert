@@ -161,20 +161,26 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  StreamController<bool> notification = StreamController<bool>();
-  StreamController<String> param2Controller = StreamController<String>();
+  StreamController<bool> _updateNotificationController =
+      StreamController<bool>();
 
-  bool selection = true;
-  void updateParam1(bool newValue) {
-    selection = newValue;
-    notification.sink.add(selection);
-    selection = con_notify;
+  bool _selection = true;
+  bool get selection => _selection;
+
+  Stream<bool> get updateNotificationStream =>
+      _updateNotificationController.stream;
+
+  void setNotification(bool newValue) {
+    _selection = newValue;
+    con_notify = newValue;
+    // 如果你想往 Stream 中添加新的值，使用 add 方法
+    _updateNotificationController.add(_selection);
     notifyListeners();
   }
 
+  @override
   void dispose() {
-    notification.close();
-    param2Controller.close();
+    _updateNotificationController.close();
     super.dispose();
   }
 }
@@ -421,26 +427,6 @@ class _Pageone extends State<PageOne> {
                       )
                     : const CircularProgressIndicator(),
               ),
-
-              // StreamBuilder<bool>(
-              //   stream: context.read<AppDataProvider>().notification.stream,
-              //   builder: (context, snapshot) {
-              //     try {
-              //       bool? notified = snapshot.data;
-
-              //       return Text(
-              //         'Notification: ${notified ?? false}',
-              //         style: TextStyle(fontSize: 18),
-              //       );
-              //     } catch (e, stackTrace) {
-              //       print('Caught an exception: $e');
-              //       print('Stack trace: $stackTrace');
-
-              //       // Return a default or error UI if needed
-              //       return Text('Error occurred');
-              //     }
-              //   },
-              // ),
             ]),
       ),
     );
@@ -656,7 +642,6 @@ void startDataPolling() {
 
 class _Pagethree extends State<PageThree> {
   Widget build(BuildContext context) {
-    var appDataProvider = Provider.of<AppDataProvider>(context, listen: false);
     return Scaffold(
         body: Column(
       children: [
@@ -693,35 +678,26 @@ class _Pagethree extends State<PageThree> {
           ),
         ),
         ListTile(
-          leading: const Icon(Icons.access_alarm),
-          title: Text(
-            "設備通知",
-            //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          ),
-          subtitle: Text("設備通知是否開啟"),
-          trailing: StreamBuilder<bool>(
-            stream: appDataProvider.notification.stream,
-            builder: (context, snapshot) {
-              try {
-                bool? notified = snapshot.data;
-
+            leading: const Icon(Icons.access_alarm),
+            title: Text(
+              "設備通知",
+              //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            subtitle: Text("設備通知是否開啟"),
+            trailing: Consumer<AppDataProvider>(
+              builder: (context, appDataProvider, child) {
                 return Switch(
-                  value: notified ?? true,
-                  onChanged: (value) {
-                    appDataProvider.notification.sink.add(value);
-                    // setState(() {
-                    //   con_notify = value;
-                    // });
+                  value: Provider.of<AppDataProvider>(context)._selection,
+                  onChanged: (bool value) {
+                    Provider.of<AppDataProvider>(context, listen: false)
+                        .setNotification(value);
+                    print('Noti: $value');
+                    print(
+                        'Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
                   },
                 );
-              } catch (e, stackTrace) {
-                print('Caught an exception: $e');
-                print('Stack trace: $stackTrace');
-                return Text('Error occurred');
-              }
-            },
-          ),
-        ),
+              },
+            )),
         ListTile(
             onTap: () {
               setState(() {
@@ -733,7 +709,17 @@ class _Pagethree extends State<PageThree> {
               });
             },
             leading: const Icon(Icons.person),
-            title: Text('登入'))
+            title: Text('登入')),
+        // StreamBuilder<bool>(
+        //   stream: context.read<AppDataProvider>().updateNotificationStream,
+        //   builder: (context, snapshot) {
+        //     bool? counter1 = snapshot.data;
+        //     return Text(
+        //       '通知: ${counter1 ?? 0}',
+        //       style: TextStyle(fontSize: 24),
+        //     );
+        //   },
+        // ),
       ],
     ));
   }
@@ -784,6 +770,15 @@ class NextPage extends StatelessWidget {
                 child: Text("登入", style: TextStyle(fontSize: 20)),
                 onPressed: () {},
               ),
+            ),
+            Consumer<AppDataProvider>(
+              builder: (context, appDataProvider, child) {
+                bool? counter1 = appDataProvider.selection;
+                return Text(
+                  '通知: ${counter1 ?? 0}',
+                  style: TextStyle(fontSize: 24),
+                );
+              },
             ),
           ],
         ),
