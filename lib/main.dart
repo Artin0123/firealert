@@ -259,7 +259,7 @@ class _Pageone extends State<PageOne> {
   // }
   final TextEditingController _controller = TextEditingController();
   final _channel = WebSocketChannel.connect(
-    Uri.parse('wss://echo.websocket.events'),
+    Uri.parse('ws://59.102.142.103:9988'),
   );
 
   Future<void> getImage(String buffer) async {
@@ -399,7 +399,23 @@ class _Pageone extends State<PageOne> {
               StreamBuilder(
                 stream: _channel.stream,
                 builder: (context, snapshot) {
-                  return Text(snapshot.hasData ? '${snapshot.data}' : '');
+                  try {
+                    if (snapshot.hasError) {
+                      // Handle the error here
+                      return Text('Error: ${snapshot.error}');
+                    }
+
+                    if (!snapshot.hasData) {
+                      // Handle the case where there is no data yet
+                      return Text('No data available');
+                    }
+
+                    // Process and display the data
+                    return Text('${snapshot.data}');
+                  } catch (error) {
+                    // Handle any unexpected errors
+                    return Text('Unexpected error: $error');
+                  }
                 },
               ),
               ElevatedButton(
