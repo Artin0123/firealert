@@ -448,13 +448,7 @@ class _Pageone extends State<PageOne> {
                 },
                 child: const Text('取得資料'),
               ),
-              // Form(
-              //   child: TextFormField(
-              //     controller: _controller,
-              //     decoration:
-              //         const InputDecoration(labelText: 'Send a message'),
-              //   ),
-              // ),
+
               const SizedBox(height: 24),
               StreamBuilder<String>(
                 stream:
@@ -467,16 +461,7 @@ class _Pageone extends State<PageOne> {
                   }
                 },
               ),
-              // SizedBox(height: 20),
-              // Consumer<WebSocketService>(
-              //   builder: (context, webSocketService, child) {
-              //     // 显示最新的消息
-              //     return Text(
-              //       'Latest Message: ${webSocketService._latestMessage}',
-              //       style: TextStyle(fontSize: 16),
-              //     );
-              //   },
-              // ),
+
               Container(
                 child: imageData != null
                     ? Image.memory(
@@ -500,12 +485,6 @@ class _Pageone extends State<PageOne> {
       ),
     );
   }
-
-  // void _sendMessage() {
-  //   if (_controller.text.isNotEmpty) {
-  //     _channel.sink.add(_controller.text);
-  //   }
-  // }
 }
 
 void launchPhone(String Phonenumber) async {
