@@ -61,16 +61,6 @@ class _MyHomePageState extends State<MyHomePage> {
     const PageThree(),
   ];
 
-  // void _incrementCounter() {
-  //   setState(() {
-  //     // This call to setState tells the Flutter framework that something has
-  //     // changed in this State, which causes it to rerun the build method below
-  //     // so that the display can reflect the updated values. If we changed
-  //     // _counter without calling setState(), then the build method would not be
-  //     // called again, and so nothing would appear to happen.
-  //     _counter++;
-  //   });
-  // }
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
   @override
@@ -250,13 +240,6 @@ Future<Map<String, dynamic>> fetchData() async {
 }
 
 class _Pageone extends State<PageOne> {
-  //getImage(captureMediaJson);
-  // Future<Map<String, dynamic>> update() {
-  //   Future<Map<String, dynamic>> buffer;
-  //   buffer = fetchData();
-  //   //getImage(captureMediaJson);
-  //   return buffer;
-  // }
   // final TextEditingController _controller = TextEditingController();
   // final _channel = WebSocketChannel.connect(
   //   Uri.parse('ws://59.102.142.103:9988'),
