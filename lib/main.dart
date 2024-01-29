@@ -6,10 +6,21 @@ import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => WebSocketService(),
+        ),
+        // 添加更多的 providers，每个对应一个不同的 WebSocket 连接
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -239,11 +250,75 @@ Future<Map<String, dynamic>> fetchData() async {
   }
 }
 
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+class WebSocketService with ChangeNotifier {
+  late IOWebSocketChannel _channel;
+  String _connectionStatus = 'Disconnected';
+  late StreamController<String> _messageController;
+
+  WebSocketService() {
+    _messageController = StreamController<String>.broadcast();
+    _connectToWebSocket();
+  }
+  Stream<String> get messageStream => _messageController.stream;
+  void _connectToWebSocket() {
+    _channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+    _channel.stream.listen(
+      (message) {
+        var data = json.decode(message.toString());
+        if (data['status'] == 'success') {
+          _connectionStatus = 'Connected';
+          print('Connection established successfully');
+          print(message);
+        } else {
+          _connectionStatus = 'Disconnected';
+          print(message);
+        }
+        _messageController.add(message);
+        notifyListeners();
+      },
+      onDone: () {
+        _connectionStatus = 'Disconnected';
+        notifyListeners();
+      },
+      onError: (error) {
+        _connectionStatus = 'Disconnected';
+        notifyListeners();
+      },
+    );
+  }
+
+  String get connectionStatus => _connectionStatus;
+
+  void sendMessage(String message) {
+    _channel.sink.add(message);
+  }
+
+  @override
+  void dispose() {
+    _channel.sink.close();
+    _messageController.close();
+    super.dispose();
+  }
+}
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 class _Pageone extends State<PageOne> {
-  // final TextEditingController _controller = TextEditingController();
-  // final _channel = WebSocketChannel.connect(
-  //   Uri.parse('ws://59.102.142.103:9988'),
-  // );
+  //inal channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+
+  void initState() {
+    super.initState();
+    //_streamController = StreamController<String>();
+    //var data;
+    // Flutter收到连接成功后，期望先收到状态消息
+
+    // 监听来自服务器的消息
+    // channel.stream.listen((message) {
+    //   _streamController.add(message);
+    // });
+  }
 
   Future<void> getImage(String buffer) async {
     accessCode = buffer;
@@ -282,6 +357,8 @@ class _Pageone extends State<PageOne> {
 
   @override
   Widget build(BuildContext context) {
+    var _streamController =
+        Provider.of<WebSocketService>(context, listen: false);
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       // Center is a layout widget. It takes a single child and positions it
@@ -378,44 +455,28 @@ class _Pageone extends State<PageOne> {
               //         const InputDecoration(labelText: 'Send a message'),
               //   ),
               // ),
-              // const SizedBox(height: 24),
-              // StreamBuilder(
-              //   stream: _channel.stream,
-              //   builder: (context, snapshot) {
-              //     try {
-              //       if (snapshot.hasError) {
-              //         // Handle the error here
-              //         return Text('Error: ${snapshot.error}');
-              //       }
-
-              //       if (!snapshot.hasData) {
-              //         // Handle the case where there is no data yet
-              //         return const Text('No data available');
-              //       }
-
-              //       // Process and display the data
-              //       return Text('${snapshot.data}');
-              //     } catch (error) {
-              //       // Handle any unexpected errors
-              //       return Text('Unexpected error: $error');
-              //     }
+              const SizedBox(height: 24),
+              StreamBuilder<String>(
+                stream:
+                    _streamController.messageStream, // 使用 WebSocketService 的消息流
+                builder: (context, snapshot) {
+                  if (snapshot.hasData) {
+                    return Text('WebSocket 1 Message: ${snapshot.data}');
+                  } else {
+                    return Text('No WebSocket 1 Message');
+                  }
+                },
+              ),
+              // SizedBox(height: 20),
+              // Consumer<WebSocketService>(
+              //   builder: (context, webSocketService, child) {
+              //     // 显示最新的消息
+              //     return Text(
+              //       'Latest Message: ${webSocketService._latestMessage}',
+              //       style: TextStyle(fontSize: 16),
+              //     );
               //   },
               // ),
-              // ElevatedButton(
-              //   onPressed: _sendMessage,
-              //   child: const Icon(Icons.send),
-              // ),
-              // Container(
-              //   alignment: Alignment.centerLeft,
-              //   child: Text('上次警報更新時間: $updatetime\n是否有警報: $isAlert', textAlign: TextAlign.left),
-              //   Text('事件種類: $events'),
-              //   Text('事件等級: $levels'),
-              //   Text('感測器位置: $locations'),
-              //   Text('事件時間: $timestamps'),
-              //   Text('氣體數值: $airqualitys'),
-              //   Text('溫度: $temperatures'),
-              // ),
-
               Container(
                 child: imageData != null
                     ? Image.memory(
@@ -444,13 +505,6 @@ class _Pageone extends State<PageOne> {
   //   if (_controller.text.isNotEmpty) {
   //     _channel.sink.add(_controller.text);
   //   }
-  // }
-
-  // @override
-  // void dispose() {
-  //   _channel.sink.close();
-  //   _controller.dispose();
-  //   super.dispose();
   // }
 }
 
@@ -659,6 +713,18 @@ class _Pagethree extends State<PageThree> {
         body: Column(
       children: [
         ListTile(
+            onTap: () {
+              setState(() {
+                // This is called when the user toggles the switch.
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NextPage()),
+                );
+              });
+            },
+            leading: const Icon(Icons.person),
+            title: const Text('登入')),
+        ListTile(
           selected: _selected,
           onTap: () {
             setState(() {
@@ -711,28 +777,6 @@ class _Pagethree extends State<PageThree> {
                 );
               },
             )),
-        ListTile(
-            onTap: () {
-              setState(() {
-                // This is called when the user toggles the switch.
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const NextPage()),
-                );
-              });
-            },
-            leading: const Icon(Icons.person),
-            title: const Text('登入')),
-        // StreamBuilder<bool>(
-        //   stream: context.read<AppDataProvider>().updateNotificationStream,
-        //   builder: (context, snapshot) {
-        //     bool? counter1 = snapshot.data;
-        //     return Text(
-        //       '通知: ${counter1 ?? 0}',
-        //       style: TextStyle(fontSize: 24),
-        //     );
-        //   },
-        // ),
       ],
     ));
   }
