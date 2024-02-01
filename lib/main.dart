@@ -72,19 +72,19 @@ class _MyHomePageState extends State<MyHomePage> {
     const PageThree(),
   ];
 
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+  //     FlutterLocalNotificationsPlugin();
   @override
   void initState() {
     super.initState();
 
     // 初始化本地通知插件
-    var initializationSettingsAndroid =
-        const AndroidInitializationSettings('app_icon');
-    var initializationSettingsIOS = const DarwinInitializationSettings();
-    var initializationSettings = InitializationSettings(
-        android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
-    flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    // var initializationSettingsAndroid =
+    //     const AndroidInitializationSettings('app_icon');
+    // var initializationSettingsIOS = const DarwinInitializationSettings();
+    // var initializationSettings = InitializationSettings(
+    //     android: initializationSettingsAndroid, iOS: initializationSettingsIOS);
+    // flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   @override
@@ -920,15 +920,6 @@ class NextPage extends StatelessWidget {
                 child: const Text("登入", style: TextStyle(fontSize: 20)),
                 onPressed: () {},
               ),
-            ),
-            Consumer<AppDataProvider>(
-              builder: (context, appDataProvider, child) {
-                bool? counter1 = appDataProvider.selection;
-                return Text(
-                  '通知: ${counter1 ?? 0}',
-                  style: const TextStyle(fontSize: 24),
-                );
-              },
             ),
           ],
         ),
