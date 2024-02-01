@@ -624,7 +624,7 @@ class _Pagetwo extends State<PageTwo> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${locations}',
+                    '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${locations}\n感測器 id: ${sensorData.id}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -717,7 +717,7 @@ class SearchBarDelegate extends SearchDelegate {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${sensorData.locations}',
+                    '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${sensorData.locations}\n感測器 id: ${sensorData.id}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
