@@ -432,7 +432,14 @@ class _Pageone extends State<PageOne> {
                             onPressed: () {
                               launchPhone('119');
                             },
-                            child: const Text('通報119'),
+                            style: ElevatedButton.styleFrom(
+                              primary:
+                                  Colors.red, // Set the background color to red
+                            ),
+                            child: const Text(
+                              '通報119',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           )
                         ],
                       ),
@@ -516,18 +523,18 @@ class _Pagetwo extends State<PageTwo> {
   TextEditingController searchController = TextEditingController();
   var buffer = {};
 
-  void updateList() async {
-    // Fetch data and update the list
-    // Map<String, dynamic> newData = await fetchData();
+  // void updateList() async {
+  //   // Fetch data and update the list
+  //   // Map<String, dynamic> newData = await fetchData();
 
-    setState(() {
-      // items = newData;
-      items.add(SensorData(airqualitys, temperatures, '123', normal));
-      items.add(SensorData(airqualitys, temperatures, '456', 'no'));
-      buffer['123'] = SensorData(airqualitys, temperatures, '123', normal);
-      buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
-    });
-  }
+  //   setState(() {
+  //     // items = newData;
+  //     // items.add(SensorData(airqualitys, temperatures, '123', normal));
+  //     // items.add(SensorData(airqualitys, temperatures, '456', 'no'));
+  //     // buffer['123'] = SensorData(airqualitys, temperatures, '123', normal);
+  //     // buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
+  //   });
+  // }
 
   void filterItems(String query) {
     // Filter items based on the search query
@@ -543,7 +550,8 @@ class _Pagetwo extends State<PageTwo> {
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes'); // 先預設值
+    buffer['123'] =
+        SensorData(airqualitys, temperatures, '123', 'yes'); // 先預設值，預設key
     buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
