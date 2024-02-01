@@ -719,16 +719,57 @@ class SearchBarDelegate extends SearchDelegate {
 
   @override
   Widget buildSuggestions(BuildContext context) {
+    //for(var brand in search)
+    List<dynamic> matchingSensorData = [];
+    if (query.isNotEmpty) {
+      // Convert query to lowercase for case-insensitive matching
+      String lowerCaseQuery = query.toLowerCase();
+
+      matchingSensorData = dic.entries
+          .where((entry) {
+            String key = entry.key.toString().toLowerCase();
+            SensorData value = entry.value;
+
+            // Check if the key or any property of SensorData contains the query
+            return key.contains(lowerCaseQuery) ||
+                value.temperature.toLowerCase().contains(lowerCaseQuery) ||
+                value.airQuality.toLowerCase().contains(lowerCaseQuery) ||
+                value.id.toLowerCase().contains(lowerCaseQuery);
+          })
+          .map((entry) => entry.value)
+          .toList();
+    }
+    // return ListView(
+    //   children: dic.entries.map((MapEntry<dynamic, dynamic> entry) {
+    //     String key = entry.key.toString();
+    //     SensorData value = entry.value;
+
+    //     return ListTile(
+    //       title: Text('id $key: ${value.temperature}'),
+    //       onTap: () {
+    //         query = '$key ${value.temperature}';
+    //         result.add(value);
+    //         showResults(context);
+    //       },
+    //     );
+    //   }).toList(),
+    // );
     return ListView(
-      children: dic.entries.map((MapEntry<dynamic, dynamic> entry) {
-        String key = entry.key.toString();
-        SensorData value = entry.value;
+      children: matchingSensorData.map((sensorData) {
+        String key = dic.entries
+                .firstWhere(
+                  (entry) => entry.value == sensorData,
+                  orElse: () => MapEntry(null, null),
+                )
+                ?.key
+                ?.toString() ??
+            '';
 
         return ListTile(
-          title: Text('id $key: ${value.temperature}'),
+          title: Text('id $key: ${sensorData.temperature}'),
           onTap: () {
-            query = '$key ${value.temperature}';
-            result.add(value);
+            query = '$key ${sensorData.temperature}';
+            result.add(sensorData);
             showResults(context);
           },
         );
