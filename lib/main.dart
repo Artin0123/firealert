@@ -201,6 +201,7 @@ String locations = '';
 String timestamps = '';
 String airqualitys = '45.2356';
 String temperatures = '78.2356';
+String normal = 'yes';
 // int _counter = 0;
 String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
 String accessCode = '';
@@ -502,21 +503,29 @@ class PageTwo extends StatefulWidget {
   State<PageTwo> createState() => _Pagetwo();
 }
 
+class SensorData {
+  String airQuality;
+  String temperature;
+  String id;
+  String normals;
+  SensorData(this.airQuality, this.temperature, this.id, this.normals);
+}
+
 class _Pagetwo extends State<PageTwo> {
-  List<String> items = [];
+  List<SensorData> items = [];
   TextEditingController searchController = TextEditingController();
   var buffer = {};
 
   void updateList() async {
     // Fetch data and update the list
-    //Map<String, dynamic> newData = await fetchData();
+    // Map<String, dynamic> newData = await fetchData();
 
     setState(() {
-      //items = newData;
-      items.add(airqualitys);
-      items.add(temperatures);
-      buffer[123] = airqualitys;
-      buffer[456] = temperatures;
+      // items = newData;
+      items.add(SensorData(airqualitys, temperatures, '123', normal));
+      items.add(SensorData(airqualitys, temperatures, '456', 'no'));
+      buffer['123'] = SensorData(airqualitys, temperatures, '123', normal);
+      buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
     });
   }
 
@@ -524,21 +533,30 @@ class _Pagetwo extends State<PageTwo> {
     // Filter items based on the search query
     setState(() {
       items = items
-          .where((item) => item.toLowerCase().contains(query.toLowerCase()))
+          .where((item) =>
+              item.airQuality.toLowerCase().contains(query.toLowerCase()) ||
+              item.temperature.toLowerCase().contains(query.toLowerCase()) ||
+              item.id.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    buffer[123] = airqualitys; //先預設值
-    buffer[456] = temperatures;
+    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes'); // 先預設值
+    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
+    Color num1;
+    Color num2 = Color.fromARGB(248, 237, 127, 167);
+    List<Color> cardColors = [
+      Color.fromARGB(255, 253, 208, 223),
+      Color.fromARGB(248, 237, 127, 167),
+      Colors.white,
+      Color.fromARGB(255, 90, 155, 213)
+    ];
     return Scaffold(
       appBar: AppBar(
         title: TextField(
-          //controller: searchController,
           onTap: () async {
-            // Show search bar and get user input
             final query = await showSearch(
               context: context,
               delegate: SearchBarDelegate(buffer),
@@ -546,7 +564,6 @@ class _Pagetwo extends State<PageTwo> {
             if (query != null) {
               filterItems(query);
             }
-            // Handle search query
           },
           decoration: const InputDecoration(
             hintText: 'Search...',
@@ -555,52 +572,65 @@ class _Pagetwo extends State<PageTwo> {
         ),
       ),
       body: ListView.builder(
-          itemCount: buffer.length,
-          itemBuilder: (context, index) {
-            int key = buffer.keys.elementAt(index);
-            String sensorTitle = '';
-            String exper = '';
-            if (index % 2 == 0) {
-              sensorTitle = '溫度感測器';
-              exper = '溫度';
-            } else {
-              sensorTitle = '空氣感測器';
-              exper = '濕度';
-            }
-            return Card(
-              elevation: 6,
-              margin: const EdgeInsets.all(16),
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      sensorTitle,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      '感測器 id: $key\n$exper: ${buffer[key]}\n有無異常:',
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                  ],
-                ),
+        itemCount: buffer.length,
+        itemBuilder: (context, index) {
+          String key = buffer.keys.elementAt(index);
+          SensorData sensorData = buffer[key];
+          String sensorTitle = '';
+          if (sensorData.normals == 'yes') {
+            sensorTitle = '感測異常';
+            num1 = cardColors[0];
+            num2 = cardColors[1];
+          } else {
+            sensorTitle = '正常';
+            num1 = cardColors[2];
+            num2 = cardColors[3];
+          }
+
+          return Card(
+            elevation: 6,
+            margin: const EdgeInsets.all(16),
+            color: num1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: BorderSide(
+                color: num2,
+                width: 2.0,
               ),
-            );
-          }),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sensorTitle,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
 
 class SearchBarDelegate extends SearchDelegate {
   var dic = {};
-  List<String> result = [];
+  List<SensorData> result = [];
   SearchBarDelegate(this.dic);
   @override
   Widget buildLeading(BuildContext context) {
-    //输入框之前的部件
     return IconButton(
       icon: const Icon(Icons.arrow_back),
       onPressed: () {
@@ -611,7 +641,6 @@ class SearchBarDelegate extends SearchDelegate {
 
   @override
   List<Widget> buildActions(BuildContext context) {
-    //輸入時的物件
     return [
       IconButton(
         tooltip: 'Clear',
@@ -626,42 +655,33 @@ class SearchBarDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    //顯示搜索結果
-
-    List<String> buffer = [];
+    List<SensorData> buffer = [];
     if (result.isNotEmpty) {
       buffer.add(result[0]);
-      buffer.add(result[1]);
       result.clear();
     } else {
-      buffer.add('0');
-      buffer.add('0');
+      buffer.add(SensorData('0', '0', '0', 'no'));
     }
 
     return ListTile(
-      title: Text('id :${buffer[0]}:\n${buffer[1]}'),
+      title: Text('id :${buffer[0].id}:\n${buffer[0].temperature}'),
       onTap: () {
-        // 处理结果的点击事件
-        // 这里你可以进行页面跳转或其他操作
-        //close(context, buffer);
+        // Handle result tap
       },
     );
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    //搜索建議
     return ListView(
       children: dic.entries.map((MapEntry<dynamic, dynamic> entry) {
         String key = entry.key.toString();
-        String value = entry.value.toString();
+        SensorData value = entry.value;
 
         return ListTile(
-          title: Text('id $key: $value'),
+          title: Text('id $key: ${value.temperature}'),
           onTap: () {
-            // 按下選中的項目
-            query = '$key $value'; // 將選中項目放進query
-            result.add(key);
+            query = '$key ${value.temperature}';
             result.add(value);
             showResults(context);
           },
