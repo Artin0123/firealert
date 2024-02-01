@@ -663,12 +663,6 @@ class SearchBarDelegate extends SearchDelegate {
       buffer.add(SensorData('0', '0', '0', 'no'));
     }
 
-    // return ListTile(
-    //   title: Text('id :${buffer[0].id}:\n${buffer[0].temperature}'),
-    //   onTap: () {
-    //     // Handle result tap
-    //   },
-    // );
     Color num1;
     Color num2;
     return ListView.builder(
