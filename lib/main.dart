@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (context) => AppDataProvider(),
       child: MaterialApp(
-        title: 'Flutter Demo',
+        title: '火燒報哩災',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
           useMaterial3: true,
@@ -663,10 +663,62 @@ class SearchBarDelegate extends SearchDelegate {
       buffer.add(SensorData('0', '0', '0', 'no'));
     }
 
-    return ListTile(
-      title: Text('id :${buffer[0].id}:\n${buffer[0].temperature}'),
-      onTap: () {
-        // Handle result tap
+    // return ListTile(
+    //   title: Text('id :${buffer[0].id}:\n${buffer[0].temperature}'),
+    //   onTap: () {
+    //     // Handle result tap
+    //   },
+    // );
+    Color num1;
+    Color num2;
+    return ListView.builder(
+      itemCount: buffer.length,
+      itemBuilder: (context, index) {
+        //String key = buffer.keys.elementAt(index);
+        SensorData sensorData = buffer[0];
+        String sensorTitle = '';
+        if (sensorData.normals == 'yes') {
+          sensorTitle = '感測異常';
+          num1 = Color.fromARGB(255, 253, 208, 223);
+          num2 = Color.fromARGB(248, 237, 127, 167);
+        } else {
+          sensorTitle = '正常';
+          num1 = Colors.white;
+          num2 = Color.fromARGB(255, 90, 155, 213);
+        }
+
+        return Card(
+          elevation: 6,
+          margin: const EdgeInsets.all(16),
+          color: num1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
+            side: BorderSide(
+              color: num2,
+              width: 2.0,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  sensorTitle,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}',
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ],
+            ),
+          ),
+        );
       },
     );
   }
