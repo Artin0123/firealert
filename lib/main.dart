@@ -659,62 +659,64 @@ class SearchBarDelegate extends SearchDelegate {
     if (result.isNotEmpty) {
       buffer.add(result[0]);
       result.clear();
-    } else {
-      buffer.add(SensorData('0', '0', '0', 'no'));
     }
 
     Color num1;
     Color num2;
-    return ListView.builder(
-      itemCount: buffer.length,
-      itemBuilder: (context, index) {
-        //String key = buffer.keys.elementAt(index);
-        SensorData sensorData = buffer[0];
-        String sensorTitle = '';
-        if (sensorData.normals == 'yes') {
-          sensorTitle = '感測異常';
-          num1 = Color.fromARGB(255, 253, 208, 223);
-          num2 = Color.fromARGB(248, 237, 127, 167);
-        } else {
-          sensorTitle = '正常';
-          num1 = Colors.white;
-          num2 = Color.fromARGB(255, 90, 155, 213);
-        }
+    if (buffer.isNotEmpty) {
+      return ListView.builder(
+        itemCount: buffer.length,
+        itemBuilder: (context, index) {
+          //String key = buffer.keys.elementAt(index);
+          SensorData sensorData = buffer[0];
+          String sensorTitle = '';
+          if (sensorData.normals == 'yes') {
+            sensorTitle = '感測異常';
+            num1 = Color.fromARGB(255, 253, 208, 223);
+            num2 = Color.fromARGB(248, 237, 127, 167);
+          } else {
+            sensorTitle = '正常';
+            num1 = Colors.white;
+            num2 = Color.fromARGB(255, 90, 155, 213);
+          }
 
-        return Card(
-          elevation: 6,
-          margin: const EdgeInsets.all(16),
-          color: num1,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
-            side: BorderSide(
-              color: num2,
-              width: 2.0,
+          return Card(
+            elevation: 6,
+            margin: const EdgeInsets.all(16),
+            color: num1,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+              side: BorderSide(
+                color: num2,
+                width: 2.0,
+              ),
             ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  sensorTitle,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    sensorTitle,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}',
-                  style: const TextStyle(fontSize: 16),
-                ),
-              ],
+                  const SizedBox(height: 8),
+                  Text(
+                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}',
+                    style: const TextStyle(fontSize: 16),
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+    } else {
+      return Text('No search results');
+    }
   }
 
   @override
