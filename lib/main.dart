@@ -515,7 +515,9 @@ class SensorData {
   String temperature;
   String id;
   String normals;
-  SensorData(this.airQuality, this.temperature, this.id, this.normals);
+  String locations;
+  SensorData(
+      this.airQuality, this.temperature, this.id, this.normals, this.locations);
 }
 
 class _Pagetwo extends State<PageTwo> {
@@ -543,16 +545,18 @@ class _Pagetwo extends State<PageTwo> {
           .where((item) =>
               item.airQuality.toLowerCase().contains(query.toLowerCase()) ||
               item.temperature.toLowerCase().contains(query.toLowerCase()) ||
-              item.id.toLowerCase().contains(query.toLowerCase()))
+              item.id.toLowerCase().contains(query.toLowerCase()) ||
+              item.locations.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] =
-        SensorData(airqualitys, temperatures, '123', 'yes'); // 先預設值，預設key
-    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
+    buffer['123'] = SensorData(
+        airqualitys, temperatures, '123', 'yes', locations); // 先預設值，預設key
+    buffer['456'] =
+        SensorData(airqualitys, temperatures, '456', 'no', locations);
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
     List<Color> cardColors = [
@@ -620,7 +624,7 @@ class _Pagetwo extends State<PageTwo> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}',
+                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${locations}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -713,7 +717,7 @@ class SearchBarDelegate extends SearchDelegate {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}',
+                    '感測器 id: ${sensorData.id}\n溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${sensorData.locations}',
                     style: const TextStyle(fontSize: 16),
                   ),
                 ],
@@ -887,49 +891,51 @@ class NextPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('登入'),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.person),
-                  labelText: "使用者名稱 ",
-                  //hintText: "使用者名稱",
+      body: Expanded(
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.person),
+                    labelText: "使用者名稱 ",
+                    //hintText: "使用者名稱",
+                  ),
                 ),
               ),
-            ),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
-              child: TextFormField(
-                decoration: const InputDecoration(
-                  prefixIcon: Icon(Icons.lock),
-                  suffixIcon: Icon(Icons.remove_red_eye),
-                  labelText: "密碼 ",
-                  //hintText: "最好6個字",
+              Container(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    prefixIcon: Icon(Icons.lock),
+                    suffixIcon: Icon(Icons.remove_red_eye),
+                    labelText: "密碼 ",
+                    //hintText: "最好6個字",
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(
-              height: 52.0,
-            ),
-            SizedBox(
-              width: MediaQuery.of(context).size.width - 1000.0,
-              height: 70.0,
-              child: ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all<Color>(
-                      const Color.fromARGB(
-                          255, 164, 199, 228)), // Change to your desired color
-                ),
-                child: const Text("登入", style: TextStyle(fontSize: 20)),
-                onPressed: () {},
+              const SizedBox(
+                height: 52.0,
               ),
-            ),
-          ],
+              SizedBox(
+                width: double.infinity, // Use full available width
+                height: 70.0,
+                child: ElevatedButton(
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color.fromARGB(255, 164, 199,
+                            228)), // Change to your desired color
+                  ),
+                  child: const Text("登入", style: TextStyle(fontSize: 20)),
+                  onPressed: () {},
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
