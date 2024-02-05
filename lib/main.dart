@@ -8,6 +8,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:provider/provider.dart';
+import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 
 void main() {
   runApp(
@@ -109,36 +110,40 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
       ),
       body: pages[currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Colors.black,
-        unselectedItemColor: Colors.grey,
-        showUnselectedLabels: true,
-        currentIndex: currentIndex,
+      bottomNavigationBar: ConvexAppBar(
+        // selectedItemColor: Color.fromARGB(255, 51, 66, 80),
+        // unselectedItemColor: Colors.grey,
+        // showUnselectedLabels: true,
+        // currentIndex: currentIndex,
+        style: TabStyle.react,
+        backgroundColor: Color.fromARGB(255, 217, 207, 255),
+        color: Colors.grey,
+        activeColor: Colors.orange,
         onTap: (int index) {
           setState(() {
             currentIndex = index;
           });
         },
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '事件',
+        items: [
+          TabItem(
+            icon: Icons.home,
+            title: '事件',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.history),
-            label: '紀錄',
+          TabItem(
+            icon: Icons.history,
+            title: '紀錄',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.warning),
-            label: '通報',
+          TabItem(
+            icon: Icons.warning,
+            title: ('通報'),
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.smart_toy),
-            label: '設備',
+          TabItem(
+            icon: Icons.smart_toy,
+            title: '設備',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.settings),
-            label: '設定',
+          TabItem(
+            icon: Icons.settings,
+            title: '設定',
           ),
         ],
       ),
