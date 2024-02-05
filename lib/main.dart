@@ -64,12 +64,14 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
-
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   // 定义底部导航栏中的每个页面
   final List<Widget> pages = [
     const PageOne(),
     const PageTwo(),
     const PageThree(),
+    const PageFour(),
+    const PageFive(),
   ];
 
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -108,6 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: pages[currentIndex],
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Colors.black,
+        unselectedItemColor: Colors.grey,
+        showUnselectedLabels: true,
         currentIndex: currentIndex,
         onTap: (int index) {
           setState(() {
@@ -118,6 +123,14 @@ class _MyHomePageState extends State<MyHomePage> {
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: '事件',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.history),
+            label: '紀錄',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.warning),
+            label: '通報',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.smart_toy),
@@ -204,46 +217,46 @@ Uint8List? imageData;
 bool _selected = false;
 bool con_notify = true;
 String captureMediaJson = '';
-Future<Map<String, dynamic>> fetchData() async {
-  final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
-  try {
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      // 如果服務器返回一個 OK 響應，則解析 JSON。
-      Map<String, dynamic> jsonData = jsonDecode(response.body);
+// Future<Map<String, dynamic>> fetchData() async {
+//   final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
+//   try {
+//     final response = await http.get(url);
+//     if (response.statusCode == 200) {
+//       // 如果服務器返回一個 OK 響應，則解析 JSON。
+//       Map<String, dynamic> jsonData = jsonDecode(response.body);
 
-      // 使用鍵來訪問對應的值
-      updatetime = jsonData['0_update_stamp'];
-      isAlert = jsonData['alert'].toString();
-      List<dynamic> details = jsonData['details'];
-      for (var detail in details) {
-        events = detail['event'];
-        levels = detail['level'].toString();
-        locations = detail['location'];
-        timestamps = detail['time_stamp'];
-        Map<String, dynamic> sensors = detail['sensors'];
-        airqualitys = sensors['air_quality'].toStringAsFixed(2);
-        temperatures = sensors['temperature'].toStringAsFixed(2);
+//       // 使用鍵來訪問對應的值
+//       updatetime = jsonData['0_update_stamp'];
+//       isAlert = jsonData['alert'].toString();
+//       List<dynamic> details = jsonData['details'];
+//       for (var detail in details) {
+//         events = detail['event'];
+//         levels = detail['level'].toString();
+//         locations = detail['location'];
+//         timestamps = detail['time_stamp'];
+//         Map<String, dynamic> sensors = detail['sensors'];
+//         airqualitys = sensors['air_quality'].toStringAsFixed(2);
+//         temperatures = sensors['temperature'].toStringAsFixed(2);
 
-        //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+//         //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-        List<dynamic> captureImage = detail['capture_media'];
-        captureMediaJson = captureImage[0];
+//         List<dynamic> captureImage = detail['capture_media'];
+//         captureMediaJson = captureImage[0];
 
-        //String request = "http://192.168.0.13/apis/index.php";
-        //String buffer = "access_code=$captureMediaJson";
-        //Uri image_url = Uri.parse(request);
-      }
-      return jsonData; // 返回解析後的 JSON 數據
-    } else {
-      // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
-      throw Exception('Key "0_update_stamp" not found in the JSON data');
-    }
-  } catch (e) {
-    // 如果發生錯誤，則拋出一個異常。
-    throw Exception(e.toString());
-  }
-}
+//         //String request = "http://192.168.0.13/apis/index.php";
+//         //String buffer = "access_code=$captureMediaJson";
+//         //Uri image_url = Uri.parse(request);
+//       }
+//       return jsonData; // 返回解析後的 JSON 數據
+//     } else {
+//       // 如果服務器返回一個不是 OK 的響應，則拋出一個異常。
+//       throw Exception('Key "0_update_stamp" not found in the JSON data');
+//     }
+//   } catch (e) {
+//     // 如果發生錯誤，則拋出一個異常。
+//     throw Exception(e.toString());
+//   }
+// }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -436,11 +449,11 @@ class _Pageone extends State<PageOne> {
                   )),
               ElevatedButton(
                 onPressed: () async {
-                  if (_selected == false) {
-                    await fetchData();
-                    getImage(captureMediaJson);
-                    setState(() {}); // 更新狀態
-                  }
+                  // if (_selected == false) {
+                  //   await fetchData();
+                  //   getImage(captureMediaJson);
+                  //   setState(() {}); // 更新狀態
+                  // }
                 },
                 child: const Text('取得資料'),
               ),
@@ -781,7 +794,7 @@ void startDataPolling() {
   const Duration pollInterval = Duration(seconds: 3);
   Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
     // 发送数据请求到服务器
-    fetchData();
+    // fetchData();
   });
 }
 
@@ -858,6 +871,50 @@ class _Pagethree extends State<PageThree> {
   }
 }
 
+class PageFour extends StatefulWidget {
+  const PageFour({super.key});
+  @override
+  State<PageFour> createState() => _Pagefour();
+}
+
+class _Pagefour extends State<PageFour> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Text(locations),
+      ),
+    );
+  }
+}
+
+class PageFive extends StatefulWidget {
+  const PageFive({super.key});
+  @override
+  State<PageFive> createState() => _Pagefive();
+}
+
+class _Pagefive extends State<PageFive> {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Text(locations),
+      ),
+    );
+  }
+}
+
 class NextPage extends StatelessWidget {
   const NextPage({super.key});
 
@@ -913,9 +970,7 @@ class NextPage extends StatelessWidget {
     );
   }
 }
-// class _NextPage extends State<NextPage>{
 
-// }
 class SecondPage extends StatefulWidget {
   const SecondPage({super.key});
   @override
