@@ -135,7 +135,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           TabItem(
             icon: Icons.warning,
-            title: ('通報'),
+            title: '通報',
           ),
           TabItem(
             icon: Icons.smart_toy,
@@ -276,7 +276,7 @@ class WebSocketService with ChangeNotifier {
   }
   Stream<String> get messageStream => _messageController.stream;
   void _connectToWebSocket() {
-    _channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+    _channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988?token=1234');
     _channel.stream.listen(
       (message) {
         var data = json.decode(message.toString());
