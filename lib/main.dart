@@ -177,27 +177,6 @@ class AppDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  // void sendNotification() async {
-  //   var androidPlatformChannelSpecifics = const AndroidNotificationDetails(
-  //     'your channel id',
-  //     'your channel name',
-  //     importance: Importance.max,
-  //     priority: Priority.high,
-  //   );
-  //   var iOSPlatformChannelSpecifics = const DarwinNotificationDetails();
-  //   var platformChannelSpecifics = NotificationDetails(
-  //       android: androidPlatformChannelSpecifics,
-  //       iOS: iOSPlatformChannelSpecifics);
-
-  //   // await flutterLocalNotificationsPlugin.show(
-  //   //   0,
-  //   //   '設備異常通知',
-  //   //   '溫度感器異常!',
-  //   //   platformChannelSpecifics,
-  //   //   payload: 'item x',
-  //   // );
-  // }
-
   @override
   void dispose() {
     _updateNotificationController.close();
