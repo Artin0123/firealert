@@ -4,6 +4,7 @@ import 'dart:async';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:provider/provider.dart';
+import 'package:flutt/sensor_data.dart';
 
 class WebSocketService with ChangeNotifier {
   late IOWebSocketChannel _channel;
@@ -23,6 +24,20 @@ class WebSocketService with ChangeNotifier {
         var data = json.decode(message.toString());
         if (data['status'] == 'success') {
           _connectionStatus = 'Connected';
+          Map<String, dynamic> jsonData = jsonDecode(message);
+          String updatetime = jsonData['0_update_stamp'];
+          String isAlert = jsonData['alert'].toString();
+          List<dynamic> details = jsonData['details'];
+          for (var detail in details) {
+            String events = detail['event'];
+            String levels = detail['level'].toString();
+            String locations = detail['location'];
+            String timestamps = detail['time_stamp'];
+            Map<String, dynamic> sensors = detail['sensors'];
+            String airqualitys = sensors['air_quality'].toStringAsFixed(2);
+            String temperatures = sensors['temperature'].toStringAsFixed(2);
+          }
+
           print('Connection established successfully');
           print(message);
         } else {

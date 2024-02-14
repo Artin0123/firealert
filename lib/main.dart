@@ -10,6 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutt/local_notification_service.dart';
 import 'package:flutt/websocket_service.dart';
+import 'package:flutt/sensor_data.dart';
 
 void main() {
   runApp(
@@ -201,7 +202,6 @@ String timestamps = '';
 String airqualitys = '45.2356';
 String temperatures = '78.2356';
 String normal = 'yes';
-// int _counter = 0;
 String apiUrl = 'http://140.138.150.29:38083/apis/index.php';
 String accessCode = '';
 Uint8List? imageData;
@@ -455,16 +455,6 @@ class PageTwo extends StatefulWidget {
   State<PageTwo> createState() => _Pagetwo();
 }
 
-class SensorData {
-  String airQuality;
-  String temperature;
-  String id;
-  String normals;
-  String locations;
-  SensorData(
-      this.airQuality, this.temperature, this.id, this.normals, this.locations);
-}
-
 class _Pagetwo extends State<PageTwo> {
   List<SensorData> items = [];
   TextEditingController searchController = TextEditingController();
@@ -498,10 +488,10 @@ class _Pagetwo extends State<PageTwo> {
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] = SensorData(
-        airqualitys, temperatures, '123', 'yes', locations); // 先預設值，預設key
-    buffer['456'] =
-        SensorData(airqualitys, temperatures, '456', 'no', locations);
+    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes',
+        locations, events, isAlert, levels, updatetime); // 先預設值，預設key
+    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no',
+        locations, events, isAlert, levels, updatetime);
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
     List<Color> cardColors = [
