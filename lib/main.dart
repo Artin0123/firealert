@@ -4,12 +4,12 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:url_launcher/url_launcher.dart';
 import 'dart:async';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:provider/provider.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutt/local_notification_service.dart';
+import 'package:flutt/websocket_service.dart';
 
 void main() {
   runApp(
@@ -250,60 +250,6 @@ String captureMediaJson = '';
 // }
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-class WebSocketService with ChangeNotifier {
-  late IOWebSocketChannel _channel;
-  String _connectionStatus = 'Disconnected';
-  late StreamController<String> _messageController;
-
-  WebSocketService() {
-    _messageController = StreamController<String>.broadcast();
-    _connectToWebSocket();
-  }
-  Stream<String> get messageStream => _messageController.stream;
-  void _connectToWebSocket() {
-    _channel =
-        IOWebSocketChannel.connect('ws://59.102.142.103:9988?token=1234');
-    _channel.stream.listen(
-      (message) {
-        var data = json.decode(message.toString());
-        if (data['status'] == 'success') {
-          _connectionStatus = 'Connected';
-          print('Connection established successfully');
-          print(message);
-        } else {
-          _connectionStatus = 'Disconnected';
-          print(message);
-        }
-        _messageController.add(message);
-        notifyListeners();
-      },
-      onDone: () {
-        _connectionStatus = 'Disconnected';
-        notifyListeners();
-      },
-      onError: (error) {
-        _connectionStatus = 'Disconnected';
-        notifyListeners();
-      },
-    );
-  }
-
-  String get connectionStatus => _connectionStatus;
-
-  void sendMessage(String message) {
-    _channel.sink.add(message);
-  }
-
-  @override
-  void dispose() {
-    _channel.sink.close();
-    _messageController.close();
-    super.dispose();
-  }
-}
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class _Pageone extends State<PageOne> {
   //inal channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
