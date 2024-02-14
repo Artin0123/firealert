@@ -305,6 +305,7 @@ class _Pageone extends State<PageOne> {
   Widget build(BuildContext context) {
     var _streamController =
         Provider.of<WebSocketService>(context, listen: false);
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       // Center is a layout widget. It takes a single child and positions it

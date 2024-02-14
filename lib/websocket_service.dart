@@ -7,9 +7,10 @@ import 'package:web_socket_channel/io.dart';
 import 'package:provider/provider.dart';
 import 'package:flutt/sensor_data.dart';
 
+SensorData_list sensor_list = SensorData_list();
+
 class WebSocketService with ChangeNotifier {
   late IOWebSocketChannel _channel;
-  SensorData_list sensor_list = SensorData_list();
   String _connectionStatus = 'Disconnected';
   late StreamController<String> _messageController;
 
@@ -65,5 +66,9 @@ class WebSocketService with ChangeNotifier {
         notifyListeners();
       },
     );
+  }
+
+  SensorData_list getSensorData() {
+    return sensor_list;
   }
 }
