@@ -1,5 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-//import 'package:rxdart/subjects.dart';
+import 'package:rxdart/subjects.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -8,12 +8,12 @@ class LocalNotificationService {
 
   final _localNotificationService = FlutterLocalNotificationsPlugin();
 
-  //final BehaviorSubject<String?> onNotificationClick = BehaviorSubject();
+  final BehaviorSubject<String?> onNotificationClick = BehaviorSubject();
 
   Future<void> intialize() async {
     tz.initializeTimeZones();
     const AndroidInitializationSettings androidInitializationSettings =
-        AndroidInitializationSettings('@drawable/ic_stat_android');
+        AndroidInitializationSettings('@mipmap/ic_launcher');
 
     IOSInitializationSettings iosInitializationSettings =
         IOSInitializationSettings(
@@ -104,7 +104,7 @@ class LocalNotificationService {
   void onSelectNotification(String? payload) {
     print('payload $payload');
     if (payload != null && payload.isNotEmpty) {
-      //onNotificationClick.add(payload);
+      onNotificationClick.add(payload);
     }
   }
 }

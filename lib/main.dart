@@ -807,6 +807,14 @@ void startDataPolling() {
 
 class _Pagethree extends State<PageThree> {
   @override
+  late final LocalNotificationService service;
+
+  void initState() {
+    service = LocalNotificationService();
+    service.intialize();
+    super.initState();
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
         body: Column(
@@ -872,6 +880,9 @@ class _Pagethree extends State<PageThree> {
                     print('Noti: $value');
                     print(
                         'Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
+
+                    service.showNotification(
+                        id: 0, title: 'Notification Title', body: 'Some body');
                   },
                 );
               },
