@@ -12,13 +12,16 @@ SensorData_list sensor_list = SensorData_list();
 class WebSocketService with ChangeNotifier {
   late IOWebSocketChannel _channel;
   String _connectionStatus = 'Disconnected';
-  late StreamController<String> _messageController;
+  //late StreamController<String> _messageController;
+  late StreamController<Map<String, dynamic>> _messageController2;
 
   WebSocketService() {
-    _messageController = StreamController<String>.broadcast();
+    //_messageController = StreamController<String>.broadcast();
+    _messageController2 = StreamController<Map<String, dynamic>>.broadcast();
     _connectToWebSocket();
   }
-  Stream<String> get messageStream => _messageController.stream;
+  //Stream<String> get messageStream => _messageController.stream;
+  Stream<Map<String, dynamic>> get messageStream => _messageController2.stream;
   void _connectToWebSocket() {
     _channel =
         IOWebSocketChannel.connect('ws://59.102.142.103:9988?token=1234');
@@ -54,7 +57,8 @@ class WebSocketService with ChangeNotifier {
           _connectionStatus = 'Disconnected';
           print(message);
         }
-        _messageController.add(message);
+        //_messageController.add(message);
+        _messageController2.add(data);
         notifyListeners();
       },
       onDone: () {

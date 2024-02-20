@@ -208,6 +208,9 @@ Uint8List? imageData;
 bool _selected = false;
 bool con_notify = true;
 String captureMediaJson = '';
+String event_id = '';
+String iot_id = '';
+String big_location = '';
 // Future<Map<String, dynamic>> fetchData() async {
 //   final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
 //   try {
@@ -303,9 +306,10 @@ class _Pageone extends State<PageOne> {
 
   @override
   Widget build(BuildContext context) {
-    var _streamController =
+    // var _streamController =
+    //     Provider.of<WebSocketService>(context, listen: false);
+    var _streamController_json =
         Provider.of<WebSocketService>(context, listen: false);
-
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       // Center is a layout widget. It takes a single child and positions it
@@ -349,15 +353,61 @@ class _Pageone extends State<PageOne> {
                             style: TextStyle(
                                 fontWeight: FontWeight.bold, fontSize: 20)),
                       ),
+                      // Align(
+                      //   alignment: Alignment.centerLeft,
+                      //   child: Padding(
+                      //     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      //     child: Text(
+                      //         '位置: $locations\n時間: $timestamps\n上次警報更新時間: $updatetime\n是否有警報: $isAlert\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures',
+                      //         textAlign: TextAlign.left),
+                      //   ),
+                      // ),
                       Align(
                         alignment: Alignment.centerLeft,
                         child: Padding(
                           padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          child: Text(
-                              '位置: $locations\n時間: $timestamps\n上次警報更新時間: $updatetime\n是否有警報: $isAlert\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures',
-                              textAlign: TextAlign.left),
+                          child: StreamBuilder<Map<String, dynamic>>(
+                            stream: _streamController_json.messageStream,
+                            builder: (context, snapshot) {
+                              if (snapshot.hasData) {
+                                Map<String, dynamic> datas = snapshot.data!;
+                                String status = '';
+                                if (datas.containsKey('status')) {
+                                  status = datas['status'].toString();
+                                }
+
+                                if (datas.containsKey('details')) {
+                                  dynamic data = datas['details'];
+                                  if (data.isNotEmpty) {
+                                    // Data is present in datas['data']
+                                    // Do something with the data
+                                    locations = data['location'];
+                                    levels = data['level'].toString();
+                                    temperatures =
+                                        data['temperature'].toString();
+                                    timestamps =
+                                        data['o_time_stamp'].toString();
+                                    airqualitys = data['smoke'].toString();
+                                    events = data['event'].toString();
+                                    event_id = data['event_id'].toString();
+                                    big_location = data['group_name'];
+                                  } else {
+                                    // Data is empty
+                                  }
+                                } else {
+                                  // 'data' key does not exist in the map
+                                }
+                                return Text(
+                                    '位置: $big_location $locations\n時間: $timestamps\n事件id: $event_id\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures',
+                                    textAlign: TextAlign.left);
+                              } else {
+                                return Text('No message');
+                              }
+                            },
+                          ),
                         ),
                       ),
+
                       const SizedBox(height: 10),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -403,29 +453,19 @@ class _Pageone extends State<PageOne> {
                 child: const Text('取得資料'),
               ),
 
-              const SizedBox(height: 24),
-              StreamBuilder<String>(
-                stream:
-                    _streamController.messageStream, // 使用 WebSocketService 的消息流
-                builder: (context, snapshot) {
-                  if (snapshot.hasData) {
-                    return Text('WebSocket 1 Message: ${snapshot.data}');
-                  } else {
-                    return Text('No WebSocket 1 Message');
-                  }
-                },
-              ),
+              //const SizedBox(height: 24),
+              // StreamBuilder<String>(
+              //   stream:
+              //       _streamController.messageStream, // 使用 WebSocketService 的消息流
+              //   builder: (context, snapshot) {
+              //     if (snapshot.hasData) {
+              //       return Text('WebSocket 1 Message: ${snapshot.data}');
+              //     } else {
+              //       return Text('No WebSocket 1 Message');
+              //     }
+              //   },
+              // ),
 
-              Container(
-                child: imageData != null
-                    ? Image.memory(
-                        imageData!,
-                        width: 300,
-                        height: 300,
-                        fit: BoxFit.cover,
-                      )
-                    : const CircularProgressIndicator(),
-              ),
               Consumer<AppDataProvider>(
                 builder: (context, appDataProvider, child) {
                   bool? counter1 = appDataProvider.selection;
