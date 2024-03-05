@@ -2,18 +2,18 @@ class SensorData {
   String airQuality = '';
   String temperature = '';
   String id = '';
-  String normals = ''; //設備是否正常
+  String iot_id = ''; //設備是否正常
   String locations = '';
   String updatetime = '';
   String events = ''; //事件種類
   String levels = ''; //事件等級
   String isAlert = ''; //是否有警報
-  SensorData(this.airQuality, this.temperature, this.id, this.normals,
+  SensorData(this.airQuality, this.temperature, this.id, this.iot_id,
       this.locations, this.events, this.isAlert, this.levels, this.updatetime);
   void modify(SensorData buffer) {
     airQuality = buffer.airQuality;
     temperature = buffer.temperature;
-    normals = buffer.normals;
+    iot_id = buffer.iot_id;
     locations = buffer.locations;
     updatetime = buffer.updatetime;
     events = buffer.events;

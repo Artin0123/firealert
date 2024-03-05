@@ -100,7 +100,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: pages[currentIndex],
@@ -153,12 +154,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController = StreamController<bool>();
+  final StreamController<bool> _updateNotificationController =
+      StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream =>
+      _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -200,6 +203,7 @@ String captureMediaJson = '';
 String event_id = '';
 String iot_id = '';
 String big_location = '';
+List<SensorData> sensordata = [];
 // Future<Map<String, dynamic>> fetchData() async {
 //   final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
 //   try {
@@ -284,7 +288,8 @@ class _PageEvent extends State<PageEvent> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint('Unexpected content type: ${response.headers['content-type']}');
+        debugPrint(
+            'Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -296,167 +301,179 @@ class _PageEvent extends State<PageEvent> {
   Widget build(BuildContext context) {
     // var _streamController =
     //     Provider.of<WebSocketService>(context, listen: false);
-    var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
+    var _streamController_json =
+        Provider.of<WebSocketService>(context, listen: false);
+
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       // Center is a layout widget. It takes a single child and positions it
       // in the middle of the parent.
-      body: SingleChildScrollView(
-        child: Column(
-            // Column is also a layout widget. It takes a list of children and
-            // arranges them vertically. By default, it sizes itself to fit its
-            // children horizontally, and tries to be as tall as its parent.
-            //
-            // Column has various properties to control how it sizes itself and
-            // how it positions its children. Here we use mainAxisAlignment to
-            // center the children vertically; the main axis here is the vertical
-            // axis because Columns are vertical (the cross axis would be
-            // horizontal).
-            //
-            // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-            // action in the IDE, or press "p" in the console), to see the
-            // wireframe for each widget.
-            // mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              // Text(
-              //   '$_counter',
-              //   style: Theme.of(context).textTheme.headlineMedium,
-              // ),
-              Card(
-                  elevation: 6,
-                  margin: const EdgeInsets.all(16),
-                  color: const Color.fromARGB(255, 253, 208, 223),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: const BorderSide(
-                      color: Color.fromARGB(248, 237, 127, 167),
-                      width: 2.0,
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      const ListTile(
-                        title: Text('火災', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
-                      ),
-                      // Align(
-                      //   alignment: Alignment.centerLeft,
-                      //   child: Padding(
-                      //     padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                      //     child: Text(
-                      //         '位置: $locations\n時間: $timestamps\n上次警報更新時間: $updatetime\n是否有警報: $isAlert\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures',
-                      //         textAlign: TextAlign.left),
-                      //   ),
-                      // ),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
-                          child: StreamBuilder<Map<String, dynamic>>(
-                            stream: _streamController_json.messageStream,
-                            builder: (context, snapshot) {
-                              if (snapshot.hasData) {
-                                Map<String, dynamic> datas = snapshot.data!;
-                                String status = '';
-                                if (datas.containsKey('status')) {
-                                  status = datas['status'].toString();
-                                }
+      body: StreamBuilder<Map<String, dynamic>>(
+        stream: _streamController_json.messageStream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            // Data is available, extract and display it
+            Map<String, dynamic> datas = snapshot.data!;
 
-                                if (datas.containsKey('details')) {
-                                  dynamic data = datas['details'];
-                                  if (data.isNotEmpty) {
-                                    // Data is present in datas['data']
-                                    // Do something with the data
-                                    locations = data['location'];
-                                    levels = data['level'].toString();
-                                    temperatures = data['temperature'].toString();
-                                    timestamps = data['o_time_stamp'].toString();
-                                    airqualitys = data['smoke'].toString();
-                                    events = data['event'].toString();
-                                    event_id = data['event_id'].toString();
-                                    big_location = data['group_name'];
-                                  } else {
-                                    // Data is empty
-                                  }
-                                } else {
-                                  // 'data' key does not exist in the map
-                                }
-                                return Text('位置: $big_location $locations\n時間: $timestamps\n事件id: $event_id\n事件種類: $events\n事件等級: $levels\n氣體數值: $airqualitys\n溫度: $temperatures',
-                                    textAlign: TextAlign.left);
-                              } else {
-                                return Text('No message');
-                              }
-                            },
+            if (datas.containsKey('details')) {
+              dynamic data = datas['details'];
+              if (data.isNotEmpty) {
+                // Data is present in datas['data']
+                // Do something with the data
+                locations = data['location'];
+                levels = data['level'].toString();
+                temperatures = data['temperature'].toString();
+                timestamps = data['o_time_stamp'].toString();
+                airqualitys = data['smoke'].toString();
+                events = data['event'].toString();
+                event_id = data['event_id'].toString();
+                big_location = data['group_name'];
+                String iot_id = data['iot_id'].toString();
+                SensorData sensorData = SensorData(
+                    airqualitys,
+                    temperatures,
+                    event_id,
+                    iot_id,
+                    big_location + ' ' + locations,
+                    events,
+                    isAlert,
+                    levels,
+                    timestamps);
+                int spi = 0;
+                for (var i = 0; i < sensordata.length; i++) {
+                  if (sensordata[i].id == event_id) {
+                    sensordata[i].modify(sensorData);
+                    spi = 1;
+                    break;
+                  }
+                }
+                if (spi == 0) {
+                  sensordata.add(sensorData);
+                }
+              }
+            }
+            return SingleChildScrollView(
+              child: sensordata.isEmpty
+                  ? Container(
+                      width: 400, // 设置固定宽度
+                      height: 100, // 设置固定高度
+                      child: Card(
+                        elevation: 6,
+                        margin: EdgeInsets.all(16),
+                        color: Colors.white, // 设置白色背景
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0), // 设置圆角
+                          side: BorderSide(
+                              color: Colors.black, width: 2.0), // 设置黑色边框
+                        ),
+                        child: Center(
+                          child: Text(
+                            '無事件資料',
+                            textAlign: TextAlign.left,
                           ),
                         ),
                       ),
-
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              // 当按钮按下时，跳转到新页面
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (context) => const SecondPage()),
-                              );
-                            },
-                            child: const Text('查看詳情'),
-                          ),
-                          const SizedBox(width: 10),
-                          ElevatedButton(
-                            onPressed: () {
-                              launchPhone('119');
-                            },
-                            // style: ElevatedButton.styleFrom(
-                            //   primary:
-                            //       Colors.red, // Set the background color to red
-                            // ),
-                            child: const Text(
-                              '通報119',
-                              style: TextStyle(color: Colors.white),
+                    )
+                  : ListView.builder(
+                      shrinkWrap:
+                          true, // Ensures that the ListView.builder takes up only the necessary space
+                      itemCount: sensordata.length,
+                      itemBuilder: (context, index) {
+                        SensorData itemData = sensordata[index];
+                        //加入顏色變化
+                        return Card(
+                          elevation: 6,
+                          margin: const EdgeInsets.all(16),
+                          color: const Color.fromARGB(255, 253, 208, 223),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0),
+                            side: const BorderSide(
+                              color: Color.fromARGB(248, 237, 127, 167),
+                              width: 2.0,
                             ),
-                          )
-                        ],
-                      ),
-                      const SizedBox(height: 10),
-                    ],
-                  )),
-              ElevatedButton(
-                onPressed: () async {
-                  // if (_selected == false) {
-                  //   await fetchData();
-                  //   getImage(captureMediaJson);
-                  //   setState(() {}); // 更新狀態
-                  // }
-                },
-                child: const Text('取得資料'),
-              ),
-
-              //const SizedBox(height: 24),
-              // StreamBuilder<String>(
-              //   stream:
-              //       _streamController.messageStream, // 使用 WebSocketService 的消息流
-              //   builder: (context, snapshot) {
-              //     if (snapshot.hasData) {
-              //       return Text('WebSocket 1 Message: ${snapshot.data}');
-              //     } else {
-              //       return Text('No WebSocket 1 Message');
-              //     }
-              //   },
-              // ),
-
-              Consumer<AppDataProvider>(
-                builder: (context, appDataProvider, child) {
-                  bool? counter1 = appDataProvider.selection;
-                  return Text(
-                    '通知: ${counter1 ?? 0}',
-                    style: const TextStyle(fontSize: 24),
-                  );
-                },
-              ),
-            ]),
+                          ),
+                          child: ListTile(
+                            title: Text(itemData.events,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20)),
+                            subtitle: Text(
+                              '位置: ${itemData.locations}\n'
+                              '時間: ${itemData.updatetime}\n'
+                              '事件id: ${itemData.id}\n'
+                              '事件等級: ${itemData.levels}\n'
+                              '氣體數值: ${itemData.airQuality}\n'
+                              '溫度: ${itemData.temperature}',
+                              textAlign: TextAlign.left,
+                            ),
+                            trailing: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                ElevatedButton(
+                                  onPressed: () {
+                                    // 当按钮按下时，跳转到新页面
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const SecondPage()),
+                                    );
+                                  },
+                                  child: const Text('查看詳情'),
+                                ),
+                                const SizedBox(width: 10),
+                                ElevatedButton(
+                                  onPressed: () {
+                                    launchPhone('119');
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    primary: Colors
+                                        .red, // Set the background color to red
+                                  ),
+                                  child: const Text(
+                                    '通報119',
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                )
+                              ],
+                            ),
+                            // Add any other widgets or UI elements as needed
+                          ),
+                        );
+                      },
+                    ),
+            );
+          } else if (snapshot.hasError) {
+            // Error occurred while fetching data
+            return Text('Error: ${snapshot.error}');
+          } else {
+            // Data is not available yet
+            if (sensordata.isEmpty) {
+              //return (Text('無事件資料'));
+              return Container(
+                width: 400, // 设置固定宽度
+                height: 100, // 设置固定高度
+                child: Card(
+                  elevation: 6,
+                  margin: EdgeInsets.all(16),
+                  color: Colors.white, // 设置白色背景
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0), // 设置圆角
+                    side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
+                  ),
+                  child: Center(
+                    child: Text(
+                      '無事件資料',
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
+                ),
+              );
+            } else {
+              return Center(child: CircularProgressIndicator());
+            }
+            // Or any other loading indicator
+          }
+        },
       ),
     );
   }
@@ -510,11 +527,18 @@ class _PageWarn extends State<PageWarn> {
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes', locations, events, isAlert, levels, updatetime); // 先預設值，預設key
-    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no', locations, events, isAlert, levels, updatetime);
+    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes',
+        locations, events, isAlert, levels, updatetime); // 先預設值，預設key
+    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no',
+        locations, events, isAlert, levels, updatetime);
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
-    List<Color> cardColors = [Color.fromARGB(255, 253, 208, 223), Color.fromARGB(248, 237, 127, 167), Colors.white, Color.fromARGB(255, 90, 155, 213)];
+    List<Color> cardColors = [
+      Color.fromARGB(255, 253, 208, 223),
+      Color.fromARGB(248, 237, 127, 167),
+      Colors.white,
+      Color.fromARGB(255, 90, 155, 213)
+    ];
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -539,7 +563,7 @@ class _PageWarn extends State<PageWarn> {
           String key = buffer.keys.elementAt(index);
           SensorData sensorData = buffer[key];
           String sensorTitle = '';
-          if (sensorData.normals == 'yes') {
+          if (sensorData.iot_id == 'yes') {
             sensorTitle = '感測異常';
             num1 = cardColors[0];
             num2 = cardColors[1];
@@ -632,7 +656,7 @@ class SearchBarDelegate extends SearchDelegate {
           //String key = buffer.keys.elementAt(index);
           SensorData sensorData = buffer[0];
           String sensorTitle = '';
-          if (sensorData.normals == 'yes') {
+          if (sensorData.iot_id == 'yes') {
             sensorTitle = '感測異常';
             num1 = Color.fromARGB(255, 253, 208, 223);
             num2 = Color.fromARGB(248, 237, 127, 167);
@@ -793,7 +817,8 @@ class _PageUtil extends State<PageUtil> {
           },
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
-          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          iconColor:
+              MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -851,7 +876,8 @@ class _PageHistory extends State<PageHistory> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -873,7 +899,8 @@ class _PageSetting extends State<PageSetting> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -897,7 +924,8 @@ class NextPage extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.person),
@@ -907,7 +935,8 @@ class NextPage extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -925,7 +954,9 @@ class NextPage extends StatelessWidget {
                 height: 70.0,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 164, 199, 228)), // Change to your desired color
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color.fromARGB(255, 164, 199,
+                            228)), // Change to your desired color
                   ),
                   child: const Text("登入", style: TextStyle(fontSize: 20)),
                   onPressed: () {},
@@ -951,7 +982,8 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
