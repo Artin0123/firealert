@@ -381,6 +381,7 @@ class _PageEvent extends State<PageEvent> {
                       itemBuilder: (context, index) {
                         SensorData itemData = sensordata[index];
                         //加入顏色變化
+                        //判斷event類別
                         return Card(
                           elevation: 6,
                           margin: const EdgeInsets.all(16),
