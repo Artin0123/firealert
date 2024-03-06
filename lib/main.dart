@@ -27,7 +27,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  // const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -48,7 +48,17 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+  // const MyHomePage({super.key, required this.title});
+
+  // This widget is the home page of your application. It is stateful, meaning
+  // that it has a State object (defined below) that contains fields that affect
+  // how it looks.
+
+  // This class is the configuration for the state. It holds the values (in this
+  // case the title) provided by the parent (in this case the App widget) and
+  // used by the build method of the State. Fields in a Widget subclass are
+  // always marked "final".
+
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -57,10 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
   // static const TextStyle optionStyle =
   //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   // 定义底部导航栏中的每个页面
-  List<Widget> pages = [
+  final List<Widget> pages = [
     const PageEvent(),
     const PageWarn(),
     const PageUtil(),
+    const PageHistory(),
+    const PageSetting(),
   ];
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //     FlutterLocalNotificationsPlugin();
@@ -79,58 +91,77 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
+    // This method is rerun every time setState is called, for instance as done
+    // by the _incrementCounter method above.
+    //
+    // The Flutter framework has been optimized to make rerunning build methods
+    // fast, so that you can just rebuild anything that needs updating rather
+    // than having to individually change instances of widgets.
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue[300],
-          title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.history),
-            iconSize: 35,
-            onPressed: () {},
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
+        title: const Text('火災事件列表',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
+      ),
+      body: pages[currentIndex],
+      bottomNavigationBar: ConvexAppBar(
+        // selectedItemColor: Color.fromARGB(255, 51, 66, 80),
+        // unselectedItemColor: Colors.grey,
+        // showUnselectedLabels: true,
+        // currentIndex: currentIndex,
+        style: TabStyle.fixed,
+        cornerRadius: 20,
+        backgroundColor: Colors.blue[200],
+        color: Colors.grey[600],
+        activeColor: Colors.orange,
+        onTap: (int index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        items: [
+          TabItem(
+            icon: Icons.home,
+            title: '事件',
           ),
-          actions: [
-            IconButton(icon: const Icon(Icons.settings), iconSize: 35, onPressed: () {}),
-          ],
-        ),
-        body: pages[currentIndex],
-        bottomNavigationBar: ConvexAppBar(
-          style: TabStyle.react,
-          // cornerRadius: 20,
-          backgroundColor: Colors.blue[200],
-          color: Colors.grey[600],
-          activeColor: Colors.orange,
-          onTap: (int index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          items: [
-            TabItem(
-              icon: Icons.home,
-              title: '事件',
-            ),
-            TabItem(
-              icon: Icons.warning,
-              title: '通報',
-            ),
-            TabItem(
-              icon: Icons.smart_toy,
-              title: '設備',
-            ),
-          ],
-        ));
+          TabItem(
+            icon: Icons.history,
+            title: '紀錄',
+          ),
+          TabItem(
+            icon: Icons.warning,
+            title: '通報',
+          ),
+          TabItem(
+            icon: Icons.smart_toy,
+            title: '設備',
+          ),
+          TabItem(
+            icon: Icons.settings,
+            title: '設定',
+          ),
+        ],
+      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: _incrementCounter,
+      //   tooltip: 'Increment',
+      //   child: const Icon(Icons.add),
+      // ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
   }
 }
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController = StreamController<bool>();
+  final StreamController<bool> _updateNotificationController =
+      StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream =>
+      _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -217,58 +248,61 @@ List<SensorData> sensordata = [];
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class _PageEvent extends State<PageEvent> {
-  final channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+  //inal channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
 
   void initState() {
     super.initState();
-  //   _streamController = StreamController<String>();
-  //   var data;
-  //   // Flutter收到连接成功后，期望先收到状态消息
+    //_streamController = StreamController<String>();
+    //var data;
+    // Flutter收到连接成功后，期望先收到状态消息
 
-  //   // 监听来自服务器的消息
-  //   channel.stream.listen((message) {
-  //     _streamController.add(message);
-  //   });
+    // 监听来自服务器的消息
+    // channel.stream.listen((message) {
+    //   _streamController.add(message);
+    // });
   }
 
-  // Future<void> getImage(String buffer) async {
-  //   accessCode = buffer;
-  //   Map<String, String> payload = {'access_code': accessCode};
+  Future<void> getImage(String buffer) async {
+    accessCode = buffer;
+    Map<String, String> payload = {'access_code': accessCode};
 
-  //   // Encode the payload to x-www-form-urlencoded format
-  //   //String encodedPayload = Uri.encodeQueryComponent(payload.toString());
+    // Encode the payload to x-www-form-urlencoded format
+    //String encodedPayload = Uri.encodeQueryComponent(payload.toString());
 
-  //   // Make the HTTP POST request
-  //   http.Response response = await http.post(
-  //     Uri.parse(apiUrl),
-  //     headers: {
-  //       'Content-Type': 'application/x-www-form-urlencoded',
-  //     },
-  //     body: payload,
-  //   );
+    // Make the HTTP POST request
+    http.Response response = await http.post(
+      Uri.parse(apiUrl),
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: payload,
+    );
 
-  //   // Check if the request was successful (status code 200)
-  //   if (response.statusCode == 200) {
-  //     // Check if the content type is 'image/jpeg'
-  //     if (response.headers['content-type'] == 'image/jpeg') {
-  //       // Decode the response body as Uint8List (bytes)
-  //       setState(() {
-  //         //有問題
-  //         imageData = response.bodyBytes;
-  //       });
-  //     } else {
-  //       debugPrint('Unexpected content type: ${response.headers['content-type']}');
-  //     }
-  //   } else {
-  //     debugPrint('HTTP request failed with status: $response');
-  //     debugPrint('Response body: ${response.body}');
-  //   }
-  // }
+    // Check if the request was successful (status code 200)
+    if (response.statusCode == 200) {
+      // Check if the content type is 'image/jpeg'
+      if (response.headers['content-type'] == 'image/jpeg') {
+        // Decode the response body as Uint8List (bytes)
+        setState(() {
+          //有問題
+          imageData = response.bodyBytes;
+        });
+      } else {
+        debugPrint(
+            'Unexpected content type: ${response.headers['content-type']}');
+      }
+    } else {
+      debugPrint('HTTP request failed with status: $response');
+      debugPrint('Response body: ${response.body}');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    // var _streamController = Provider.of<WebSocketService>(context, listen: false);
-    var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
+    // var _streamController =
+    //     Provider.of<WebSocketService>(context, listen: false);
+    var _streamController_json =
+        Provider.of<WebSocketService>(context, listen: false);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
@@ -295,10 +329,19 @@ class _PageEvent extends State<PageEvent> {
                 event_id = data['event_id'].toString();
                 big_location = data['group_name'];
                 String iot_id = data['iot_id'].toString();
-                SensorData sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
+                SensorData sensorData = SensorData(
+                    airqualitys,
+                    temperatures,
+                    event_id,
+                    iot_id,
+                    big_location + ' ' + locations,
+                    events,
+                    isAlert,
+                    levels,
+                    timestamps);
                 int spi = 0;
                 for (var i = 0; i < sensordata.length; i++) {
-                  if (sensordata[i].id == event_id) {
+                  if (sensordata[i].iot_id == iot_id) {
                     sensordata[i].modify(sensorData);
                     spi = 1;
                     break;
@@ -320,7 +363,8 @@ class _PageEvent extends State<PageEvent> {
                         color: Colors.white, // 设置白色背景
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                          side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
+                          side: BorderSide(
+                              color: Colors.black, width: 2.0), // 设置黑色边框
                         ),
                         child: Center(
                           child: Text(
@@ -331,7 +375,8 @@ class _PageEvent extends State<PageEvent> {
                       ),
                     )
                   : ListView.builder(
-                      shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
+                      shrinkWrap:
+                          true, // Ensures that the ListView.builder takes up only the necessary space
                       itemCount: sensordata.length,
                       itemBuilder: (context, index) {
                         SensorData itemData = sensordata[index];
@@ -349,7 +394,9 @@ class _PageEvent extends State<PageEvent> {
                             ),
                           ),
                           child: ListTile(
-                            title: Text(itemData.events, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
+                            title: Text(itemData.events,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold, fontSize: 20)),
                             subtitle: Text(
                               '位置: ${itemData.locations}\n'
                               '時間: ${itemData.updatetime}\n'
@@ -359,34 +406,37 @@ class _PageEvent extends State<PageEvent> {
                               '溫度: ${itemData.temperature}',
                               textAlign: TextAlign.left,
                             ),
-                            trailing: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                ElevatedButton(
-                                  onPressed: () {
-                                    // 当按钮按下时，跳转到新页面
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(builder: (context) => const SecondPage()),
-                                    );
-                                  },
-                                  child: const Text('查看詳情'),
-                                ),
-                                const SizedBox(width: 10),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    launchPhone('119');
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    primary: Colors.red, // Set the background color to red
-                                  ),
-                                  child: const Text(
-                                    '通報119',
-                                    style: TextStyle(color: Colors.white),
-                                  ),
-                                )
-                              ],
-                            ),
+                            // trailing: Row(
+                            //   mainAxisAlignment: MainAxisAlignment.center,
+                            //   children: [
+                            //     ElevatedButton(
+                            //       onPressed: () {
+                            //         // 当按钮按下时，跳转到新页面
+                            //         Navigator.push(
+                            //           context,
+                            //           MaterialPageRoute(
+                            //               builder: (context) =>
+                            //                   const SecondPage()),
+                            //         );
+                            //       },
+                            //       child: const Text('查看詳情'),
+                            //     ),
+                            //     const SizedBox(width: 10),
+                            //     ElevatedButton(
+                            //       onPressed: () {
+                            //         launchPhone('119');
+                            //       },
+                            //       style: ElevatedButton.styleFrom(
+                            //         primary: Colors
+                            //             .red, // Set the background color to red
+                            //       ),
+                            //       child: const Text(
+                            //         '通報119',
+                            //         style: TextStyle(color: Colors.white),
+                            //       ),
+                            //     )
+                            //   ],
+                            // ),
                             // Add any other widgets or UI elements as needed
                           ),
                         );
@@ -420,7 +470,74 @@ class _PageEvent extends State<PageEvent> {
                 ),
               );
             } else {
-              return Center(child: CircularProgressIndicator());
+              return ListView.builder(
+                shrinkWrap:
+                    true, // Ensures that the ListView.builder takes up only the necessary space
+                itemCount: sensordata.length,
+                itemBuilder: (context, index) {
+                  SensorData itemData = sensordata[index];
+                  //加入顏色變化
+                  //判斷event類別
+                  return Card(
+                    elevation: 6,
+                    margin: const EdgeInsets.all(16),
+                    color: const Color.fromARGB(255, 253, 208, 223),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10.0),
+                      side: const BorderSide(
+                        color: Color.fromARGB(248, 237, 127, 167),
+                        width: 2.0,
+                      ),
+                    ),
+                    child: ListTile(
+                      title: Text(itemData.events,
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 20)),
+                      subtitle: Text(
+                        '位置: ${itemData.locations}\n'
+                        '時間: ${itemData.updatetime}\n'
+                        '事件id: ${itemData.id}\n'
+                        '事件等級: ${itemData.levels}\n'
+                        '氣體數值: ${itemData.airQuality}\n'
+                        '溫度: ${itemData.temperature}',
+                        textAlign: TextAlign.left,
+                      ),
+                      // trailing: Row(
+                      //   mainAxisAlignment: MainAxisAlignment.center,
+                      //   children: [
+                      //     ElevatedButton(
+                      //       onPressed: () {
+                      //         // 当按钮按下时，跳转到新页面
+                      //         Navigator.push(
+                      //           context,
+                      //           MaterialPageRoute(
+                      //               builder: (context) =>
+                      //                   const SecondPage()),
+                      //         );
+                      //       },
+                      //       child: const Text('查看詳情'),
+                      //     ),
+                      //     const SizedBox(width: 10),
+                      //     ElevatedButton(
+                      //       onPressed: () {
+                      //         launchPhone('119');
+                      //       },
+                      //       style: ElevatedButton.styleFrom(
+                      //         primary: Colors
+                      //             .red, // Set the background color to red
+                      //       ),
+                      //       child: const Text(
+                      //         '通報119',
+                      //         style: TextStyle(color: Colors.white),
+                      //       ),
+                      //     )
+                      //   ],
+                      // ),
+                      // Add any other widgets or UI elements as needed
+                    ),
+                  );
+                },
+              );
             }
             // Or any other loading indicator
           }
@@ -478,11 +595,18 @@ class _PageWarn extends State<PageWarn> {
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes', locations, events, isAlert, levels, updatetime); // 先預設值，預設key
-    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no', locations, events, isAlert, levels, updatetime);
+    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes',
+        locations, events, isAlert, levels, updatetime); // 先預設值，預設key
+    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no',
+        locations, events, isAlert, levels, updatetime);
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
-    List<Color> cardColors = [Color.fromARGB(255, 253, 208, 223), Color.fromARGB(248, 237, 127, 167), Colors.white, Color.fromARGB(255, 90, 155, 213)];
+    List<Color> cardColors = [
+      Color.fromARGB(255, 253, 208, 223),
+      Color.fromARGB(248, 237, 127, 167),
+      Colors.white,
+      Color.fromARGB(255, 90, 155, 213)
+    ];
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -761,7 +885,8 @@ class _PageUtil extends State<PageUtil> {
           },
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
-          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          iconColor:
+              MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -819,7 +944,8 @@ class _PageHistory extends State<PageHistory> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -841,7 +967,8 @@ class _PageSetting extends State<PageSetting> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -865,7 +992,8 @@ class NextPage extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.person),
@@ -875,7 +1003,8 @@ class NextPage extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -893,7 +1022,9 @@ class NextPage extends StatelessWidget {
                 height: 70.0,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 164, 199, 228)), // Change to your desired color
+                    backgroundColor: MaterialStateProperty.all<Color>(
+                        const Color.fromARGB(255, 164, 199,
+                            228)), // Change to your desired color
                   ),
                   child: const Text("登入", style: TextStyle(fontSize: 20)),
                   onPressed: () {},
@@ -919,7 +1050,8 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
