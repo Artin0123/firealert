@@ -843,13 +843,13 @@ void startDataPolling() {
 
 class _PageUtil extends State<PageUtil> {
   // @override
-  late final LocalNotificationService service;
+  // late final LocalNotificationService service;
 
-  void initState() {
-    service = LocalNotificationService();
-    service.intialize();
-    super.initState();
-  }
+  // void initState() {
+  //   service = LocalNotificationService();
+  //   service.intialize();
+  //   super.initState();
+  // }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -917,8 +917,8 @@ class _PageUtil extends State<PageUtil> {
                     print(
                         'Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
 
-                    service.showNotification(
-                        id: 0, title: 'Notification Title', body: 'Some body');
+                    // service.showNotification(
+                    //     id: 0, title: 'Notification Title', body: 'Some body');
                   },
                 );
               },
