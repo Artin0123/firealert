@@ -27,7 +27,7 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
-  // const MyApp({super.key});
+  const MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -48,17 +48,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  // const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
+  const MyHomePage({super.key});
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -89,63 +79,47 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.history),
-          iconSize: 35,
-          onPressed: () {},
+        appBar: AppBar(
+          backgroundColor: Colors.blue[300],
+          title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          leading: IconButton(
+            icon: const Icon(Icons.history),
+            iconSize: 35,
+            onPressed: () {},
+          ),
+          actions: [
+            IconButton(icon: const Icon(Icons.settings), iconSize: 35, onPressed: () {}),
+          ],
         ),
-        actions: [
-          IconButton(icon: const Icon(Icons.settings), iconSize: 35, onPressed: () {}),
-        ],
-      ),
-      body: pages[currentIndex],
-      bottomNavigationBar: ConvexAppBar(
-        // selectedItemColor: Color.fromARGB(255, 51, 66, 80),
-        // unselectedItemColor: Colors.grey,
-        // showUnselectedLabels: true,
-        // currentIndex: currentIndex,
-        style: TabStyle.fixed,
-        cornerRadius: 20,
-        backgroundColor: Colors.blue[200],
-        color: Colors.grey[600],
-        activeColor: Colors.orange,
-        onTap: (int index) {
-          setState(() {
-            currentIndex = index;
-          });
-        },
-        items: [
-          TabItem(
-            icon: Icons.home,
-            title: '事件',
-          ),
-          TabItem(
-            icon: Icons.warning,
-            title: '通報',
-          ),
-          TabItem(
-            icon: Icons.smart_toy,
-            title: '設備',
-          ),
-        ],
-      ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: _incrementCounter,
-      //   tooltip: 'Increment',
-      //   child: const Icon(Icons.add),
-      // ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+        body: pages[currentIndex],
+        bottomNavigationBar: ConvexAppBar(
+          style: TabStyle.react,
+          // cornerRadius: 20,
+          backgroundColor: Colors.blue[200],
+          color: Colors.grey[600],
+          activeColor: Colors.orange,
+          onTap: (int index) {
+            setState(() {
+              currentIndex = index;
+            });
+          },
+          items: [
+            TabItem(
+              icon: Icons.home,
+              title: '事件',
+            ),
+            TabItem(
+              icon: Icons.warning,
+              title: '通報',
+            ),
+            TabItem(
+              icon: Icons.smart_toy,
+              title: '設備',
+            ),
+          ],
+        ));
   }
 }
 
@@ -243,58 +217,57 @@ List<SensorData> sensordata = [];
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 class _PageEvent extends State<PageEvent> {
-  //inal channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+  final channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
 
   void initState() {
     super.initState();
-    //_streamController = StreamController<String>();
-    //var data;
-    // Flutter收到连接成功后，期望先收到状态消息
+  //   _streamController = StreamController<String>();
+  //   var data;
+  //   // Flutter收到连接成功后，期望先收到状态消息
 
-    // 监听来自服务器的消息
-    // channel.stream.listen((message) {
-    //   _streamController.add(message);
-    // });
+  //   // 监听来自服务器的消息
+  //   channel.stream.listen((message) {
+  //     _streamController.add(message);
+  //   });
   }
 
-  Future<void> getImage(String buffer) async {
-    accessCode = buffer;
-    Map<String, String> payload = {'access_code': accessCode};
+  // Future<void> getImage(String buffer) async {
+  //   accessCode = buffer;
+  //   Map<String, String> payload = {'access_code': accessCode};
 
-    // Encode the payload to x-www-form-urlencoded format
-    //String encodedPayload = Uri.encodeQueryComponent(payload.toString());
+  //   // Encode the payload to x-www-form-urlencoded format
+  //   //String encodedPayload = Uri.encodeQueryComponent(payload.toString());
 
-    // Make the HTTP POST request
-    http.Response response = await http.post(
-      Uri.parse(apiUrl),
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: payload,
-    );
+  //   // Make the HTTP POST request
+  //   http.Response response = await http.post(
+  //     Uri.parse(apiUrl),
+  //     headers: {
+  //       'Content-Type': 'application/x-www-form-urlencoded',
+  //     },
+  //     body: payload,
+  //   );
 
-    // Check if the request was successful (status code 200)
-    if (response.statusCode == 200) {
-      // Check if the content type is 'image/jpeg'
-      if (response.headers['content-type'] == 'image/jpeg') {
-        // Decode the response body as Uint8List (bytes)
-        setState(() {
-          //有問題
-          imageData = response.bodyBytes;
-        });
-      } else {
-        debugPrint('Unexpected content type: ${response.headers['content-type']}');
-      }
-    } else {
-      debugPrint('HTTP request failed with status: $response');
-      debugPrint('Response body: ${response.body}');
-    }
-  }
+  //   // Check if the request was successful (status code 200)
+  //   if (response.statusCode == 200) {
+  //     // Check if the content type is 'image/jpeg'
+  //     if (response.headers['content-type'] == 'image/jpeg') {
+  //       // Decode the response body as Uint8List (bytes)
+  //       setState(() {
+  //         //有問題
+  //         imageData = response.bodyBytes;
+  //       });
+  //     } else {
+  //       debugPrint('Unexpected content type: ${response.headers['content-type']}');
+  //     }
+  //   } else {
+  //     debugPrint('HTTP request failed with status: $response');
+  //     debugPrint('Response body: ${response.body}');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
-    // var _streamController =
-    //     Provider.of<WebSocketService>(context, listen: false);
+    // var _streamController = Provider.of<WebSocketService>(context, listen: false);
     var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
 
     return Scaffold(
