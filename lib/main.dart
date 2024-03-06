@@ -67,12 +67,10 @@ class _MyHomePageState extends State<MyHomePage> {
   // static const TextStyle optionStyle =
   //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   // 定义底部导航栏中的每个页面
-  final List<Widget> pages = [
+  List<Widget> pages = [
     const PageEvent(),
     const PageWarn(),
     const PageUtil(),
-    const PageHistory(),
-    const PageSetting(),
   ];
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //     FlutterLocalNotificationsPlugin();
@@ -100,9 +98,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('火災事件列表',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
+        leading: IconButton(
+          icon: const Icon(Icons.history),
+          iconSize: 35,
+          onPressed: () {},
+        ),
+        actions: [
+          IconButton(icon: const Icon(Icons.settings), iconSize: 35, onPressed: () {}),
+        ],
       ),
       body: pages[currentIndex],
       bottomNavigationBar: ConvexAppBar(
@@ -126,20 +131,12 @@ class _MyHomePageState extends State<MyHomePage> {
             title: '事件',
           ),
           TabItem(
-            icon: Icons.history,
-            title: '紀錄',
-          ),
-          TabItem(
             icon: Icons.warning,
             title: '通報',
           ),
           TabItem(
             icon: Icons.smart_toy,
             title: '設備',
-          ),
-          TabItem(
-            icon: Icons.settings,
-            title: '設定',
           ),
         ],
       ),
@@ -154,14 +151,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController =
-      StreamController<bool>();
+  final StreamController<bool> _updateNotificationController = StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream =>
-      _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -288,8 +283,7 @@ class _PageEvent extends State<PageEvent> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint(
-            'Unexpected content type: ${response.headers['content-type']}');
+        debugPrint('Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -301,8 +295,7 @@ class _PageEvent extends State<PageEvent> {
   Widget build(BuildContext context) {
     // var _streamController =
     //     Provider.of<WebSocketService>(context, listen: false);
-    var _streamController_json =
-        Provider.of<WebSocketService>(context, listen: false);
+    var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(240, 255, 255, 245),
@@ -329,16 +322,7 @@ class _PageEvent extends State<PageEvent> {
                 event_id = data['event_id'].toString();
                 big_location = data['group_name'];
                 String iot_id = data['iot_id'].toString();
-                SensorData sensorData = SensorData(
-                    airqualitys,
-                    temperatures,
-                    event_id,
-                    iot_id,
-                    big_location + ' ' + locations,
-                    events,
-                    isAlert,
-                    levels,
-                    timestamps);
+                SensorData sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
                 int spi = 0;
                 for (var i = 0; i < sensordata.length; i++) {
                   if (sensordata[i].id == event_id) {
@@ -363,8 +347,7 @@ class _PageEvent extends State<PageEvent> {
                         color: Colors.white, // 设置白色背景
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                          side: BorderSide(
-                              color: Colors.black, width: 2.0), // 设置黑色边框
+                          side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
                         ),
                         child: Center(
                           child: Text(
@@ -375,8 +358,7 @@ class _PageEvent extends State<PageEvent> {
                       ),
                     )
                   : ListView.builder(
-                      shrinkWrap:
-                          true, // Ensures that the ListView.builder takes up only the necessary space
+                      shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
                       itemCount: sensordata.length,
                       itemBuilder: (context, index) {
                         SensorData itemData = sensordata[index];
@@ -394,9 +376,7 @@ class _PageEvent extends State<PageEvent> {
                             ),
                           ),
                           child: ListTile(
-                            title: Text(itemData.events,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)),
+                            title: Text(itemData.events, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20)),
                             subtitle: Text(
                               '位置: ${itemData.locations}\n'
                               '時間: ${itemData.updatetime}\n'
@@ -414,9 +394,7 @@ class _PageEvent extends State<PageEvent> {
                                     // 当按钮按下时，跳转到新页面
                                     Navigator.push(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SecondPage()),
+                                      MaterialPageRoute(builder: (context) => const SecondPage()),
                                     );
                                   },
                                   child: const Text('查看詳情'),
@@ -427,8 +405,7 @@ class _PageEvent extends State<PageEvent> {
                                     launchPhone('119');
                                   },
                                   style: ElevatedButton.styleFrom(
-                                    primary: Colors
-                                        .red, // Set the background color to red
+                                    primary: Colors.red, // Set the background color to red
                                   ),
                                   child: const Text(
                                     '通報119',
@@ -528,18 +505,11 @@ class _PageWarn extends State<PageWarn> {
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes',
-        locations, events, isAlert, levels, updatetime); // 先預設值，預設key
-    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no',
-        locations, events, isAlert, levels, updatetime);
+    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes', locations, events, isAlert, levels, updatetime); // 先預設值，預設key
+    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no', locations, events, isAlert, levels, updatetime);
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
-    List<Color> cardColors = [
-      Color.fromARGB(255, 253, 208, 223),
-      Color.fromARGB(248, 237, 127, 167),
-      Colors.white,
-      Color.fromARGB(255, 90, 155, 213)
-    ];
+    List<Color> cardColors = [Color.fromARGB(255, 253, 208, 223), Color.fromARGB(248, 237, 127, 167), Colors.white, Color.fromARGB(255, 90, 155, 213)];
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -818,8 +788,7 @@ class _PageUtil extends State<PageUtil> {
           },
           // This sets text color and icon color to red when list tile is disabled and
           // green when list tile is selected, otherwise sets it to black.
-          iconColor:
-              MaterialStateColor.resolveWith((Set<MaterialState> states) {
+          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
             if (states.contains(MaterialState.selected)) {
               return Colors.green;
             }
@@ -877,8 +846,7 @@ class _PageHistory extends State<PageHistory> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -900,8 +868,7 @@ class _PageSetting extends State<PageSetting> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
@@ -925,8 +892,7 @@ class NextPage extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.person),
@@ -936,8 +902,7 @@ class NextPage extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -955,9 +920,7 @@ class NextPage extends StatelessWidget {
                 height: 70.0,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color.fromARGB(255, 164, 199,
-                            228)), // Change to your desired color
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 164, 199, 228)), // Change to your desired color
                   ),
                   child: const Text("登入", style: TextStyle(fontSize: 20)),
                   onPressed: () {},
@@ -983,8 +946,7 @@ class _SecondPageState extends State<SecondPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Center(
