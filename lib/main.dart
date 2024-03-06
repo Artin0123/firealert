@@ -8,7 +8,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/io.dart';
 import 'package:provider/provider.dart';
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-// import 'package:flutt/local_notification_service.dart';
+import 'package:flutt/local_notification_service.dart';
 import 'package:flutt/websocket_service.dart';
 import 'package:flutt/sensor_data.dart';
 
@@ -567,38 +567,40 @@ class _PageWarn extends State<PageWarn> {
   TextEditingController searchController = TextEditingController();
   var buffer = {};
 
-  // void updateList() async {
-  //   // Fetch data and update the list
-  //   // Map<String, dynamic> newData = await fetchData();
-
-  //   setState(() {
-  //     // items = newData;
-  //     // items.add(SensorData(airqualitys, temperatures, '123', normal));
-  //     // items.add(SensorData(airqualitys, temperatures, '456', 'no'));
-  //     // buffer['123'] = SensorData(airqualitys, temperatures, '123', normal);
-  //     // buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no');
-  //   });
-  // }
-
   void filterItems(String query) {
     // Filter items based on the search query
     setState(() {
-      items = items
-          .where((item) =>
-              item.airQuality.toLowerCase().contains(query.toLowerCase()) ||
-              item.temperature.toLowerCase().contains(query.toLowerCase()) ||
-              item.id.toLowerCase().contains(query.toLowerCase()) ||
-              item.locations.toLowerCase().contains(query.toLowerCase()))
+      items = sensordata
+          .where((sensordata) =>
+              sensordata.airQuality
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              sensordata.temperature
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              sensordata.id.toLowerCase().contains(query.toLowerCase()) ||
+              sensordata.iot_id.toLowerCase().contains(query.toLowerCase()))
           .toList();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    buffer['123'] = SensorData(airqualitys, temperatures, '123', 'yes',
-        locations, events, isAlert, levels, updatetime); // 先預設值，預設key
-    buffer['456'] = SensorData(airqualitys, temperatures, '456', 'no',
-        locations, events, isAlert, levels, updatetime);
+    for (var i = 0; i < sensordata.length; i++) {
+      var item = sensordata[i];
+      // 将 SensorData 对象的属性添加到 buffer 中
+      buffer[item.iot_id] = SensorData(
+          item.airQuality,
+          item.temperature,
+          item.id,
+          item.iot_id,
+          item.locations,
+          item.events,
+          'yes',
+          levels,
+          item.updatetime);
+    }
+
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
     List<Color> cardColors = [
@@ -625,56 +627,61 @@ class _PageWarn extends State<PageWarn> {
           ),
         ),
       ),
-      body: ListView.builder(
-        itemCount: buffer.length,
-        itemBuilder: (context, index) {
-          String key = buffer.keys.elementAt(index);
-          SensorData sensorData = buffer[key];
-          String sensorTitle = '';
-          if (sensorData.iot_id == 'yes') {
-            sensorTitle = '感測異常';
-            num1 = cardColors[0];
-            num2 = cardColors[1];
-          } else {
-            sensorTitle = '正常';
-            num1 = cardColors[2];
-            num2 = cardColors[3];
-          }
+      body: buffer.isEmpty
+          ? Center(
+              child: Text('無資料'),
+            )
+          : ListView.builder(
+              itemCount: buffer.length,
+              itemBuilder: (context, index) {
+                String key = buffer.keys.elementAt(index);
+                SensorData sensorData = buffer[key];
+                String sensorTitle = '';
+                if (sensorData.levels == '-1') {
+                  //之後再改
+                  sensorTitle = '設備異常';
+                  num1 = cardColors[0];
+                  num2 = cardColors[1];
+                } else {
+                  sensorTitle = '正常';
+                  num1 = cardColors[2];
+                  num2 = cardColors[3];
+                }
 
-          return Card(
-            elevation: 6,
-            margin: const EdgeInsets.all(16),
-            color: num1,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10.0),
-              side: BorderSide(
-                color: num2,
-                width: 2.0,
-              ),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    sensorTitle,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
+                return Card(
+                  elevation: 6,
+                  margin: const EdgeInsets.all(16),
+                  color: num1,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                    side: BorderSide(
+                      color: num2,
+                      width: 2.0,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${locations}\n感測器 id: ${sensorData.id}',
-                    style: const TextStyle(fontSize: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          sensorTitle,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 18,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${locations}\n感測器 id: ${sensorData.id}',
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
                   ),
-                ],
-              ),
+                );
+              },
             ),
-          );
-        },
-      ),
     );
   }
 }
@@ -795,21 +802,7 @@ class SearchBarDelegate extends SearchDelegate {
           .map((entry) => entry.value)
           .toList();
     }
-    // return ListView(
-    //   children: dic.entries.map((MapEntry<dynamic, dynamic> entry) {
-    //     String key = entry.key.toString();
-    //     SensorData value = entry.value;
 
-    //     return ListTile(
-    //       title: Text('id $key: ${value.temperature}'),
-    //       onTap: () {
-    //         query = '$key ${value.temperature}';
-    //         result.add(value);
-    //         showResults(context);
-    //       },
-    //     );
-    //   }).toList(),
-    // );
     return ListView(
       children: matchingSensorData.map((sensorData) {
         String key = dic.entries
@@ -850,13 +843,13 @@ void startDataPolling() {
 
 class _PageUtil extends State<PageUtil> {
   // @override
-  // late final LocalNotificationService service;
+  late final LocalNotificationService service;
 
-  // void initState() {
-  //   service = LocalNotificationService();
-  //   service.intialize();
-  //   super.initState();
-  // }
+  void initState() {
+    service = LocalNotificationService();
+    service.intialize();
+    super.initState();
+  }
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -906,27 +899,30 @@ class _PageUtil extends State<PageUtil> {
             value: _selected,
           ),
         ),
-        // ListTile(
-        //     leading: const Icon(Icons.access_alarm),
-        //     title: const Text(
-        //       "設備通知",
-        //       //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-        //     ),
-        //     subtitle: const Text("設備通知是否開啟"),
-        //     trailing: Consumer<AppDataProvider>(
-        //       builder: (context, appDataProvider, child) {
-        //         return Switch(
-        //           value: Provider.of<AppDataProvider>(context)._selection,
-        //           onChanged: (bool value) {
-        //             Provider.of<AppDataProvider>(context, listen: false).setNotification(value);
-        //             print('Noti: $value');
-        //             print('Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
+        ListTile(
+            leading: const Icon(Icons.access_alarm),
+            title: const Text(
+              "設備通知",
+              //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+            ),
+            subtitle: const Text("設備通知是否開啟"),
+            trailing: Consumer<AppDataProvider>(
+              builder: (context, appDataProvider, child) {
+                return Switch(
+                  value: Provider.of<AppDataProvider>(context)._selection,
+                  onChanged: (bool value) {
+                    Provider.of<AppDataProvider>(context, listen: false)
+                        .setNotification(value);
+                    print('Noti: $value');
+                    print(
+                        'Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
 
-        //             service.showNotification(id: 0, title: 'Notification Title', body: 'Some body');
-        //           },
-        //         );
-        //       },
-        //     )),
+                    service.showNotification(
+                        id: 0, title: 'Notification Title', body: 'Some body');
+                  },
+                );
+              },
+            )),
       ],
     ));
   }
