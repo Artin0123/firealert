@@ -88,8 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-          title: const Text('火災事件列表', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.blue[300],
+          title: Text('火災事件列表', style: TextStyle(color: Colors.grey[50], fontWeight: FontWeight.bold)),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.history),
@@ -121,9 +121,9 @@ class _MyHomePageState extends State<MyHomePage> {
           // currentIndex: currentIndex,
           style: TabStyle.react,
           // cornerRadius: 20,
-          backgroundColor: Colors.blue[200],
-          color: Colors.grey[600],
-          activeColor: Colors.orange,
+          backgroundColor: Colors.blue[300],
+          color: Colors.grey[50],
+          activeColor: Colors.blue[900],
           onTap: (int index) {
             setState(() {
               currentIndex = index;
