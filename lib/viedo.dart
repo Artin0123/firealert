@@ -1,15 +1,18 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutt/main.dart';
+import 'package:flutt/sensor_data.dart';
+import 'dart:convert';
 
-class VideoPage extends StatefulWidget {
-  const VideoPage({Key? key}) : super(key: key);
+class DetailPage extends StatefulWidget {
+  const DetailPage({super.key});
 
   @override
-  State<VideoPage> createState() => _VideoPageState();
+  State<DetailPage> createState() => _DetailPage();
 }
 
-class _VideoPageState extends State<VideoPage> {
+class _DetailPage extends State<DetailPage> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
 
@@ -21,10 +24,12 @@ class _VideoPageState extends State<VideoPage> {
       'https://yzulab1.waziwazi.top/stream',
     );
 
-    _initializeVideoPlayerFuture = _controller.initialize();
-
-    _controller.setLooping(true);
-
+    try {
+      _initializeVideoPlayerFuture = _controller.initialize();
+      _controller.setLooping(true);
+    } catch (e) {
+      print(e);
+    }
     // Add listener to update state and rebuild UI when playing
     _controller.addListener(() {
       setState(() {});
@@ -39,65 +44,81 @@ class _VideoPageState extends State<VideoPage> {
 
   @override
   Widget build(BuildContext context) {
+    SensorData sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('詳細資料'), // 更改成影片頁面的標題
+        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
+        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        centerTitle: true,
       ),
-      body: FutureBuilder(
-        future: _initializeVideoPlayerFuture,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.done) {
-            return Column(
-              children: [
-                AspectRatio(
-                  aspectRatio: 4 / 3, //改變影片展示大小
-                  child: LayoutBuilder(
-                    builder:
-                        (BuildContext context, BoxConstraints constraints) {
-                      double videoWidth = constraints.maxWidth;
-                      double videoHeight = videoWidth * (3 / 4);
-                      return SizedBox(
-                        width: videoWidth,
-                        height: videoHeight,
-                        child: VideoPlayer(_controller),
-                      );
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: VideoProgressIndicator(
-                    _controller,
-                    allowScrubbing: true,
-                    colors: VideoProgressColors(
-                      playedColor: Colors.blue,
-                      bufferedColor: Colors.grey,
-                      backgroundColor: Colors.black,
+      body: Row(
+        children: [
+          // Card(
+          //   child: Container(
+          //     width: 200,
+          //     height: 200,
+          //     child: Text(
+          //       '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${sensorData.locations}\n感測器 id: ${sensorData.id}',
+          //       style: const TextStyle(fontSize: 16),
+          //     ),
+          //   ),
+          // ),
+          FutureBuilder(
+            future: _initializeVideoPlayerFuture,
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return Column(
+                  children: [
+                    AspectRatio(
+                      aspectRatio: 4 / 3, //改變影片展示大小
+                      child: LayoutBuilder(
+                        builder: (BuildContext context, BoxConstraints constraints) {
+                          double videoWidth = constraints.maxWidth;
+                          double videoHeight = videoWidth * (3 / 4);
+                          return SizedBox(
+                            width: videoWidth,
+                            height: videoHeight,
+                            child: VideoPlayer(_controller),
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ),
-              ],
-            );
-          } else {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          setState(() {
-            if (_controller.value.isPlaying) {
-              _controller.pause();
-            } else {
-              _controller.play();
-            }
-          });
-        },
-        child: Icon(
-          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-        ),
+                    Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: VideoProgressIndicator(
+                        _controller,
+                        allowScrubbing: true,
+                        colors: VideoProgressColors(
+                          playedColor: Colors.blue,
+                          bufferedColor: Colors.grey,
+                          backgroundColor: Colors.black,
+                        ),
+                      ),
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            },
+          ),
+          FloatingActionButton(
+            onPressed: () {
+              setState(() {
+                if (_controller.value.isPlaying) {
+                  _controller.pause();
+                } else {
+                  _controller.play();
+                }
+              });
+            },
+            child: Icon(
+              _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+            ),
+          ),
+        ],
       ),
     );
   }

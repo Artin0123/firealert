@@ -417,7 +417,7 @@ class _PageEvent extends State<PageEvent> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  VideoPage()),
+                                                  DetailPage()),
                                         );
                                       },
                                       child: const Text('查看詳情'),
@@ -508,7 +508,7 @@ class _PageEvent extends State<PageEvent> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => VideoPage()),
+                                        builder: (context) => DetailPage()),
                                   );
                                 },
                                 child: const Text('查看詳情'),
@@ -1020,29 +1020,6 @@ class _PageWarn extends State<PageWarn> {
             '通報119',
           ),
         ),
-      ),
-    );
-  }
-}
-
-class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
-  @override
-  State<DetailPage> createState() => _DetailPage();
-}
-
-class _DetailPage extends State<DetailPage> {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-      ),
-      body: Center(
-        child: Text(locations),
       ),
     );
   }
