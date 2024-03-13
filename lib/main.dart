@@ -28,7 +28,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -44,6 +43,30 @@ class MyApp extends StatelessWidget {
         home: const MyHomePage(),
       ),
     );
+  }
+}
+
+class AppDataProvider extends ChangeNotifier {
+  //共用記憶體
+  final StreamController<bool> _updateNotificationController = StreamController<bool>();
+
+  bool _selection = true;
+  bool get selection => _selection;
+
+  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
+
+  void setNotification(bool newValue) {
+    _selection = newValue;
+    con_notify = newValue;
+    // 如果你想往 Stream 中添加新的值，使用 add 方法
+    _updateNotificationController.add(_selection);
+    notifyListeners();
+  }
+
+  @override
+  void dispose() {
+    _updateNotificationController.close();
+    super.dispose();
   }
 }
 
@@ -89,7 +112,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue[300],
-          title: Text('火災事件列表', style: TextStyle(color: Colors.grey[50], fontWeight: FontWeight.bold)),
+          title: Text('火災事件列表', style: TextStyle(color: Colors.grey[200], fontWeight: FontWeight.bold)),
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.history),
@@ -122,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
           style: TabStyle.react,
           // cornerRadius: 20,
           backgroundColor: Colors.blue[300],
-          color: Colors.grey[50],
+          color: Colors.grey[200],
           activeColor: Colors.blue[900],
           onTap: (int index) {
             setState(() {
@@ -144,30 +167,6 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ));
-  }
-}
-
-class AppDataProvider extends ChangeNotifier {
-  //共用記憶體
-  final StreamController<bool> _updateNotificationController = StreamController<bool>();
-
-  bool _selection = true;
-  bool get selection => _selection;
-
-  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
-
-  void setNotification(bool newValue) {
-    _selection = newValue;
-    con_notify = newValue;
-    // 如果你想往 Stream 中添加新的值，使用 add 方法
-    _updateNotificationController.add(_selection);
-    notifyListeners();
-  }
-
-  @override
-  void dispose() {
-    _updateNotificationController.close();
-    super.dispose();
   }
 }
 
@@ -238,21 +237,18 @@ List<SensorData> sensordata = [];
 //   }
 // }
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 class _PageEvent extends State<PageEvent> {
-  //inal channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+  final channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+  late final WebSocketService _streamControllerJson;
 
+  @override
   void initState() {
     super.initState();
-    //_streamController = StreamController<String>();
-    //var data;
-    // Flutter收到连接成功后，期望先收到状态消息
-
-    // 监听来自服务器的消息
-    // channel.stream.listen((message) {
-    //   _streamController.add(message);
-    // });
+    try {
+      _streamControllerJson = Provider.of<WebSocketService>(context, listen: false);
+    } catch (e) {
+      print('Error initializing WebSocketService: $e');
+    }
   }
 
   Future<void> getImage(String buffer) async {
@@ -293,19 +289,17 @@ class _PageEvent extends State<PageEvent> {
   Widget build(BuildContext context) {
     // var _streamController =
     //     Provider.of<WebSocketService>(context, listen: false);
-    var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
+    // var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
 
     return Scaffold(
-      backgroundColor: const Color.fromARGB(240, 255, 255, 245),
       // Center is a layout widget. It takes a single child and positions it
       // in the middle of the parent.
       body: StreamBuilder<Map<String, dynamic>>(
-        stream: _streamController_json.messageStream,
+        stream: _streamControllerJson.messageStream,
         builder: (context, snapshot) {
           if (snapshot.hasData) {
             // Data is available, extract and display it
             Map<String, dynamic> datas = snapshot.data!;
-
             if (datas.containsKey('details')) {
               dynamic data = datas['details'];
               if (data.isNotEmpty) {
@@ -423,7 +417,9 @@ class _PageEvent extends State<PageEvent> {
             );
           } else if (snapshot.hasError) {
             // Error occurred while fetching data
-            return Text('Error: ${snapshot.error}');
+            return Center(
+              child: Text('WebSocket Error: ${snapshot.error}'),
+            );
           } else {
             // Data is not available yet
             if (sensordata.isEmpty) {
@@ -529,6 +525,14 @@ void launchPhone(String Phonenumber) async {
   } else {
     throw 'Could not launch $url';
   }
+}
+
+void startDataPolling() {
+  const Duration pollInterval = Duration(seconds: 3);
+  Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
+    // 发送数据请求到服务器
+    // fetchData();
+  });
 }
 
 class PageUtil extends StatefulWidget {
@@ -790,14 +794,6 @@ class PageSetting extends StatefulWidget {
   State<PageSetting> createState() => _PageSetting();
 }
 
-void startDataPolling() {
-  const Duration pollInterval = Duration(seconds: 3);
-  Timer periodicTimer = Timer.periodic(pollInterval, (Timer t) {
-    // 发送数据请求到服务器
-    // fetchData();
-  });
-}
-
 class _PageSetting extends State<PageSetting> {
   // @override
   // late final LocalNotificationService service;
@@ -810,75 +806,80 @@ class _PageSetting extends State<PageSetting> {
 
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Column(
-      children: [
-        ListTile(
-            onTap: () {
-              setState(() {
-                // This is called when the user toggles the switch.
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const NextPage()),
-                );
-              });
-            },
-            leading: const Icon(Icons.person),
-            title: const Text('登入')),
-        ListTile(
-          selected: _selected,
-          onTap: () {
-            setState(() {
-              // This is called when the user toggles the switch.
-              _selected = !_selected; //true 自動更新
-              //自動更新
-            });
-          },
-          // This sets text color and icon color to red when list tile is disabled and
-          // green when list tile is selected, otherwise sets it to black.
-          iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
-            if (states.contains(MaterialState.selected)) {
-              return Colors.green;
-            }
-            return Colors.black;
-          }),
-          leading: const Icon(Icons.person),
-          title: const Text('Headline'),
-          subtitle: Text('Enabled: , Selected: $_selected'),
-          trailing: Switch(
-            onChanged: (bool? value) {
-              // This is called when the user toggles the switch.
-              setState(() {
-                _selected = value!;
-                startDataPolling();
-              });
-            },
-            value: _selected,
-          ),
+        appBar: AppBar(
+          backgroundColor: Colors.blue[300],
+          title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          centerTitle: true,
         ),
-        ListTile(
-            leading: const Icon(Icons.access_alarm),
-            title: const Text(
-              "設備通知",
-              //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-            ),
-            subtitle: const Text("設備通知是否開啟"),
-            trailing: Consumer<AppDataProvider>(
-              builder: (context, appDataProvider, child) {
-                return Switch(
-                  value: Provider.of<AppDataProvider>(context)._selection,
-                  onChanged: (bool value) {
-                    Provider.of<AppDataProvider>(context, listen: false).setNotification(value);
-                    print('Noti: $value');
-                    print('Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
-
-                    // service.showNotification(
-                    //     id: 0, title: 'Notification Title', body: 'Some body');
-                  },
-                );
+        body: Column(
+          children: [
+            ListTile(
+                onTap: () {
+                  setState(() {
+                    // This is called when the user toggles the switch.
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const NextPage()),
+                    );
+                  });
+                },
+                leading: const Icon(Icons.person),
+                title: const Text('登入')),
+            ListTile(
+              selected: _selected,
+              onTap: () {
+                setState(() {
+                  // This is called when the user toggles the switch.
+                  _selected = !_selected; //true 自動更新
+                  //自動更新
+                });
               },
-            )),
-      ],
-    ));
+              // This sets text color and icon color to red when list tile is disabled and
+              // green when list tile is selected, otherwise sets it to black.
+              iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
+                if (states.contains(MaterialState.selected)) {
+                  return Colors.green;
+                }
+                return Colors.black;
+              }),
+              leading: const Icon(Icons.person),
+              title: const Text('Headline'),
+              subtitle: Text('Enabled: , Selected: $_selected'),
+              trailing: Switch(
+                onChanged: (bool? value) {
+                  // This is called when the user toggles the switch.
+                  setState(() {
+                    _selected = value!;
+                    startDataPolling();
+                  });
+                },
+                value: _selected,
+              ),
+            ),
+            ListTile(
+                leading: const Icon(Icons.access_alarm),
+                title: const Text(
+                  "設備通知",
+                  //style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+                subtitle: const Text("設備通知是否開啟"),
+                trailing: Consumer<AppDataProvider>(
+                  builder: (context, appDataProvider, child) {
+                    return Switch(
+                      value: Provider.of<AppDataProvider>(context)._selection,
+                      onChanged: (bool value) {
+                        Provider.of<AppDataProvider>(context, listen: false).setNotification(value);
+                        print('Noti: $value');
+                        print('Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
+
+                        // service.showNotification(
+                        //     id: 0, title: 'Notification Title', body: 'Some body');
+                      },
+                    );
+                  },
+                )),
+          ],
+        ));
   }
 }
 
@@ -893,7 +894,7 @@ class _PageHistory extends State<PageHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
+        backgroundColor: Colors.blue[300],
         title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
@@ -970,11 +971,6 @@ class _PageWarn extends State<PageWarn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-      ),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
@@ -989,13 +985,13 @@ class _PageWarn extends State<PageWarn> {
   }
 }
 
-class SecondPage extends StatefulWidget {
-  const SecondPage({super.key});
+class DetailPage extends StatefulWidget {
+  const DetailPage({super.key});
   @override
-  State<SecondPage> createState() => _SecondPageState();
+  State<DetailPage> createState() => _DetailPage();
 }
 
-class _SecondPageState extends State<SecondPage> {
+class _DetailPage extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
