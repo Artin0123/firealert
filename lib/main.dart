@@ -11,6 +11,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutt/local_notification_service.dart';
 import 'package:flutt/websocket_service.dart';
 import 'package:flutt/sensor_data.dart';
+import 'package:flutt/viedo.dart';
 
 void main() {
   runApp(
@@ -412,11 +413,12 @@ class _PageEvent extends State<PageEvent> {
                                   children: [
                                     ElevatedButton(
                                       onPressed: () {
-                                        // Navigator.push(
-                                        //   context,
-                                        //   MaterialPageRoute(
-                                        //       builder: (context) => NextPage()),
-                                        // );
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  VideoPage()),
+                                        );
                                       },
                                       child: const Text('查看詳情'),
                                     ),
@@ -503,11 +505,11 @@ class _PageEvent extends State<PageEvent> {
                             children: [
                               ElevatedButton(
                                 onPressed: () {
-                                  // Navigator.push(
-                                  //   context,
-                                  //   MaterialPageRoute(
-                                  //       builder: (context) => NextPage()),
-                                  // );
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => VideoPage()),
+                                  );
                                 },
                                 child: const Text('查看詳情'),
                               ),
