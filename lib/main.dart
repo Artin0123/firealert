@@ -238,7 +238,7 @@ List<SensorData> sensordata = [];
 // }
 
 class _PageEvent extends State<PageEvent> {
-  final channel = IOWebSocketChannel.connect('ws://59.102.142.103:9988');
+  //final channel = IOWebSocketChannel.connect('ws://firealert.waziwazi.top:8880?token=1234');
   late final WebSocketService _streamControllerJson;
 
   @override
