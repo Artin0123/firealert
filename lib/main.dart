@@ -385,51 +385,39 @@ class _PageEvent extends State<PageEvent> {
                               width: 2.0,
                             ),
                           ),
-                          child: ListTile(
-                            title: Text(itemData.events,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20)),
-                            subtitle: Text(
-                              '位置: ${itemData.locations}\n'
-                              '時間: ${itemData.updatetime}\n'
-                              '事件id: ${itemData.id}\n'
-                              '事件等級: ${itemData.levels}\n'
-                              '氣體數值: ${itemData.airQuality}\n'
-                              '溫度: ${itemData.temperature}',
-                              textAlign: TextAlign.left,
-                            ),
-                            // trailing: Row(
-                            //   mainAxisAlignment: MainAxisAlignment.center,
-                            //   children: [
-                            //     ElevatedButton(
-                            //       onPressed: () {
-                            //         // 当按钮按下时，跳转到新页面
-                            //         Navigator.push(
-                            //           context,
-                            //           MaterialPageRoute(
-                            //               builder: (context) =>
-                            //                   const SecondPage()),
-                            //         );
-                            //       },
-                            //       child: const Text('查看詳情'),
-                            //     ),
-                            //     const SizedBox(width: 10),
-                            //     ElevatedButton(
-                            //       onPressed: () {
-                            //         launchPhone('119');
-                            //       },
-                            //       style: ElevatedButton.styleFrom(
-                            //         primary: Colors
-                            //             .red, // Set the background color to red
-                            //       ),
-                            //       child: const Text(
-                            //         '通報119',
-                            //         style: TextStyle(color: Colors.white),
-                            //       ),
-                            //     )
-                            //   ],
-                            // ),
-                            // Add any other widgets or UI elements as needed
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ListTile(
+                                title: Text(
+                                  itemData.events,
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 20),
+                                ),
+                                subtitle: Text(
+                                  '位置: ${itemData.locations}\n'
+                                  '時間: ${itemData.updatetime}\n'
+                                  '事件id: ${itemData.id}\n'
+                                  '事件等級: ${itemData.levels}\n'
+                                  '氣體數值: ${itemData.airQuality}\n'
+                                  '溫度: ${itemData.temperature}',
+                                  textAlign: TextAlign.left,
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    ElevatedButton(
+                                      onPressed: () {},
+                                      child: const Text('查看詳情'),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                           ),
                         );
                       },
