@@ -6,8 +6,9 @@ import 'package:flutt/sensor_data.dart';
 import 'dart:convert';
 
 class DetailPage extends StatefulWidget {
-  const DetailPage({super.key});
-
+  final SensorData sensorData_detail;
+  const DetailPage({Key? key, required this.sensorData_detail})
+      : super(key: key);
   @override
   State<DetailPage> createState() => _DetailPage();
 }
@@ -15,11 +16,11 @@ class DetailPage extends StatefulWidget {
 class _DetailPage extends State<DetailPage> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
-
+  late SensorData _sensorData = SensorData.defaults();
   @override
   void initState() {
     super.initState();
-
+    _sensorData.modify(widget.sensorData_detail);
     _controller = VideoPlayerController.network(
       'https://yzulab1.waziwazi.top/stream',
     );
@@ -44,25 +45,25 @@ class _DetailPage extends State<DetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    SensorData sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 90, 155, 213),
-        title: const Text('詳細資訊', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        title: const Text('詳細資訊',
+            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         centerTitle: true,
       ),
       body: Row(
         children: [
-          // Card(
-          //   child: Container(
-          //     width: 200,
-          //     height: 200,
-          //     child: Text(
-          //       '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${sensorData.locations}\n感測器 id: ${sensorData.id}',
-          //       style: const TextStyle(fontSize: 16),
-          //     ),
-          //   ),
-          // ),
+          Card(
+            child: Container(
+              width: 200,
+              height: 200,
+              child: Text(
+                '溫度參數: ${_sensorData.temperature}\n煙霧參數${_sensorData.airQuality}\n地點:${_sensorData.locations}\n感測器 id: ${_sensorData.id}',
+                style: const TextStyle(fontSize: 16),
+              ),
+            ),
+          ),
           FutureBuilder(
             future: _initializeVideoPlayerFuture,
             builder: (context, snapshot) {
@@ -72,7 +73,8 @@ class _DetailPage extends State<DetailPage> {
                     AspectRatio(
                       aspectRatio: 4 / 3, //改變影片展示大小
                       child: LayoutBuilder(
-                        builder: (BuildContext context, BoxConstraints constraints) {
+                        builder:
+                            (BuildContext context, BoxConstraints constraints) {
                           double videoWidth = constraints.maxWidth;
                           double videoHeight = videoWidth * (3 / 4);
                           return SizedBox(

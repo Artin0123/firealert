@@ -298,7 +298,7 @@ class _PageEvent extends State<PageEvent> {
     // var _streamController =
     //     Provider.of<WebSocketService>(context, listen: false);
     // var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
-
+    SensorData sensorData = SensorData.defaults();
     return Scaffold(
       // Center is a layout widget. It takes a single child and positions it
       // in the middle of the parent.
@@ -322,7 +322,7 @@ class _PageEvent extends State<PageEvent> {
                 event_id = data['event_id'].toString();
                 big_location = data['group_name'];
                 String iot_id = data['iot_id'].toString();
-                SensorData sensorData = SensorData(
+                sensorData = SensorData(
                     airqualitys,
                     temperatures,
                     event_id,
@@ -416,8 +416,9 @@ class _PageEvent extends State<PageEvent> {
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailPage()),
+                                              builder: (context) => DetailPage(
+                                                  sensorData_detail:
+                                                      sensorData)),
                                         );
                                       },
                                       child: const Text('查看詳情'),
@@ -508,7 +509,8 @@ class _PageEvent extends State<PageEvent> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => DetailPage()),
+                                        builder: (context) => DetailPage(
+                                            sensorData_detail: itemData)),
                                   );
                                 },
                                 child: const Text('查看詳情'),

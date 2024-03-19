@@ -10,6 +10,17 @@ class SensorData {
   String isAlert = ''; //是否有警報
   SensorData(this.airQuality, this.temperature, this.id, this.iot_id,
       this.locations, this.events, this.isAlert, this.levels, this.updatetime);
+  SensorData.defaults()
+      : airQuality = '',
+        temperature = '',
+        id = '',
+        iot_id = '',
+        locations = '',
+        updatetime = '',
+        events = '',
+        levels = '',
+        isAlert = '';
+
   void modify(SensorData buffer) {
     airQuality = buffer.airQuality;
     temperature = buffer.temperature;
