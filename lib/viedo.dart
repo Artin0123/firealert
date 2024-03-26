@@ -22,7 +22,7 @@ class _DetailPage extends State<DetailPage> {
     super.initState();
     _sensorData.modify(widget.sensorData_detail);
     _controller = VideoPlayerController.network(
-      'https://yzulab1.waziwazi.top/stream',
+      'https://yzulab1.waziwazi.top/stream?token=123456',
     );
 
     try {
