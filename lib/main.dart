@@ -46,14 +46,14 @@ void main() async {
     android: initializationSettingsAndroid,
   );
   await notifications.initialize(initializationSettings);
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
-      autoStart: true,
-      isForegroundMode: true,
-    ),
-    iosConfiguration: IosConfiguration(),
-  );
+  // await service.configure(
+  //   androidConfiguration: AndroidConfiguration(
+  //     onStart: onStart,
+  //     autoStart: true,
+  //     isForegroundMode: true,
+  //   ),
+  //   iosConfiguration: IosConfiguration(),
+  // );
 
   runApp(
     MultiProvider(
@@ -384,6 +384,7 @@ class _PageEvent extends State<PageEvent> {
                 if (spi == 0) {
                   sensordata.add(sensorData);
                 }
+                sensordata.sort(SensorData.compareByLevel);
               }
             }
             return SingleChildScrollView(

@@ -31,6 +31,13 @@ class SensorData {
     levels = buffer.levels;
     isAlert = buffer.levels;
   }
+
+  static int compareByLevel(SensorData a, SensorData b) {
+    //兩個sensorData比大小
+    int levelA = int.tryParse(a.levels) ?? 0;
+    int levelB = int.tryParse(b.levels) ?? 0;
+    return levelB.compareTo(levelA);
+  }
 }
 
 class SensorData_list {
