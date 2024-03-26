@@ -21,7 +21,7 @@ class _VideoPageState extends State<DetailPage> {
     super.initState();
 
     _controller = VideoPlayerController.network(
-      'https://yzulab1.waziwazi.top/stream',
+      'https://yzulab1.waziwazi.top/stream?token=123456',
     );
 
     _initializeVideoPlayerFuture = _controller.initialize();
