@@ -39,8 +39,7 @@ void onStart(ServiceInstance service) async {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // 初始化本地通知
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -90,14 +89,12 @@ class MyApp extends StatelessWidget {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController =
-      StreamController<bool>();
+  final StreamController<bool> _updateNotificationController = StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream =>
-      _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -127,8 +124,10 @@ class _MyHomePageState extends State<MyHomePage> {
   // 定义底部导航栏中的每个页面
   final List<Widget> pages = [
     const PageEvent(),
+    const PageHistory(),
     const PageWarn(),
     const PageUtil(),
+    const PageSetting(),
   ];
   // FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
   //     FlutterLocalNotificationsPlugin();
@@ -147,42 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
   int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.blue[300],
-          title: Text('火災事件列表',
-              style: TextStyle(
-                  color: Colors.grey[200], fontWeight: FontWeight.bold)),
-          centerTitle: true,
-          leading: IconButton(
-            icon: const Icon(Icons.history),
-            iconSize: 35,
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const PageHistory()),
-              );
-            },
-          ),
-          actions: [
-            IconButton(
-                icon: const Icon(Icons.settings),
-                iconSize: 35,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const PageSetting()),
-                  );
-                }),
-          ],
-        ),
         body: pages[currentIndex],
         bottomNavigationBar: ConvexAppBar(
           // selectedItemColor: Color.fromARGB(255, 51, 66, 80),
@@ -191,9 +155,10 @@ class _MyHomePageState extends State<MyHomePage> {
           // currentIndex: currentIndex,
           style: TabStyle.react,
           // cornerRadius: 20,
-          backgroundColor: Colors.blue[300],
-          color: Colors.grey[200],
-          activeColor: Colors.blue[900],
+          backgroundColor: Colors.lightBlue[300],
+          elevation: 3,
+          color: Colors.grey[100],
+          activeColor: Colors.blue[700],
           onTap: (int index) {
             setState(() {
               currentIndex = index;
@@ -205,12 +170,20 @@ class _MyHomePageState extends State<MyHomePage> {
               title: '事件',
             ),
             TabItem(
+              icon: Icons.history,
+              title: '歷史',
+            ),
+            TabItem(
               icon: Icons.warning,
               title: '通報',
             ),
             TabItem(
               icon: Icons.smart_toy,
               title: '設備',
+            ),
+            TabItem(
+              icon: Icons.settings,
+              title: '設定',
             ),
           ],
         ));
@@ -292,8 +265,7 @@ class _PageEvent extends State<PageEvent> {
   void initState() {
     super.initState();
     try {
-      _streamControllerJson =
-          Provider.of<WebSocketService>(context, listen: false);
+      _streamControllerJson = Provider.of<WebSocketService>(context, listen: false);
     } catch (e) {
       print('Error initializing WebSocketService: $e');
     }
@@ -325,8 +297,7 @@ class _PageEvent extends State<PageEvent> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint(
-            'Unexpected content type: ${response.headers['content-type']}');
+        debugPrint('Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -341,6 +312,18 @@ class _PageEvent extends State<PageEvent> {
     // var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
     SensorData sensorData = SensorData.defaults();
     return Scaffold(
+      backgroundColor: Colors.grey[50],
+      appBar: AppBar(
+          backgroundColor: Colors.lightBlue[300],
+          title: Text('火災事件列表', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: Container(
+              color: Colors.lightBlue,
+              height: 3.0,
+            ),
+          )),
       // Center is a layout widget. It takes a single child and positions it
       // in the middle of the parent.
       body: StreamBuilder<Map<String, dynamic>>(
@@ -363,16 +346,7 @@ class _PageEvent extends State<PageEvent> {
                 event_id = data['event_id'].toString();
                 big_location = data['group_name'];
                 String iot_id = data['iot_id'].toString();
-                sensorData = SensorData(
-                    airqualitys,
-                    temperatures,
-                    event_id,
-                    iot_id,
-                    big_location + ' ' + locations,
-                    events,
-                    isAlert,
-                    levels,
-                    timestamps);
+                sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
                 int spi = 0;
                 for (var i = 0; i < sensordata.length; i++) {
                   if (sensordata[i].iot_id == iot_id) {
@@ -398,8 +372,7 @@ class _PageEvent extends State<PageEvent> {
                         color: Colors.white, // 设置白色背景
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                          side: BorderSide(
-                              color: Colors.black, width: 2.0), // 设置黑色边框
+                          side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
                         ),
                         child: Center(
                           child: Text(
@@ -410,8 +383,7 @@ class _PageEvent extends State<PageEvent> {
                       ),
                     )
                   : ListView.builder(
-                      shrinkWrap:
-                          true, // Ensures that the ListView.builder takes up only the necessary space
+                      shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
                       itemCount: sensordata.length,
                       itemBuilder: (context, index) {
                         SensorData itemData = sensordata[index];
@@ -434,9 +406,7 @@ class _PageEvent extends State<PageEvent> {
                               ListTile(
                                 title: Text(
                                   itemData.events,
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 20),
+                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                 ),
                                 subtitle: Text(
                                   '位置: ${itemData.locations}\n'
@@ -457,10 +427,7 @@ class _PageEvent extends State<PageEvent> {
                                       onPressed: () {
                                         Navigator.push(
                                           context,
-                                          MaterialPageRoute(
-                                              builder: (context) => DetailPage(
-                                                  sensorData_detail:
-                                                      sensorData)),
+                                          MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: sensorData)),
                                         );
                                       },
                                       child: const Text('查看詳情'),
@@ -504,8 +471,7 @@ class _PageEvent extends State<PageEvent> {
               );
             } else {
               return ListView.builder(
-                shrinkWrap:
-                    true, // Ensures that the ListView.builder takes up only the necessary space
+                shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
                 itemCount: sensordata.length,
                 itemBuilder: (context, index) {
                   SensorData itemData = sensordata[index];
@@ -528,8 +494,7 @@ class _PageEvent extends State<PageEvent> {
                         ListTile(
                           title: Text(
                             itemData.events,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold, fontSize: 20),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                           ),
                           subtitle: Text(
                             '位置: ${itemData.locations}\n'
@@ -550,9 +515,7 @@ class _PageEvent extends State<PageEvent> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) => DetailPage(
-                                            sensorData_detail: itemData)),
+                                    MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
                                   );
                                 },
                                 child: const Text('查看詳情'),
@@ -607,12 +570,8 @@ class _PageUtil extends State<PageUtil> {
     setState(() {
       items = sensordata
           .where((sensordata) =>
-              sensordata.airQuality
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
-              sensordata.temperature
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
+              sensordata.airQuality.toLowerCase().contains(query.toLowerCase()) ||
+              sensordata.temperature.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.id.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.iot_id.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -624,26 +583,12 @@ class _PageUtil extends State<PageUtil> {
     for (var i = 0; i < sensordata.length; i++) {
       var item = sensordata[i];
       // 将 SensorData 对象的属性添加到 buffer 中
-      buffer[item.iot_id] = SensorData(
-          item.airQuality,
-          item.temperature,
-          item.id,
-          item.iot_id,
-          item.locations,
-          item.events,
-          'yes',
-          levels,
-          item.updatetime);
+      buffer[item.iot_id] = SensorData(item.airQuality, item.temperature, item.id, item.iot_id, item.locations, item.events, 'yes', levels, item.updatetime);
     }
 
     Color num1;
     Color num2 = Color.fromARGB(248, 237, 127, 167);
-    List<Color> cardColors = [
-      Color.fromARGB(255, 253, 208, 223),
-      Color.fromARGB(248, 237, 127, 167),
-      Colors.white,
-      Color.fromARGB(255, 90, 155, 213)
-    ];
+    List<Color> cardColors = [Color.fromARGB(255, 253, 208, 223), Color.fromARGB(248, 237, 127, 167), Colors.white, Color.fromARGB(255, 90, 155, 213)];
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -881,11 +826,16 @@ class _PageSetting extends State<PageSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.blue[300],
-          title: const Text('詳細資訊',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          backgroundColor: Colors.lightBlue[300],
+          title: Text('設定', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: Container(
+              color: Colors.lightBlue,
+              height: 3.0,
+            ),
+          ),
         ),
         body: Column(
           children: [
@@ -912,8 +862,7 @@ class _PageSetting extends State<PageSetting> {
               },
               // This sets text color and icon color to red when list tile is disabled and
               // green when list tile is selected, otherwise sets it to black.
-              iconColor:
-                  MaterialStateColor.resolveWith((Set<MaterialState> states) {
+              iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
                 if (states.contains(MaterialState.selected)) {
                   return Colors.green;
                 }
@@ -945,11 +894,9 @@ class _PageSetting extends State<PageSetting> {
                     return Switch(
                       value: Provider.of<AppDataProvider>(context)._selection,
                       onChanged: (bool value) {
-                        Provider.of<AppDataProvider>(context, listen: false)
-                            .setNotification(value);
+                        Provider.of<AppDataProvider>(context, listen: false).setNotification(value);
                         print('Noti: $value');
-                        print(
-                            'Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
+                        print('Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
 
                         // service.showNotification(
                         //     id: 0, title: 'Notification Title', body: 'Some body');
@@ -973,11 +920,16 @@ class _PageHistory extends State<PageHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.blue[300],
-        title: const Text('詳細資訊',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        centerTitle: true,
-      ),
+          backgroundColor: Colors.lightBlue[300],
+          title: Text('歷史紀錄', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: Container(
+              color: Colors.lightBlue,
+              height: 3.0,
+            ),
+          )),
       body: Center(
         child: Text(locations),
       ),
@@ -999,8 +951,7 @@ class NextPage extends StatelessWidget {
           child: Column(
             children: <Widget>[
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.person),
@@ -1010,8 +961,7 @@ class NextPage extends StatelessWidget {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.lock),
@@ -1029,9 +979,7 @@ class NextPage extends StatelessWidget {
                 height: 70.0,
                 child: ElevatedButton(
                   style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color.fromARGB(255, 164, 199,
-                            228)), // Change to your desired color
+                    backgroundColor: MaterialStateProperty.all<Color>(const Color.fromARGB(255, 164, 199, 228)), // Change to your desired color
                   ),
                   child: const Text("登入", style: TextStyle(fontSize: 20)),
                   onPressed: () {},
@@ -1068,6 +1016,17 @@ class _PageWarn extends State<PageWarn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Colors.lightBlue[300],
+          title: Text('緊急通報', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: Container(
+              color: Colors.lightBlue,
+              height: 3.0,
+            ),
+          )),
       body: Center(
         child: ElevatedButton(
           onPressed: () {
