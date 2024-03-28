@@ -22,7 +22,8 @@ class WebSocketService with ChangeNotifier {
 
   void _connectToWebSocket() {
     try {
-      _channel = IOWebSocketChannel.connect('ws://firealert.waziwazi.top:8880?token=1234');
+      _channel = IOWebSocketChannel.connect(
+          'ws://firealert.waziwazi.top:8880?token=1234');
       _channel.stream.listen(
         (message) {
           var data = json.decode(message.toString());
