@@ -11,7 +11,7 @@ import 'package:convex_bottom_bar/convex_bottom_bar.dart';
 import 'package:flutt/local_notification_service.dart';
 import 'package:flutt/websocket_service.dart';
 import 'package:flutt/sensor_data.dart';
-import 'package:flutt/viedo.dart';
+import 'package:flutt/video.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
@@ -311,6 +311,7 @@ class _PageEvent extends State<PageEvent> {
     //     Provider.of<WebSocketService>(context, listen: false);
     // var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
     SensorData sensorData = SensorData.defaults();
+    bool detailButtonPressed = false;
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
@@ -423,14 +424,23 @@ class _PageEvent extends State<PageEvent> {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    ElevatedButton(
-                                      onPressed: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: sensorData)),
-                                        );
-                                      },
-                                      child: const Text('查看詳情'),
+                                    Row(
+                                      children: [
+                                        ElevatedButton(
+                                          onPressed: () {
+                                            setState(() {
+                                              detailButtonPressed = true;
+                                            });
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                            );
+                                          },
+                                          child: const Text('查看詳情'),
+                                        ),
+                                        SizedBox(width: 10),
+                                        (!detailButtonPressed && datas.containsKey('details')) ? Text('有影片') : SizedBox.shrink(),
+                                      ],
                                     ),
                                   ],
                                 ),

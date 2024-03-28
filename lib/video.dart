@@ -6,7 +6,6 @@ import 'package:flutt/sensor_data.dart';
 class DetailPage extends StatefulWidget {
   final SensorData sensorData_detail;
   const DetailPage({Key? key, required this.sensorData_detail}) : super(key: key);
-
   @override
   State<DetailPage> createState() => _VideoPageState();
 }
