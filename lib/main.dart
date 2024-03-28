@@ -358,7 +358,7 @@ class _PageEvent extends State<PageEvent> {
                 if (spi == 0) {
                   sensordata.add(sensorData);
                 }
-                sensordata.sort(SensorData.compareByLevel);
+                // sensordata.sort(SensorData.compareByLevel);
               }
             }
             return SingleChildScrollView(
@@ -1027,13 +1027,16 @@ class _PageWarn extends State<PageWarn> {
               height: 3.0,
             ),
           )),
-      body: Center(
-        child: ElevatedButton(
+      body: Container(
+        width: double.infinity,
+        height: 100,
+        child: TextButton(
           onPressed: () {
             launchPhone('119');
           },
           child: const Text(
             '通報119',
+            style: TextStyle(fontSize: 20),
           ),
         ),
       ),
