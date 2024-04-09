@@ -24,6 +24,7 @@ class SensorData {
   void modify(SensorData buffer) {
     airQuality = buffer.airQuality;
     temperature = buffer.temperature;
+    id = buffer.id;
     iot_id = buffer.iot_id;
     locations = buffer.locations;
     updatetime = buffer.updatetime;
