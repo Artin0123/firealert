@@ -38,6 +38,7 @@ void onStart(ServiceInstance service) async {
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   // 初始化本地通知
   const AndroidInitializationSettings initializationSettingsAndroid =
       AndroidInitializationSettings('@mipmap/ic_launcher');
@@ -220,6 +221,7 @@ String iot_id = '';
 String big_location = '';
 List<SensorData> sensordata = [];
 List<SensorData> record = [];
+late final WebSocketService _streamControllerJson;
 // Future<Map<String, dynamic>> fetchData() async {
 //   final url = Uri.http('140.138.150.29:38080', 'service/alertAPI/'); // 將你的網址替換成實際的 URL http://140.138.150.29:38080/service/alertAPI/
 //   try {
@@ -263,7 +265,6 @@ List<SensorData> record = [];
 
 class _PageEvent extends State<PageEvent> {
   //final channel = IOWebSocketChannel.connect('ws://firealert.waziwazi.top:8880?token=1234');
-  late final WebSocketService _streamControllerJson;
 
   @override
   void initState() {
@@ -1030,6 +1031,8 @@ class NextPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    TextEditingController _usernameController = TextEditingController();
+    TextEditingController _passwordController = TextEditingController();
     return Scaffold(
       appBar: AppBar(
         title: const Text('登入'),
@@ -1042,6 +1045,7 @@ class NextPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
+                  controller: _usernameController,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.person),
                     labelText: "使用者名稱 ",
@@ -1053,6 +1057,7 @@ class NextPage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     horizontal: 24.0, vertical: 16.0),
                 child: TextFormField(
+                  controller: _passwordController,
                   decoration: const InputDecoration(
                     prefixIcon: Icon(Icons.lock),
                     suffixIcon: Icon(Icons.remove_red_eye),
@@ -1074,7 +1079,15 @@ class NextPage extends StatelessWidget {
                             228)), // Change to your desired color
                   ),
                   child: const Text("登入", style: TextStyle(fontSize: 20)),
-                  onPressed: () {},
+                  onPressed: () {
+                    String username = _usernameController.text;
+                    String password = _passwordController.text;
+                    Map<String, dynamic> person_data = {
+                      'username': username,
+                      'password': password,
+                    };
+                    // _streamControllerJson.sendData(person_data);
+                  },
                 ),
               ),
             ],
