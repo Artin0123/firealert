@@ -44,18 +44,4 @@ class WebSocketService with ChangeNotifier {
       print('WebSocket Connection Error: $e');
     }
   }
-
-  void sendData(Map<String, dynamic> jsonData) {
-    try {
-      if (_channel != null &&
-          _channel.sink != null &&
-          _channel.sink.done == false) {
-        _channel.sink.add(jsonEncode(jsonData));
-      } else {
-        print('WebSocket channel is closed');
-      }
-    } catch (e) {
-      print('Error sending data: $e');
-    }
-  }
 }

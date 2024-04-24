@@ -312,6 +312,22 @@ class _PageEvent extends State<PageEvent> {
     }
   }
 
+  ButtonStyle _buttonStyle(Color buttonColor) {
+    return ButtonStyle(
+      backgroundColor: MaterialStateProperty.all<Color>(buttonColor),
+    );
+  }
+
+  Color _buttonColor = Colors.red;
+  int button_signal = 0;
+  void _toggleButtonColor() {
+    setState(() {
+      _buttonColor = button_signal == 0 ? Colors.blue : Colors.red;
+      // Update text color to contrast with button color
+      //_textColor = _buttonColor == Colors.blue ? Colors.white : Colors.black;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     // var _streamController =
@@ -369,6 +385,7 @@ class _PageEvent extends State<PageEvent> {
                     levels,
                     timestamps);
                 int spi = 0;
+
                 for (var i = 0; i < sensordata.length; i++) {
                   if (sensordata[i].iot_id == iot_id) {
                     sensordata[i].modify(sensorData);
@@ -380,6 +397,8 @@ class _PageEvent extends State<PageEvent> {
                   sensordata.add(sensorData);
                 }
                 record.add(sensorData);
+                button_signal = 1;
+                print(button_signal);
                 // sensordata.sort(SensorData.compareByLevel);
               }
             }
@@ -453,19 +472,37 @@ class _PageEvent extends State<PageEvent> {
                                       children: [
                                         ElevatedButton(
                                           onPressed: () {
+                                            button_signal = 0;
                                             setState(() {
                                               detailButtonPressed = true;
+                                              //_buttonColor = Colors.blue;
+                                              _toggleButtonColor();
+                                              print(button_signal);
+                                              print(
+                                                  'Button color: $_buttonColor');
                                             });
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailPage(
-                                                          sensorData_detail:
-                                                              itemData)),
+                                                builder: (context) =>
+                                                    DetailPage(
+                                                        sensorData_detail:
+                                                            itemData),
+                                              ),
                                             );
                                           },
-                                          child: const Text('查看詳情'),
+                                          style: _buttonStyle(_buttonColor),
+                                          child: _buttonColor == Colors.red
+                                              ? Text(
+                                                  '有影片',
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                )
+                                              : Text(
+                                                  '查看詳情',
+                                                  style: TextStyle(
+                                                      color: Colors.black),
+                                                ),
                                         ),
                                         SizedBox(width: 10),
                                         (!detailButtonPressed &&
@@ -1027,71 +1064,90 @@ class _PageHistory extends State<PageHistory> {
 }
 
 class NextPage extends StatelessWidget {
-  const NextPage({super.key});
+  const NextPage({Key? key}) : super(key: key);
+
+  Future<void> _sendDataToServer(String username, String password) async {
+    final response = await http.post(
+      Uri.parse('http://192.168.0.13:3000/login'),
+      headers: <String, String>{
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+      body: jsonEncode(<String, String>{
+        'username': username,
+        'password': password,
+      }),
+    );
+
+    // Check response
+    if (response.statusCode == 200) {
+      // Request successful
+      print('Successful send!!!');
+      Map<String, dynamic> responseData = jsonDecode(response.body);
+      // Access data from response
+      print('Response data: $responseData');
+    } else {
+      // Request failed
+      print(response.statusCode);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     TextEditingController _usernameController = TextEditingController();
     TextEditingController _passwordController = TextEditingController();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('登入'),
       ),
-      body: Expanded(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
-                child: TextFormField(
-                  controller: _usernameController,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.person),
-                    labelText: "使用者名稱 ",
-                    //hintText: "使用者名稱",
-                  ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.person),
+                  labelText: "使用者名稱 ",
                 ),
               ),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 24.0, vertical: 16.0),
-                child: TextFormField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(
-                    prefixIcon: Icon(Icons.lock),
-                    suffixIcon: Icon(Icons.remove_red_eye),
-                    labelText: "密碼 ",
-                    //hintText: "最好6個字",
-                  ),
+            ),
+            Container(
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              child: TextFormField(
+                controller: _passwordController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.lock),
+                  suffixIcon: Icon(Icons.remove_red_eye),
+                  labelText: "密碼 ",
                 ),
               ),
-              const SizedBox(
-                height: 52.0,
-              ),
-              SizedBox(
-                width: double.infinity, // Use full available width
-                height: 70.0,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    backgroundColor: MaterialStateProperty.all<Color>(
-                        const Color.fromARGB(255, 164, 199,
-                            228)), // Change to your desired color
+            ),
+            const SizedBox(height: 52.0),
+            SizedBox(
+              width: double.infinity,
+              height: 70.0,
+              child: ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStateProperty.all<Color>(
+                    const Color.fromARGB(255, 164, 199, 228),
                   ),
-                  child: const Text("登入", style: TextStyle(fontSize: 20)),
-                  onPressed: () {
-                    String username = _usernameController.text;
-                    String password = _passwordController.text;
-                    Map<String, dynamic> person_data = {
-                      'username': username,
-                      'password': password,
-                    };
-                    // _streamControllerJson.sendData(person_data);
-                  },
                 ),
+                child: const Text(
+                  "登入",
+                  style: TextStyle(fontSize: 20),
+                ),
+                onPressed: () {
+                  String username = _usernameController.text;
+                  String password = _passwordController.text;
+                  _sendDataToServer(username, password);
+                },
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
