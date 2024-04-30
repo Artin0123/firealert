@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 class SensorData {
   String airQuality = '';
   String temperature = '';
@@ -8,6 +10,7 @@ class SensorData {
   String events = ''; //事件種類
   String levels = ''; //事件等級
   String isAlert = ''; //是否有警報
+  Color button_color = Colors.red;
   SensorData(this.airQuality, this.temperature, this.id, this.iot_id,
       this.locations, this.events, this.isAlert, this.levels, this.updatetime);
   SensorData.defaults()
@@ -31,6 +34,18 @@ class SensorData {
     events = buffer.events;
     levels = buffer.levels;
     isAlert = buffer.levels;
+  }
+
+  void fixcolorRed() {
+    button_color = Colors.red;
+  }
+
+  void fixcolorblue() {
+    button_color = Colors.blue;
+  }
+
+  Color buttoncolor() {
+    return button_color;
   }
 
   static int compareByLevel(SensorData a, SensorData b) {

@@ -385,7 +385,7 @@ class _PageEvent extends State<PageEvent> {
                     levels,
                     timestamps);
                 int spi = 0;
-
+                sensorData.fixcolorRed();
                 for (var i = 0; i < sensordata.length; i++) {
                   if (sensordata[i].iot_id == iot_id) {
                     sensordata[i].modify(sensorData);
@@ -397,8 +397,8 @@ class _PageEvent extends State<PageEvent> {
                   sensordata.add(sensorData);
                 }
                 record.add(sensorData);
-                button_signal = 1;
-                print(button_signal);
+                // button_signal = 1;
+                // print(button_signal);
                 // sensordata.sort(SensorData.compareByLevel);
               }
             }
@@ -472,15 +472,14 @@ class _PageEvent extends State<PageEvent> {
                                       children: [
                                         ElevatedButton(
                                           onPressed: () {
-                                            button_signal = 0;
-                                            setState(() {
-                                              detailButtonPressed = true;
-                                              //_buttonColor = Colors.blue;
-                                              _toggleButtonColor();
-                                              print(button_signal);
-                                              print(
-                                                  'Button color: $_buttonColor');
-                                            });
+                                            // button_signal = 0;
+                                            // setState(() {
+                                            //   detailButtonPressed = true;
+                                            //   //_buttonColor = Colors.blue;
+                                            //  // _toggleButtonColor();
+
+                                            // });
+                                            itemData.fixcolorblue();
                                             Navigator.push(
                                               context,
                                               MaterialPageRoute(
@@ -491,10 +490,15 @@ class _PageEvent extends State<PageEvent> {
                                               ),
                                             );
                                           },
-                                          style: _buttonStyle(_buttonColor),
+                                          style: ButtonStyle(
+                                            backgroundColor:
+                                                MaterialStateProperty.all<
+                                                        Color>(
+                                                    itemData.buttoncolor()),
+                                          ),
                                           child: _buttonColor == Colors.red
                                               ? Text(
-                                                  '有影片',
+                                                  '新影片',
                                                   style: TextStyle(
                                                       color: Colors.black),
                                                 )
