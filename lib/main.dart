@@ -1108,14 +1108,20 @@ class _PageHistory extends State<PageHistory> {
 }
 
 //登入頁面
-class NextPage extends StatelessWidget {
+class NextPage extends StatefulWidget {
   const NextPage({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    TextEditingController _usernameController = TextEditingController();
-    TextEditingController _passwordController = TextEditingController();
+  _NextPageState createState() => _NextPageState();
+}
 
+class _NextPageState extends State<NextPage> {
+  TextEditingController _usernameController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('登入'),
@@ -1139,10 +1145,21 @@ class NextPage extends StatelessWidget {
                   const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText: true,
-                decoration: const InputDecoration(
+                obscureText:
+                    !_obscureText, // Fix: Use !_obscureText to invert the value
+                decoration: InputDecoration(
+                  // No need for const here
                   prefixIcon: Icon(Icons.lock),
-                  suffixIcon: Icon(Icons.remove_red_eye),
+                  suffixIcon: IconButton(
+                    icon: Icon(
+                      _obscureText ? Icons.visibility : Icons.visibility_off,
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        _obscureText = !_obscureText;
+                      });
+                    },
+                  ),
                   labelText: "密碼 ",
                 ),
               ),
@@ -1162,14 +1179,12 @@ class NextPage extends StatelessWidget {
                   style: TextStyle(fontSize: 20),
                 ),
                 onPressed: () {
-                  username = _usernameController.text;
-                  password = _passwordController.text;
+                  String username = _usernameController.text;
+                  String password = _passwordController.text;
                   _sendDataToServer(username, password).then((responseCode) {
                     if (responseCode == 200) {
-                      //成功回到原始介面
                       Navigator.pop(context);
                     } else if (responseCode == 401) {
-                      //登入驗證失敗
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text('登入失敗，請檢查用戶名與密碼'),
