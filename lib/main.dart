@@ -686,14 +686,6 @@ class _PageUtil extends State<PageUtil> {
           item.updatetime);
     }
 
-    Color num1;
-    Color num2 = Color.fromARGB(248, 237, 127, 167);
-    List<Color> cardColors = [
-      Color.fromARGB(255, 253, 208, 223),
-      Color.fromARGB(248, 237, 127, 167),
-      Colors.white,
-      Color.fromARGB(255, 90, 155, 213)
-    ];
     return Scaffold(
       appBar: AppBar(
         title: TextField(
@@ -716,34 +708,25 @@ class _PageUtil extends State<PageUtil> {
           ? Center(
               child: Text('無資料'),
             )
-          : ListView.builder(
+          : ListView.separated(
               itemCount: buffer.length,
+              separatorBuilder: (context, index) {
+                return Divider(); //這裡是每個item之間的分隔線
+              },
               itemBuilder: (context, index) {
                 String key = buffer.keys.elementAt(index);
                 SensorData sensorData = buffer[key];
                 String sensorTitle = '';
+
                 if (sensorData.levels == '-1') {
                   //之後再改
                   sensorTitle = '設備異常';
-                  num1 = cardColors[0];
-                  num2 = cardColors[1];
                 } else {
                   sensorTitle = '正常';
-                  num1 = cardColors[2];
-                  num2 = cardColors[3];
                 }
 
-                return Card(
-                  elevation: 6,
+                return Container(
                   margin: const EdgeInsets.all(16),
-                  color: num1,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                    side: BorderSide(
-                      color: num2,
-                      width: 2.0,
-                    ),
-                  ),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -758,7 +741,7 @@ class _PageUtil extends State<PageUtil> {
                         ),
                         const SizedBox(height: 8),
                         Text(
-                          '溫度參數: ${sensorData.temperature}\n煙霧參數${sensorData.airQuality}\n地點:${locations}\n感測器 id: ${sensorData.id}',
+                          '溫度參數: ${sensorData.temperature}\n煙霧參數: ${sensorData.airQuality}\n地點 :${locations}\n感測器 id: ${sensorData.id}',
                           style: const TextStyle(fontSize: 16),
                         ),
                       ],
@@ -1021,6 +1004,7 @@ class _PageSetting extends State<PageSetting> {
   }
 }
 
+//歷史介面
 class PageHistory extends StatefulWidget {
   const PageHistory({Key? key}) : super(key: key);
 
@@ -1057,7 +1041,7 @@ class _PageHistory extends State<PageHistory> {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(
-              '${record[index].events}n地點: ${record[index].locations}',
+              '${record[index].events}\n地點: ${record[index].locations}',
               style: const TextStyle(fontSize: 16),
             ),
             subtitle: Text(
