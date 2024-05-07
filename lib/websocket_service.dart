@@ -23,7 +23,9 @@ class WebSocketService with ChangeNotifier {
   void _connectToWebSocket() {
     try {
       _channel = IOWebSocketChannel.connect(
-          'ws://firealert.waziwazi.top:8880?token=1234');
+          'ws://firealert.waziwazi.top:8880?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huIiwiaWF0IjoxNzE1MDc2MDAxLCJleHAiOjE3MzA2MjgwMDF9.5sV4-QHxKTsg6MgoJ6CXaMuk_LacQaptPXSolqMnZL4&uid=10011');
+      // _channel = IOWebSocketChannel.connect(
+      //     'ws://firealert.waziwazi.top:8880?token=1234');
       _channel.stream.listen(
         (message) {
           var data = json.decode(message.toString());

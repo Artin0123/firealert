@@ -36,6 +36,9 @@ void onStart(ServiceInstance service) async {
   });
 }
 
+String username = ""; //使用者名稱與密碼
+String password = "";
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -56,6 +59,8 @@ void main() async {
   //   iosConfiguration: IosConfiguration(),
   // );
 
+  //使用者定期驗證
+
   runApp(
     MultiProvider(
       providers: [
@@ -67,6 +72,25 @@ void main() async {
       child: const MyApp(),
     ),
   );
+  startTimer();
+}
+
+void startTimer() {
+  int timestamp = 1714472686;
+  DateTime then =
+      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
+          .toUtc();
+  DateTime now = DateTime.now().toUtc();
+  Duration delay = then.difference(now);
+  Timer.periodic(delay, (timer) {
+    // 在时间到达 1714472686 UTC+8 时执行的代码写在这里
+    if (username != "" && password != "") {
+      print(username + " " + password);
+      _sendDataToServer(password, username);
+    } else {
+      print("No username and password!!!");
+    }
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -1055,33 +1079,9 @@ class _PageHistory extends State<PageHistory> {
   }
 }
 
+//登入頁面
 class NextPage extends StatelessWidget {
   const NextPage({Key? key}) : super(key: key);
-
-  Future<void> _sendDataToServer(String username, String password) async {
-    final response = await http.post(
-      Uri.parse('http://192.168.0.13:3000/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': username,
-        'password': password,
-      }),
-    );
-
-    // Check response
-    if (response.statusCode == 200) {
-      // Request successful
-      print('Successful send!!!');
-      Map<String, dynamic> responseData = jsonDecode(response.body);
-      // Access data from response
-      print('Response data: $responseData');
-    } else {
-      // Request failed
-      print(response.statusCode);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1134,8 +1134,8 @@ class NextPage extends StatelessWidget {
                   style: TextStyle(fontSize: 20),
                 ),
                 onPressed: () {
-                  String username = _usernameController.text;
-                  String password = _passwordController.text;
+                  username = _usernameController.text;
+                  password = _passwordController.text;
                   _sendDataToServer(username, password);
                 },
               ),
@@ -1144,6 +1144,32 @@ class NextPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+//獲取使用者驗證資訊
+Future<void> _sendDataToServer(String username, String password) async {
+  final response = await http.post(
+    Uri.parse('http://192.168.0.13:3000/login'),
+    headers: <String, String>{
+      'Content-Type': 'application/json; charset=UTF-8',
+    },
+    body: jsonEncode(<String, String>{
+      'username': username,
+      'password': password,
+    }),
+  );
+
+  // Check response
+  if (response.statusCode == 200) {
+    // Request successful
+    print('Successful send!!!');
+    Map<String, dynamic> responseData = jsonDecode(response.body);
+    // Access data from response
+    print('Response data: $responseData');
+  } else {
+    // Request failed
+    print(response.statusCode);
   }
 }
 
