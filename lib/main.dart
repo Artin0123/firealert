@@ -38,7 +38,7 @@ void onStart(ServiceInstance service) async {
 
 String username = ""; //使用者名稱與密碼
 String password = "";
-
+Map<String, dynamic> tokenbuffer = Map<String, dynamic>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -65,7 +65,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => WebSocketService(),
+          create: (context) => WebSocketService(tokenbuffer),
         ),
         // 添加更多的 providers，每个对应一个不同的 WebSocket 连接
       ],
@@ -82,7 +82,7 @@ void startTimer() {
           .toUtc();
   DateTime now = DateTime.now().toUtc();
   Duration delay = then.difference(now);
-  Timer.periodic(delay, (timer) {
+  Timer(delay, () {
     // 在时间到达 1714472686 UTC+8 时执行的代码写在这里
     if (username != "" && password != "") {
       print(username + " " + password);
@@ -919,6 +919,9 @@ class SearchBarDelegate extends SearchDelegate {
   }
 }
 
+bool _isLoggedIn = false;
+
+//設定頁面
 class PageSetting extends StatefulWidget {
   const PageSetting({super.key});
   @override
@@ -934,7 +937,6 @@ class _PageSetting extends State<PageSetting> {
   //   service.intialize();
   //   super.initState();
   // }
-
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
@@ -956,17 +958,20 @@ class _PageSetting extends State<PageSetting> {
         body: Column(
           children: [
             ListTile(
-                onTap: () {
-                  setState(() {
-                    // This is called when the user toggles the switch.
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const NextPage()),
-                    );
-                  });
-                },
-                leading: const Icon(Icons.person),
-                title: const Text('登入')),
+              onTap: () {
+                if (_isLoggedIn) {
+                  // 如果登入 就登出
+                  _handleLogout();
+                } else {
+                  // 未登入，就進入登入畫面
+                  _handleLogin();
+                }
+              },
+              leading: Icon(
+                  _isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
+              title: Text(_isLoggedIn ? username : '登入'), // 根据登录状态显示不同的文本
+              subtitle: Text(_isLoggedIn ? '登出' : ''),
+            ),
             ListTile(
               selected: _selected,
               onTap: () {
@@ -1025,6 +1030,29 @@ class _PageSetting extends State<PageSetting> {
                 )),
           ],
         ));
+  }
+
+  void _handleLogin() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => NextPage()),
+    ).then((_) {
+      // 登录成功后更新状态为已登录
+      setState(() {
+        _isLoggedIn = true;
+      });
+    });
+  }
+
+  void _handleLogout() {
+    // 登出逻辑...
+    // 登出成功后更新状态为未登录
+    setState(() {
+      _isLoggedIn = false;
+      username = "";
+      password = "";
+      tokenbuffer = Map<String, dynamic>();
+    });
   }
 }
 
@@ -1136,7 +1164,26 @@ class NextPage extends StatelessWidget {
                 onPressed: () {
                   username = _usernameController.text;
                   password = _passwordController.text;
-                  _sendDataToServer(username, password);
+                  _sendDataToServer(username, password).then((responseCode) {
+                    if (responseCode == 200) {
+                      //成功回到原始介面
+                      Navigator.pop(context);
+                    } else if (responseCode == 401) {
+                      //登入驗證失敗
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('登入失敗，請檢查用戶名與密碼'),
+                        ),
+                      );
+                    }
+                  }).catchError((error) {
+                    print('登入時發生錯誤：$error');
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('登入失敗，請稍後再試'),
+                      ),
+                    );
+                  });
                 },
               ),
             ),
@@ -1148,7 +1195,7 @@ class NextPage extends StatelessWidget {
 }
 
 //獲取使用者驗證資訊
-Future<void> _sendDataToServer(String username, String password) async {
+Future<int> _sendDataToServer(String username, String password) async {
   final response = await http.post(
     Uri.parse('http://192.168.0.13:3000/login'),
     headers: <String, String>{
@@ -1165,11 +1212,14 @@ Future<void> _sendDataToServer(String username, String password) async {
     // Request successful
     print('Successful send!!!');
     Map<String, dynamic> responseData = jsonDecode(response.body);
+    tokenbuffer = responseData;
     // Access data from response
     print('Response data: $responseData');
+    return response.statusCode;
   } else {
     // Request failed
     print(response.statusCode);
+    return response.statusCode;
   }
 }
 
