@@ -1022,7 +1022,8 @@ class _PageSetting extends State<PageSetting> {
 }
 
 class PageHistory extends StatefulWidget {
-  const PageHistory({super.key});
+  const PageHistory({Key? key}) : super(key: key);
+
   @override
   State<PageHistory> createState() => _PageHistory();
 }
@@ -1049,18 +1050,21 @@ class _PageHistory extends State<PageHistory> {
           ),
         ),
       ),
-      body: ListView.builder(
-        itemCount: record.length,
+      body: ListView.separated(
+        separatorBuilder: (context, index) => Divider(color: Colors.black),
+        itemCount:
+            record.length, // replace 'record' with your actual record array
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
-              title: Text(
-                '${record[index].events}\n地點: ${record[index].locations}',
-                style: const TextStyle(fontSize: 16),
-              ),
-              subtitle: Text(
-                '更新時間: ${record[index].updatetime}',
-                style: const TextStyle(fontSize: 14),
-              ));
+            title: Text(
+              '${record[index].events}n地點: ${record[index].locations}',
+              style: const TextStyle(fontSize: 16),
+            ),
+            subtitle: Text(
+              '更新時間: ${record[index].updatetime}',
+              style: const TextStyle(fontSize: 14),
+            ),
+          );
         },
       ),
     );
