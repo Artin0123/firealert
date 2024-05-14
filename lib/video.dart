@@ -15,19 +15,32 @@ class _VideoPageState extends State<DetailPage> {
   late VideoPlayerController _controller;
   late Future<void> _initializeVideoPlayerFuture;
   late SensorData _sensorData = SensorData.defaults();
-
+  late Timer _timer;
   @override
   void initState() {
     super.initState();
     _sensorData.modify(widget.sensorData_detail);
-    _controller = VideoPlayerController.network(
+    _controller = VideoPlayerController.networkUrl(Uri.parse(
       'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101',
-    );
+    ));
 
     _initializeVideoPlayerFuture = _controller.initialize();
 
     _controller.setLooping(true);
+    _timer = Timer.periodic(Duration(seconds: 16), (Timer timer) async {
+      if (_controller.value.isPlaying) {
+        await _controller.pause();
+      }
+      _controller = VideoPlayerController.networkUrl(Uri.parse(
+        'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101',
+      ));
 
+      _initializeVideoPlayerFuture = _controller.initialize();
+      _controller.setLooping(true);
+      if (_controller.value.isPlaying) {
+        _controller.pause();
+      }
+    });
     // Add listener to update state and rebuild UI when playing
     _controller.addListener(() {
       setState(() {});
@@ -36,6 +49,7 @@ class _VideoPageState extends State<DetailPage> {
 
   @override
   void dispose() {
+    _timer.cancel();
     _controller.dispose();
     super.dispose();
   }

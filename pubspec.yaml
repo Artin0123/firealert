@@ -34,6 +34,9 @@ dependencies:
   convex_bottom_bar: ^3.2.0
   rxdart: ^0.27.4
   video_player: ^2.2.11
+  dio: ^4.0.4
+  permission_handler: ^7.2.0
+  path_provider: ^2.0.3
   flutter:
     sdk: flutter
 
