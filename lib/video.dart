@@ -5,7 +5,8 @@ import 'package:flutt/sensor_data.dart';
 
 class DetailPage extends StatefulWidget {
   final SensorData sensorData_detail;
-  const DetailPage({Key? key, required this.sensorData_detail}) : super(key: key);
+  const DetailPage({Key? key, required this.sensorData_detail})
+      : super(key: key);
   @override
   State<DetailPage> createState() => _VideoPageState();
 }
@@ -52,7 +53,9 @@ class _VideoPageState extends State<DetailPage> {
               child: Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2), // 添加邊框
+                  side: BorderSide(
+                      color: Colors.blueGrey[700] ?? Colors.blue,
+                      width: 2), // 添加邊框
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -60,7 +63,8 @@ class _VideoPageState extends State<DetailPage> {
                     padding: const EdgeInsets.only(top: 5), // 添加間距
                     child: Text(
                       _sensorData.events,
-                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 20),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -92,7 +96,8 @@ class _VideoPageState extends State<DetailPage> {
                       AspectRatio(
                         aspectRatio: 4 / 3, //改變影片展示大小
                         child: LayoutBuilder(
-                          builder: (BuildContext context, BoxConstraints constraints) {
+                          builder: (BuildContext context,
+                              BoxConstraints constraints) {
                             double videoWidth = constraints.maxWidth;
                             double videoHeight = videoWidth * (3 / 4);
                             return SizedBox(
