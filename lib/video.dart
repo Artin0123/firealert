@@ -24,10 +24,18 @@ class _VideoPageState extends State<DetailPage> {
       'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101',
     ));
 
-    _initializeVideoPlayerFuture = _controller.initialize();
+    _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+      // Ensure the first frame is shown after the video is initialized,
+      // even before the play button has been pressed.
+      Duration videoDuration = _controller.value.duration;
+      int videoLengthInSeconds = videoDuration.inSeconds;
+      print(videoLengthInSeconds);
+      print("hello");
+      setState(() {});
+    });
 
     _controller.setLooping(true);
-    _timer = Timer.periodic(Duration(seconds: 16), (Timer timer) async {
+    _timer = Timer.periodic(Duration(seconds: 14), (Timer timer) async {
       if (_controller.value.isPlaying) {
         await _controller.pause();
       }
@@ -35,11 +43,16 @@ class _VideoPageState extends State<DetailPage> {
         'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101',
       ));
 
-      _initializeVideoPlayerFuture = _controller.initialize();
+      _initializeVideoPlayerFuture = _controller.initialize().then((_) {
+        // Ensure the first frame is shown after the video is initialized,
+        // even before the play button has been pressed.
+        setState(() {});
+      });
       _controller.setLooping(true);
       if (_controller.value.isPlaying) {
         _controller.pause();
       }
+      _controller.setLooping(false);
     });
     // Add listener to update state and rebuild UI when playing
     _controller.addListener(() {
