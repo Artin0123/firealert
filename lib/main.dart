@@ -756,12 +756,27 @@ class _PageUtil extends State<PageUtil> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          sensorTitle,
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              sensorTitle,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                              ),
+                            ),
+                            IconButton(
+                              icon: Icon(Icons.settings),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => Sensordetail()),
+                                );
+                              },
+                            ),
+                          ],
                         ),
                         const SizedBox(height: 8),
                         Text(
@@ -774,6 +789,20 @@ class _PageUtil extends State<PageUtil> {
                 );
               },
             ),
+    );
+  }
+}
+
+class Sensordetail extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('參數設定'),
+      ),
+      body: Center(
+        child: Text('This is the Settings Page'),
+      ),
     );
   }
 }
