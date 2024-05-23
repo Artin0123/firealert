@@ -772,7 +772,7 @@ class _PageUtil extends State<PageUtil> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => Sensordetail()),
+                                      builder: (context) => PageArgs()),
                                 );
                               },
                             ),
@@ -793,17 +793,329 @@ class _PageUtil extends State<PageUtil> {
   }
 }
 
-class Sensordetail extends StatelessWidget {
+class PageArgs extends StatefulWidget {
+  const PageArgs({super.key});
+  @override
+  State<PageArgs> createState() => _PageArgs();
+}
+
+class _PageArgs extends State<PageArgs> {
+  String _selectedLabel = '1';
+  bool warning = true;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('參數設定'),
-      ),
-      body: Center(
-        child: Text('This is the Settings Page'),
-      ),
-    );
+        appBar: AppBar(
+          title: const Text('參數設定'), // 更改成影片頁面的標題
+        ),
+        body: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              Container(
+                margin: const EdgeInsets.all(10), // 添加間距
+                child: Card(
+                  color: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2), // 添加邊框
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: const ListTile(
+                    title: Padding(
+                      padding: EdgeInsets.only(top: 5), // 添加間距
+                      child: Text(
+                        "元智一館 七樓 1705A實驗室",
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                        textAlign: TextAlign.left,
+                      ),
+                    ),
+                    subtitle: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(height: 5), // 添加間距
+                        Text(
+                          '狀態：正常\n'
+                          '上次回應： 2024-11-13 22 : 07\n'
+                          'IP 地址: 192.168.70.99\n'
+                          '\n'
+                          '• 設備編號: 100\n'
+                          '• 感測煙霧: 43 ug/m3\n'
+                          '• 感測溫度: 29.3 °C\n',
+                          textAlign: TextAlign.left,
+                          style: TextStyle(fontSize: 16, height: 1.5),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Expanded(
+                    child: Container(
+                      margin: const EdgeInsets.all(10), // 添加間距
+                      child: const ListTile(
+                        title: Padding(
+                          padding: EdgeInsets.only(top: 5), // 添加間距
+                        ),
+                        subtitle: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            SizedBox(height: 10), // 添加間距
+                            Text(
+                              '• 名稱設定: \n\n\n'
+                              '• 群組設定: \n\n\n'
+                              '• 煙霧閥值: \n\n\n'
+                              '• 煙霧梯度: \n\n\n'
+                              '• 溫度閥值: \n\n\n'
+                              '• 溫度梯度: \n\n\n'
+                              '• 緊急影片時長: \n\n\n'
+                              '• 喚醒回應時長: \n\n\n'
+                              '• 是否開啟警報: \n',
+                              textAlign: TextAlign.left,
+                              style: TextStyle(fontSize: 16, height: 1.5),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: Container(
+                        margin: const EdgeInsets.all(10),
+                        child: Column(children: <Widget>[
+                          const TextField(
+                            decoration: InputDecoration(
+                              // enabledBorder: OutlineInputBorder(
+                              //   borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                              // ),
+                              hintText: 'Text',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          const TextField(
+                            decoration: InputDecoration(
+                              // enabledBorder: OutlineInputBorder(
+                              //   borderSide: BorderSide(color: Colors.grey, width: 2.0),
+                              // ),
+                              hintText: 'Text',
+                            ),
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownMenu(
+                            enableFilter: true,
+                            onSelected: (number) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _selectedLabel = number.toString();
+                              });
+                            },
+                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
+                              DropdownMenuEntry<int>(
+                                value: 1,
+                                label: '1',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 2,
+                                label: '2',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 3,
+                                label: '3',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 4,
+                                label: '4',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 5,
+                                label: '5',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownMenu(
+                            enableFilter: true,
+                            onSelected: (number) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _selectedLabel = number.toString();
+                              });
+                            },
+                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
+                              DropdownMenuEntry<int>(
+                                value: 1,
+                                label: '1',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 2,
+                                label: '2',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 3,
+                                label: '3',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 4,
+                                label: '4',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 5,
+                                label: '5',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownMenu(
+                            enableFilter: true,
+                            onSelected: (number) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _selectedLabel = number.toString();
+                              });
+                            },
+                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
+                              DropdownMenuEntry<int>(
+                                value: 1,
+                                label: '1',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 2,
+                                label: '2',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 3,
+                                label: '3',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 4,
+                                label: '4',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 5,
+                                label: '5',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownMenu(
+                            enableFilter: true,
+                            onSelected: (number) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _selectedLabel = number.toString();
+                              });
+                            },
+                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
+                              DropdownMenuEntry<int>(
+                                value: 1,
+                                label: '1',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 2,
+                                label: '2',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 3,
+                                label: '3',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 4,
+                                label: '4',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 5,
+                                label: '5',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownMenu(
+                            enableFilter: true,
+                            onSelected: (number) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _selectedLabel = number.toString();
+                              });
+                            },
+                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
+                              DropdownMenuEntry<int>(
+                                value: 1,
+                                label: '1',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 2,
+                                label: '2',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 3,
+                                label: '3',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 4,
+                                label: '4',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 5,
+                                label: '5',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownMenu(
+                            enableFilter: true,
+                            onSelected: (number) {
+                              // This is called when the user selects an item.
+                              setState(() {
+                                _selectedLabel = number.toString();
+                              });
+                            },
+                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
+                              DropdownMenuEntry<int>(
+                                value: 1,
+                                label: '1',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 2,
+                                label: '2',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 3,
+                                label: '3',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 4,
+                                label: '4',
+                              ),
+                              DropdownMenuEntry<int>(
+                                value: 5,
+                                label: '5',
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Switch(
+                            value: warning,
+                            onChanged: (bool value) {
+                              setState(() {
+                                warning = value;
+                              });
+                            },
+                          )
+                        ])),
+                  )
+                ],
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  debugPrint('ElevatedButton was pressed!');
+                },
+                child: const Text('修改'),
+              )
+            ],
+          ),
+        ));
   }
 }
 
