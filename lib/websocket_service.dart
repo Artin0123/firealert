@@ -20,41 +20,41 @@ class WebSocketService with ChangeNotifier {
 
   Stream<Map<String, dynamic>> get messageStream => _messageController2.stream;
 
-  void _connectToWebSocket(Map<String, dynamic> token) {
-    try {
-      if (token.isEmpty) {
-        _channel = IOWebSocketChannel.connect(
-            'ws://firealert.waziwazi.top:8880?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huIiwiaWF0IjoxNzE1MDc2MDAxLCJleHAiOjE3MzA2MjgwMDF9.5sV4-QHxKTsg6MgoJ6CXaMuk_LacQaptPXSolqMnZL4&uid=10011');
-      } else if (token.isNotEmpty) {
-        String accessToken = token['accessToken'].toString();
-        String uid = token['uid'].toString();
-        _channel = IOWebSocketChannel.connect(
-            'ws://firealert.waziwazi.top:8880?token=' +
-                accessToken +
-                '&uid=' +
-                uid);
-      }
+  void _connectToWebSocket(Map<String, dynamic> token) async {
+    while (true) {
+      try {
+        if (token.isEmpty) {
+          _channel = IOWebSocketChannel.connect(
+              'ws://firealert.waziwazi.top:8880?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJqb2huIiwiaWF0IjoxNzE1MDc2MDAxLCJleHAiOjE3MzA2MjgwMDF9.5sV4-QHxKTsg6MgoJ6CXaMuk_LacQaptPXSolqMnZL4&uid=10011');
+        } else if (token.isNotEmpty) {
+          String accessToken = token['accessToken'].toString();
+          String uid = token['uid'].toString();
+          _channel = IOWebSocketChannel.connect('ws://firealert.waziwazi.top:8880?token=' + accessToken + '&uid=' + uid);
+        }
 
-      // _channel = IOWebSocketChannel.connect(
-      //     'ws://firealert.waziwazi.top:8880?token=1234');
-      _channel.stream.listen(
-        (message) {
-          var data = json.decode(message.toString());
-          if (data['status'] == 'success') {
-            print('Connection established successfully');
-            print(message);
-          } else {
-            print(message);
-          }
-          _messageController2.add(data);
-          notifyListeners();
-        },
-        onError: (error) {
-          print('WebSocket Error: $error');
-        },
-      );
-    } catch (e) {
-      print('WebSocket Connection Error: $e');
+        // _channel = IOWebSocketChannel.connect(
+        //     'ws://firealert.waziwazi.top:8880?token=1234');
+        _channel.stream.listen(
+          (message) {
+            var data = json.decode(message.toString());
+            if (data['status'] == 'success') {
+              print('Connection established successfully');
+              print(message);
+            } else {
+              print(message);
+            }
+            _messageController2.add(data);
+            notifyListeners();
+          },
+          onError: (error) {
+            print('WebSocket Error: $error');
+          },
+        );
+        break;
+      } catch (e) {
+        print('WebSocket Connection Error: $e');
+        await Future.delayed(Duration(seconds: 5));
+      }
     }
   }
 }
