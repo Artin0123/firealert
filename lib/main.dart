@@ -568,7 +568,7 @@ class _PageEvent extends State<PageEvent> {
                       // crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(
-                          width: 320,
+                          width: 300,
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.only(top: 5), // 添加間距
