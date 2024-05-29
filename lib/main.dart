@@ -1528,6 +1528,21 @@ Future<int> _sendDataToServer(String username, String password) async {
   }
 }
 
+void fetchData() async {
+  final response = await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
+
+  if (response.statusCode == 200) {
+    // If the server returns a 200 OK response,
+    // then parse the JSON.
+    print('Response data: ${response.body}');
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+
+    throw Exception('Failed to load data');
+  }
+}
+
 class PageWarn extends StatefulWidget {
   const PageWarn({super.key});
   @override
@@ -1562,18 +1577,25 @@ class _PageWarn extends State<PageWarn> {
               height: 3.0,
             ),
           )),
-      body: Container(
-        width: double.infinity,
-        height: 100,
-        child: TextButton(
-          onPressed: () {
-            launchPhone('119');
-          },
-          child: const Text(
-            '通報119',
-            style: TextStyle(fontSize: 20),
+      body: Column(
+        children: <Widget>[
+          Container(
+              width: double.infinity,
+              height: 100,
+              child: TextButton(
+                onPressed: () {
+                  launchPhone('119');
+                },
+                child: const Text(
+                  '通報119',
+                  style: TextStyle(fontSize: 20),
+                ),
+              )),
+          ElevatedButton(
+            onPressed: fetchData,
+            child: Text('Fetch Data'),
           ),
-        ),
+        ],
       ),
     );
   }
