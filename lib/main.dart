@@ -174,10 +174,10 @@ class _MyHomePageState extends State<MyHomePage> {
           // currentIndex: currentIndex,
           style: TabStyle.react,
           // cornerRadius: 20,
-          backgroundColor: Colors.lightBlue[300],
+          backgroundColor: Colors.blue[400],
           elevation: 3,
           color: Colors.grey[100],
-          activeColor: Colors.blue[700],
+          activeColor: Colors.blue[900],
           onTap: (int index) {
             setState(() {
               currentIndex = index;
@@ -1245,13 +1245,13 @@ class _PageSetting extends State<PageSetting> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          backgroundColor: Colors.lightBlue[300],
+          backgroundColor: Colors.blue[400],
           title: Text('設定', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
             child: Container(
-              color: Colors.lightBlue,
+              color: Colors.blue[700],
               height: 3.0,
             ),
           ),
@@ -1366,7 +1366,7 @@ class _PageHistory extends State<PageHistory> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.lightBlue[300],
+        backgroundColor: Colors.blue[400],
         title: Text(
           '歷史紀錄',
           style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold),
@@ -1375,7 +1375,7 @@ class _PageHistory extends State<PageHistory> {
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3.0),
           child: Container(
-            color: Colors.lightBlue,
+            color: Colors.blue[700],
             height: 3.0,
           ),
         ),
@@ -1552,13 +1552,13 @@ class _PageWarn extends State<PageWarn> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: Colors.lightBlue[300],
+          backgroundColor: Colors.blue[400],
           title: Text('緊急通報', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
             child: Container(
-              color: Colors.lightBlue,
+              color: Colors.blue[700],
               height: 3.0,
             ),
           )),
