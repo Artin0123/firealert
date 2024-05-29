@@ -99,10 +99,6 @@ class MyApp extends StatelessWidget {
       create: (context) => AppDataProvider(),
       child: MaterialApp(
         title: '火燒報哩災',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-          useMaterial3: true,
-        ),
         debugShowCheckedModeBanner: false,
         home: const MyHomePage(),
       ),
@@ -355,13 +351,13 @@ class _PageEvent extends State<PageEvent> {
     return Scaffold(
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
-          backgroundColor: Colors.lightBlue[300],
+          backgroundColor: Colors.blue[400],
           title: Text('火災事件列表', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
             child: Container(
-              color: Colors.lightBlue,
+              color: Colors.blue[700],
               height: 3.0,
             ),
           )),
@@ -445,67 +441,45 @@ class _PageEvent extends State<PageEvent> {
                               width: 2.0,
                             ),
                           ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ListTile(
-                                title: Text(
-                                  itemData.events,
-                                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                                ),
-                                subtitle: Text(
-                                  '位置: ${itemData.locations}\n'
-                                  '時間: ${itemData.updatetime}\n'
-                                  '事件id: ${itemData.id}\n'
-                                  '事件等級: ${itemData.levels}\n'
-                                  '氣體數值: ${itemData.airQuality}\n'
-                                  '溫度: ${itemData.temperature}',
-                                  textAlign: TextAlign.left,
+                          child: Row(
+                            // crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              SizedBox(
+                                width: 320,
+                                child: ListTile(
+                                  title: Padding(
+                                    padding: const EdgeInsets.only(top: 5), // 添加間距
+                                    child: Text(
+                                      itemData.events,
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                      textAlign: TextAlign.left,
+                                    ),
+                                  ),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      const SizedBox(height: 5), // 添加間距
+                                      Text(
+                                        '${itemData.locations}\n'
+                                        '${itemData.updatetime}\n',
+                                        textAlign: TextAlign.left,
+                                        style: const TextStyle(fontSize: 16, height: 1.5),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        ElevatedButton(
-                                          onPressed: () {
-                                            // button_signal = 0;
-                                            // setState(() {
-                                            //   detailButtonPressed = true;
-                                            //   //_buttonColor = Colors.blue;
-                                            //  // _toggleButtonColor();
-
-                                            // });
-                                            itemData.fixcolorblue();
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) => DetailPage(sensorData_detail: itemData),
-                                              ),
-                                            );
-                                          },
-                                          style: ButtonStyle(
-                                            backgroundColor: MaterialStateProperty.all<Color>(itemData.buttoncolor()),
-                                          ),
-                                          child: _buttonColor == Colors.red
-                                              ? Text(
-                                                  '新影片',
-                                                  style: TextStyle(color: Colors.black),
-                                                )
-                                              : Text(
-                                                  '查看詳情',
-                                                  style: TextStyle(color: Colors.black),
-                                                ),
-                                        ),
-                                        SizedBox(width: 10),
-                                        (!detailButtonPressed && datas.containsKey('details')) ? Text('有影片') : SizedBox.shrink(),
-                                      ],
-                                    ),
-                                  ],
-                                ),
+                              IconButton(
+                                icon: const Icon(Icons.keyboard_arrow_right),
+                                iconSize: 48,
+                                color: const Color.fromARGB(248, 241, 102, 153),
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                  );
+                                },
+                                alignment: Alignment.centerRight,
                               ),
                             ],
                           ),
@@ -560,40 +534,45 @@ class _PageEvent extends State<PageEvent> {
                         width: 2.0,
                       ),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ListTile(
-                          title: Text(
-                            itemData.events,
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                          ),
-                          subtitle: Text(
-                            '位置: ${itemData.locations}\n'
-                            '時間: ${itemData.updatetime}\n'
-                            '事件id: ${itemData.id}\n'
-                            '事件等級: ${itemData.levels}\n'
-                            '氣體數值: ${itemData.airQuality}\n'
-                            '溫度: ${itemData.temperature}',
-                            textAlign: TextAlign.left,
+                    child: Row(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        SizedBox(
+                          width: 320,
+                          child: ListTile(
+                            title: Padding(
+                              padding: const EdgeInsets.only(top: 5), // 添加間距
+                              child: Text(
+                                itemData.events,
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                textAlign: TextAlign.left,
+                              ),
+                            ),
+                            subtitle: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                const SizedBox(height: 5), // 添加間距
+                                Text(
+                                  '${itemData.locations}\n'
+                                  '${itemData.updatetime}\n',
+                                  textAlign: TextAlign.left,
+                                  style: const TextStyle(fontSize: 16, height: 1.5),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
-                                  );
-                                },
-                                child: const Text('查看詳情'),
-                              ),
-                            ],
-                          ),
+                        IconButton(
+                          icon: const Icon(Icons.keyboard_arrow_right),
+                          iconSize: 48,
+                          color: const Color.fromARGB(248, 241, 102, 153),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                            );
+                          },
+                          alignment: Alignment.centerRight,
                         ),
                       ],
                     ),
