@@ -436,10 +436,15 @@ class _PageEvent extends State<PageEvent> {
                           side: BorderSide(
                               color: Colors.black, width: 2.0), // 设置黑色边框
                         ),
-                        child: Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
                           child: Text(
                             '無事件資料',
                             textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       ),
@@ -536,10 +541,15 @@ class _PageEvent extends State<PageEvent> {
                     borderRadius: BorderRadius.circular(10.0), // 设置圆角
                     side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
                   ),
-                  child: Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
                     child: Text(
                       '無事件資料',
                       textAlign: TextAlign.left,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
                 ),
