@@ -12,11 +12,15 @@ import 'package:flutt/local_notification_service.dart';
 import 'package:flutt/websocket_service.dart';
 import 'package:flutt/sensor_data.dart';
 import 'package:flutt/video.dart';
+import 'package:flutt/local.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_localization/flutter_localization.dart';
 
 final service = FlutterBackgroundService();
 final notifications = FlutterLocalNotificationsPlugin();
+
+final FlutterLocalization localization = FlutterLocalization.instance;
 
 void onStart(ServiceInstance service) async {
   final notifications = FlutterLocalNotificationsPlugin();
@@ -43,8 +47,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 初始化本地通知
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -77,9 +80,7 @@ void main() async {
 
 void startTimer() {
   int timestamp = 1714472686;
-  DateTime then =
-      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
-          .toUtc();
+  DateTime then = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true).toUtc();
   DateTime now = DateTime.now().toUtc();
   Duration delay = then.difference(now);
   Timer(delay, () {
@@ -96,6 +97,7 @@ void startTimer() {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
   // This widget is the root of your application.
+
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
@@ -103,6 +105,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: '火燒報哩災',
         debugShowCheckedModeBanner: false,
+        supportedLocales: localization.supportedLocales,
+        localizationsDelegates: localization.localizationsDelegates,
         home: const MyHomePage(),
       ),
     );
@@ -111,14 +115,12 @@ class MyApp extends StatelessWidget {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController =
-      StreamController<bool>();
+  final StreamController<bool> _updateNotificationController = StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream =>
-      _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -168,6 +170,25 @@ class _MyHomePageState extends State<MyHomePage> {
   // flutterLocalNotificationsPlugin.initialize(initializationSettings);
   // }
   int currentIndex = 0;
+
+  @override
+  void initState() {
+    localization.init(
+      mapLocales: [
+        const MapLocale('en', AppLocale.EN),
+        const MapLocale('zh_tw', AppLocale.ZH_TW),
+      ],
+      initLanguageCode: 'zh_tw',
+    );
+    localization.onTranslatedLanguage = _onTranslatedLanguage;
+    super.initState();
+  }
+
+  // the setState function here is a must to add
+  void _onTranslatedLanguage(Locale? locale) {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -290,8 +311,7 @@ class _PageEvent extends State<PageEvent> {
   void initState() {
     super.initState();
     try {
-      _streamControllerJson =
-          Provider.of<WebSocketService>(context, listen: false);
+      _streamControllerJson = Provider.of<WebSocketService>(context, listen: false);
     } catch (e) {
       print('Error initializing WebSocketService: $e');
     }
@@ -323,8 +343,7 @@ class _PageEvent extends State<PageEvent> {
           imageData = response.bodyBytes;
         });
       } else {
-        debugPrint(
-            'Unexpected content type: ${response.headers['content-type']}');
+        debugPrint('Unexpected content type: ${response.headers['content-type']}');
       }
     } else {
       debugPrint('HTTP request failed with status: $response');
@@ -359,11 +378,7 @@ class _PageEvent extends State<PageEvent> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text('火災事件列表',
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.title.getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
@@ -394,16 +409,7 @@ class _PageEvent extends State<PageEvent> {
                 event_id = data['event_id'].toString();
                 big_location = data['group_name'];
                 String iot_id = data['iot_id'].toString();
-                sensorData = SensorData(
-                    airqualitys,
-                    temperatures,
-                    event_id,
-                    iot_id,
-                    big_location + ' ' + locations,
-                    events,
-                    isAlert,
-                    levels,
-                    timestamps);
+                sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
                 int spi = 0;
                 sensorData.fixcolorRed();
                 for (var i = 0; i < sensordata.length; i++) {
@@ -433,8 +439,7 @@ class _PageEvent extends State<PageEvent> {
                         color: Colors.white, // 设置白色背景
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                          side: BorderSide(
-                              color: Colors.black, width: 2.0), // 设置黑色边框
+                          side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
                         ),
                         child: Padding(
                           padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
@@ -450,8 +455,7 @@ class _PageEvent extends State<PageEvent> {
                       ),
                     )
                   : ListView.builder(
-                      shrinkWrap:
-                          true, // Ensures that the ListView.builder takes up only the necessary space
+                      shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
                       itemCount: sensordata.length,
                       itemBuilder: (context, index) {
                         SensorData itemData = sensordata[index];
@@ -475,27 +479,22 @@ class _PageEvent extends State<PageEvent> {
                                 width: 300,
                                 child: ListTile(
                                   title: Padding(
-                                    padding:
-                                        const EdgeInsets.only(top: 5), // 添加間距
+                                    padding: const EdgeInsets.only(top: 5), // 添加間距
                                     child: Text(
                                       itemData.events,
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20),
+                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                       textAlign: TextAlign.left,
                                     ),
                                   ),
                                   subtitle: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     children: <Widget>[
                                       const SizedBox(height: 5), // 添加間距
                                       Text(
                                         '${itemData.locations}\n'
                                         '${itemData.updatetime}\n',
                                         textAlign: TextAlign.left,
-                                        style: const TextStyle(
-                                            fontSize: 16, height: 1.5),
+                                        style: const TextStyle(fontSize: 16, height: 1.5),
                                       ),
                                     ],
                                   ),
@@ -508,12 +507,22 @@ class _PageEvent extends State<PageEvent> {
                                 onPressed: () {
                                   Navigator.push(
                                     context,
-                                    MaterialPageRoute(
-                                        builder: (context) => DetailPage(
-                                            sensorData_detail: itemData)),
+                                    MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
                                   );
                                 },
                                 alignment: Alignment.centerRight,
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  localization.translate('en');
+                                },
+                                child: const Text('English'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  localization.translate('zh_TW');
+                                },
+                                child: const Text('繁體中文'),
                               ),
                             ],
                           ),
@@ -556,8 +565,7 @@ class _PageEvent extends State<PageEvent> {
               );
             } else {
               return ListView.builder(
-                shrinkWrap:
-                    true, // Ensures that the ListView.builder takes up only the necessary space
+                shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
                 itemCount: sensordata.length,
                 itemBuilder: (context, index) {
                   SensorData itemData = sensordata[index];
@@ -584,8 +592,7 @@ class _PageEvent extends State<PageEvent> {
                               padding: const EdgeInsets.only(top: 5), // 添加間距
                               child: Text(
                                 itemData.events,
-                                style: const TextStyle(
-                                    fontWeight: FontWeight.bold, fontSize: 20),
+                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                                 textAlign: TextAlign.left,
                               ),
                             ),
@@ -597,8 +604,7 @@ class _PageEvent extends State<PageEvent> {
                                   '${itemData.locations}\n'
                                   '${itemData.updatetime}\n',
                                   textAlign: TextAlign.left,
-                                  style: const TextStyle(
-                                      fontSize: 16, height: 1.5),
+                                  style: const TextStyle(fontSize: 16, height: 1.5),
                                 ),
                               ],
                             ),
@@ -611,9 +617,7 @@ class _PageEvent extends State<PageEvent> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      DetailPage(sensorData_detail: itemData)),
+                              MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
                             );
                           },
                           alignment: Alignment.centerRight,
@@ -665,12 +669,8 @@ class _PageUtil extends State<PageUtil> {
     setState(() {
       items = sensordata
           .where((sensordata) =>
-              sensordata.airQuality
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
-              sensordata.temperature
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
+              sensordata.airQuality.toLowerCase().contains(query.toLowerCase()) ||
+              sensordata.temperature.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.id.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.iot_id.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -682,16 +682,7 @@ class _PageUtil extends State<PageUtil> {
     for (var i = 0; i < sensordata.length; i++) {
       var item = sensordata[i];
       // 将 SensorData 对象的属性添加到 buffer 中
-      buffer[item.iot_id] = SensorData(
-          item.airQuality,
-          item.temperature,
-          item.id,
-          item.iot_id,
-          item.locations,
-          item.events,
-          'yes',
-          levels,
-          item.updatetime);
+      buffer[item.iot_id] = SensorData(item.airQuality, item.temperature, item.id, item.iot_id, item.locations, item.events, 'yes', levels, item.updatetime);
     }
 
     return Scaffold(
@@ -755,8 +746,7 @@ class _PageUtil extends State<PageUtil> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageArgs()),
+                                  MaterialPageRoute(builder: (context) => PageArgs()),
                                 );
                               },
                             ),
@@ -801,9 +791,7 @@ class _PageArgs extends State<PageArgs> {
                 child: Card(
                   color: Colors.white,
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(
-                        color: Colors.blueGrey[700] ?? Colors.blue,
-                        width: 2), // 添加邊框
+                    side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2), // 添加邊框
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: const ListTile(
@@ -811,8 +799,7 @@ class _PageArgs extends State<PageArgs> {
                       padding: EdgeInsets.only(top: 5), // 添加間距
                       child: Text(
                         "元智一館 七樓 1705A實驗室",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold, fontSize: 20),
+                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                         textAlign: TextAlign.left,
                       ),
                     ),
@@ -1307,11 +1294,7 @@ class _PageSetting extends State<PageSetting> {
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text('設定',
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text('設定', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
@@ -1333,8 +1316,7 @@ class _PageSetting extends State<PageSetting> {
                   _handleLogin();
                 }
               },
-              leading: Icon(
-                  _isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
+              leading: Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
               title: Text(_isLoggedIn ? username : '登入'), // 根据登录状态显示不同的文本
               subtitle: Text(_isLoggedIn ? '登出' : ''),
             ),
@@ -1349,8 +1331,7 @@ class _PageSetting extends State<PageSetting> {
               },
               // This sets text color and icon color to red when list tile is disabled and
               // green when list tile is selected, otherwise sets it to black.
-              iconColor:
-                  MaterialStateColor.resolveWith((Set<MaterialState> states) {
+              iconColor: MaterialStateColor.resolveWith((Set<MaterialState> states) {
                 if (states.contains(MaterialState.selected)) {
                   return Colors.green;
                 }
@@ -1382,11 +1363,9 @@ class _PageSetting extends State<PageSetting> {
                     return Switch(
                       value: Provider.of<AppDataProvider>(context)._selection,
                       onChanged: (bool value) {
-                        Provider.of<AppDataProvider>(context, listen: false)
-                            .setNotification(value);
+                        Provider.of<AppDataProvider>(context, listen: false).setNotification(value);
                         print('Noti: $value');
-                        print(
-                            'Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
+                        print('Noti Provider: ${Provider.of<AppDataProvider>(context, listen: false)._selection}');
 
                         // service.showNotification(
                         //     id: 0, title: 'Notification Title', body: 'Some body');
@@ -1438,10 +1417,7 @@ class _PageHistory extends State<PageHistory> {
         backgroundColor: Colors.blue[400],
         title: Text(
           '歷史紀錄',
-          style: TextStyle(
-              color: Colors.grey[50],
-              fontSize: 28,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -1454,8 +1430,7 @@ class _PageHistory extends State<PageHistory> {
       ),
       body: ListView.separated(
         separatorBuilder: (context, index) => Divider(color: Colors.black),
-        itemCount:
-            record.length, // replace 'record' with your actual record array
+        itemCount: record.length, // replace 'record' with your actual record array
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(
@@ -1496,8 +1471,7 @@ class _NextPageState extends State<NextPage> {
         child: Column(
           children: <Widget>[
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _usernameController,
                 decoration: const InputDecoration(
@@ -1507,12 +1481,10 @@ class _NextPageState extends State<NextPage> {
               ),
             ),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText:
-                    !_obscureText, // Fix: Use !_obscureText to invert the value
+                obscureText: !_obscureText, // Fix: Use !_obscureText to invert the value
                 decoration: InputDecoration(
                   // No need for const here
                   prefixIcon: Icon(Icons.lock),
@@ -1605,8 +1577,7 @@ Future<int> _sendDataToServer(String username, String password) async {
 }
 
 void fetchData() async {
-  final response =
-      await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
+  final response = await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response,
@@ -1645,11 +1616,7 @@ class _PageWarn extends State<PageWarn> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text('緊急通報',
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text('緊急通報', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),

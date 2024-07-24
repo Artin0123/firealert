@@ -47,6 +47,7 @@ dependencies:
   flutter_launcher_icons: ^0.13.1
   flutter_background_service: ^5.0.5
   flutter_local_notifications: ^17.0.0
+  flutter_localization: ^0.2.0
 
 flutter_launcher_icons:
   android: "launcher_icon"
