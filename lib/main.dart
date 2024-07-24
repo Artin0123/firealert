@@ -94,21 +94,39 @@ void startTimer() {
   });
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
-  // This widget is the root of your application.
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  void initState() {
+    localization.init(
+      mapLocales: [
+        const MapLocale('en', AppLocale.EN),
+        const MapLocale('zh_TW', AppLocale.ZH_TW),
+      ],
+      initLanguageCode: 'zh_TW',
+    );
+    localization.onTranslatedLanguage = _onTranslatedLanguage;
+    super.initState();
+  }
+
+  void _onTranslatedLanguage(Locale? locale) {
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => AppDataProvider(),
-      child: MaterialApp(
-        title: '火燒報哩災',
-        debugShowCheckedModeBanner: false,
-        supportedLocales: localization.supportedLocales,
-        localizationsDelegates: localization.localizationsDelegates,
-        home: const MyHomePage(),
-      ),
+    return MaterialApp(
+      title: '火燒報哩災',
+      debugShowCheckedModeBanner: false,
+      supportedLocales: localization.supportedLocales,
+      localizationsDelegates: localization.localizationsDelegates,
+      home: const MyHomePage(),
     );
   }
 }
@@ -170,24 +188,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // flutterLocalNotificationsPlugin.initialize(initializationSettings);
   // }
   int currentIndex = 0;
-
-  @override
-  void initState() {
-    localization.init(
-      mapLocales: [
-        const MapLocale('en', AppLocale.EN),
-        const MapLocale('zh_tw', AppLocale.ZH_TW),
-      ],
-      initLanguageCode: 'zh_tw',
-    );
-    localization.onTranslatedLanguage = _onTranslatedLanguage;
-    super.initState();
-  }
-
-  // the setState function here is a must to add
-  void _onTranslatedLanguage(Locale? locale) {
-    setState(() {});
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -511,18 +511,6 @@ class _PageEvent extends State<PageEvent> {
                                   );
                                 },
                                 alignment: Alignment.centerRight,
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  localization.translate('en');
-                                },
-                                child: const Text('English'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  localization.translate('zh_TW');
-                                },
-                                child: const Text('繁體中文'),
                               ),
                             ],
                           ),
@@ -1642,6 +1630,18 @@ class _PageWarn extends State<PageWarn> {
           ElevatedButton(
             onPressed: fetchData,
             child: Text('Fetch Data'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              localization.translate('en');
+            },
+            child: const Text('English'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              localization.translate('zh_TW');
+            },
+            child: const Text('繁體中文'),
           ),
         ],
       ),
