@@ -34,7 +34,6 @@ dependencies:
   convex_bottom_bar: ^3.2.0
   rxdart: ^0.28.0
   video_player: ^2.2.11
-  dio: ^5.5.0+1
   permission_handler: ^11.3.1
   path_provider: ^2.0.3
   dio: ^5.0.0
