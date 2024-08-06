@@ -38,60 +38,25 @@ class _VideoPageState extends State<DetailPage> {
 
   @override
   void initState() {
-    // super.initState();
-    // _sensorData.modify(widget.sensorData_detail);
-    // _controller = VideoPlayerController.networkUrl(Uri.parse(
-    //   'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101',
-    // ));
-
-    // _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-    //   // Ensure the first frame is shown after the video is initialized,
-    //   // even before the play button has been pressed.
-    //   Duration videoDuration = _controller.value.duration;
-    //   int videoLengthInSeconds = videoDuration.inSeconds;
-    //   print(videoLengthInSeconds);
-    //   print("hello");
-    //   setState(() {});
-    // });
-
-    // _controller.setLooping(true);
-    // _timer = Timer.periodic(Duration(seconds: 14), (Timer timer) async {
-    //   if (_controller.value.isPlaying) {
-    //     await _controller.pause();
-    //   }
-    //   _controller = VideoPlayerController.networkUrl(Uri.parse(
-    //     'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101',
-    //   ));
-
-    //   _initializeVideoPlayerFuture = _controller.initialize().then((_) {
-    //     // Ensure the first frame is shown after the video is initialized,
-    //     // even before the play button has been pressed.
-    //     setState(() {});
-    //   });
-    //   _controller.setLooping(true);
-    //   if (_controller.value.isPlaying) {
-    //     _controller.pause();
-    //   }
-    //   _controller.setLooping(false);
-    // });
-    // // Add listener to update state and rebuild UI when playing
-    // _controller.addListener(() {
-    //   setState(() {});
-    // });
-
     super.initState();
     _sensorData.modify(widget.sensorData_detail);
-    // Start a timer to download the video every 14 seconds
+    _startDownloadAndTimer();
+  }
+
+  void _startDownloadAndTimer() async {
+    // Start immediate download
+    await _downloadVideo(
+        'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
+
+    // Start periodic download every 14 seconds
     _downloadTimer = Timer.periodic(Duration(seconds: 14), (timer) {
       _downloadVideo(
-          // 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'
-          //'https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4');
           'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
     });
   }
 
   Future<void> _downloadVideo(String url) async {
-    if (_isDownloading) return; // Skip if already downloading
+    if (_isDownloading) return;
 
     setState(() {
       _isDownloading = true;
@@ -99,13 +64,9 @@ class _VideoPageState extends State<DetailPage> {
     });
 
     try {
-      // Get application document directory
       final dir = await getApplicationDocumentsDirectory();
-
-      // Set file path (overwriting existing file)
       final filePath = '${dir.path}/myVideo.mp4';
 
-      // Download video
       var dio = Dio();
       await dio.download(
         url,
@@ -119,7 +80,6 @@ class _VideoPageState extends State<DetailPage> {
         },
       );
 
-      // Dispose of the previous controller if it exists
       _controller?.dispose();
 
       setState(() {
@@ -127,10 +87,9 @@ class _VideoPageState extends State<DetailPage> {
         _progress = '下载完成';
       });
 
-      // Initialize video player controller
       _controller = VideoPlayerController.file(File(_filePath))
         ..initialize().then((_) {
-          setState(() {}); // Refresh UI when initialized
+          setState(() {});
         });
     } catch (e) {
       setState(() {
