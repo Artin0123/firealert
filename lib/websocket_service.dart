@@ -23,6 +23,7 @@ class WebSocketService with ChangeNotifier {
     } else {
       _bypassWebSocket = true;
       print('WebSocket bypassed in debug mode');
+      _connectToWebSocket(token); //測試沒有驗證
     }
   }
 
@@ -30,7 +31,7 @@ class WebSocketService with ChangeNotifier {
   bool get isConnected => _isConnected;
 
   void _connectToWebSocket(Map<String, dynamic> token) async {
-    if (_bypassWebSocket) return;
+    //if (_bypassWebSocket) return;//測試沒有驗證
 
     while (!_isConnected) {
       try {

@@ -80,6 +80,7 @@ class _VideoPageState extends State<DetailPage> {
     // });
 
     super.initState();
+    _sensorData.modify(widget.sensorData_detail);
     // Start a timer to download the video every 14 seconds
     _downloadTimer = Timer.periodic(Duration(seconds: 14), (timer) {
       _downloadVideo(
