@@ -7,8 +7,9 @@ mixin AppLocale {
     'title4',
     'title5',
     'title6',
+    'title7',
   ];
-  static const List<String> info = ['info', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8'];
+  static const List<String> info = ['info', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9', 'info10'];
   static const List<String> args = [
     'args',
     'args1',
@@ -27,7 +28,12 @@ mixin AppLocale {
     'args14',
     'args15',
     'args16',
-    'args17'
+    'args17',
+    'args18',
+    'args19',
+    'args20',
+    'args21',
+    'args22',
   ];
 
   static Map<String, dynamic> EN = {
@@ -38,6 +44,7 @@ mixin AppLocale {
     titles[4]: 'Device',
     titles[5]: 'Setting',
     titles[6]: 'Parameter settings',
+    titles[7]: 'Details',
     info[0]: 'No event data',
     info[1]: 'No data',
     info[2]: 'Device abnormal',
@@ -47,6 +54,8 @@ mixin AppLocale {
     info[6]: 'Sensor abnormal',
     info[7]: 'Login',
     info[8]: 'Logout',
+    info[9]: 'User name ',
+    info[10]: 'Password ',
     args[0]: 'Temperature parameter: ',
     args[1]: 'Smoke parameter: ',
     args[2]: 'Location: ',
@@ -60,11 +69,16 @@ mixin AppLocale {
     args[10]: '• Name setting: ',
     args[11]: '• Group setting: ',
     args[12]: '• Device enable: ',
-    args[13]: '• Smoke threshold: ',
-    args[14]: '• Smoke sensitivity: ',
-    args[15]: '• Temperature threshold: ',
-    args[16]: '• Heat sensitivity: ',
-    args[17]: '• Recording duration: ',
+    args[13]: 'Smoke threshold: ',
+    args[14]: 'Smoke sensitivity: ',
+    args[15]: 'Temperature threshold: ',
+    args[16]: 'Heat sensitivity: ',
+    args[17]: 'Recording duration: ',
+    args[18]: 'Time: ',
+    args[19]: 'Event level: ',
+    args[20]: 'Update time: ',
+    args[21]: 'User name',
+    args[22]: 'Alert: ',
   };
 
   static Map<String, dynamic> ZH_TW = {
@@ -75,6 +89,7 @@ mixin AppLocale {
     titles[4]: '設備',
     titles[5]: '設定',
     titles[6]: '參數設定',
+    titles[7]: '詳細資料',
     info[0]: '無事件資料',
     info[1]: '無資料',
     info[2]: '設備異常',
@@ -84,6 +99,8 @@ mixin AppLocale {
     info[6]: '感測異常',
     info[7]: '登入',
     info[8]: '登出',
+    info[9]: '使用者名稱 ',
+    info[10]: '密碼 ',
     args[0]: '溫度參數: ',
     args[1]: '煙霧參數: ',
     args[2]: '位置: ',
@@ -97,10 +114,15 @@ mixin AppLocale {
     args[10]: '• 名稱設定: ',
     args[11]: '• 群組設定: ',
     args[12]: '• 設備啟用: ',
-    args[13]: '• 煙霧閥值: ',
-    args[14]: '• 煙敏感度: ',
-    args[15]: '• 溫度閥值: ',
-    args[16]: '• 熱敏感度: ',
-    args[17]: '• 錄影時長: ',
+    args[13]: '煙霧閥值: ',
+    args[14]: '煙敏感度: ',
+    args[15]: '溫度閥值: ',
+    args[16]: '熱敏感度: ',
+    args[17]: '錄影時長: ',
+    args[18]: '時間:',
+    args[19]: '事件等級:',
+    args[20]: '更新時間:',
+    args[21]: '使用者名稱',
+    args[22]: '警報:',
   };
 }

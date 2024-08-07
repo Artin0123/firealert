@@ -476,7 +476,7 @@ class _PageEvent extends State<PageEvent> {
                             // crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
                               SizedBox(
-                                width: 300,
+                                width: 200,
                                 child: ListTile(
                                   title: Padding(
                                     padding: const EdgeInsets.only(top: 5), // 添加間距
@@ -574,7 +574,7 @@ class _PageEvent extends State<PageEvent> {
                       // crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         SizedBox(
-                          width: 300,
+                          width: 200,
                           child: ListTile(
                             title: Padding(
                               padding: const EdgeInsets.only(top: 5), // 添加間距
@@ -779,359 +779,170 @@ class _PageArgs extends State<PageArgs> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocale.titles[6].getString(context)),
-        ),
-        body: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              Container(
-                margin: const EdgeInsets.all(10), // 添加間距
-                child: Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2), // 添加邊框
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: ListTile(
-                    title: Padding(
-                      padding: EdgeInsets.only(top: 5), // 添加間距
-                      child: Text(
-                        "元智一館 七樓 1705A實驗室",
-                        style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                        textAlign: TextAlign.left,
-                      ),
-                    ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(height: 5), // 添加間距
-                        Text(
-                          AppLocale.args[4].getString(context) +
-                              '正常\n' +
-                              AppLocale.args[5].getString(context) +
-                              '2024-11-13 22 : 07\n' +
-                              AppLocale.args[6].getString(context) +
-                              '192.168.70.99\n\n' +
-                              AppLocale.args[7].getString(context) +
-                              '100\n' +
-                              AppLocale.args[8].getString(context) +
-                              '43 ug/m3\n' +
-                              AppLocale.args[9].getString(context) +
-                              '29.3 °C\n',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(fontSize: 16, height: 1.5),
-                        ),
-                      ],
-                    ),
-                  ),
+      appBar: AppBar(
+        title: Text(AppLocale.titles[6].getString(context)),
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[
+            Container(
+              margin: const EdgeInsets.all(10),
+              child: Card(
+                color: Colors.white,
+                shape: RoundedRectangleBorder(
+                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-              ),
-              Container(
-                margin: const EdgeInsets.all(10), // 添加間距
                 child: ListTile(
+                  title: Padding(
+                    padding: EdgeInsets.only(top: 5),
+                    child: Text(
+                      "元智一館 七樓 1705A實驗室",
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      textAlign: TextAlign.left,
+                    ),
+                  ),
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[10].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Flexible(
-                            // flex: 1,
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: AppLocale.info[4].getString(context),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[11].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Flexible(
-                            // flex: 1,
-                            child: TextField(
-                              decoration: InputDecoration(
-                                hintText: AppLocale.info[4].getString(context),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[12].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          Switch(
-                            value: warning,
-                            onChanged: (bool value) {
-                              setState(() {
-                                warning = value;
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[12].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          DropdownMenu(
-                            enableFilter: true,
-                            onSelected: (number) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                _selectedLabel = number.toString();
-                              });
-                            },
-                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
-                              DropdownMenuEntry<int>(
-                                value: 1,
-                                label: '1',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 2,
-                                label: '2',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 3,
-                                label: '3',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 4,
-                                label: '4',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 5,
-                                label: '5',
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            ' ( μg/m3 )',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[14].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          DropdownMenu(
-                            enableFilter: true,
-                            onSelected: (number) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                _selectedLabel = number.toString();
-                              });
-                            },
-                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
-                              DropdownMenuEntry<int>(
-                                value: 1,
-                                label: '1',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 2,
-                                label: '2',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 3,
-                                label: '3',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 4,
-                                label: '4',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 5,
-                                label: '5',
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            ' ( % / 30s )',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[15].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          DropdownMenu(
-                            enableFilter: true,
-                            onSelected: (number) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                _selectedLabel = number.toString();
-                              });
-                            },
-                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
-                              DropdownMenuEntry<int>(
-                                value: 1,
-                                label: '1',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 2,
-                                label: '2',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 3,
-                                label: '3',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 4,
-                                label: '4',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 5,
-                                label: '5',
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            ' ( ℃ )',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[15].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          DropdownMenu(
-                            enableFilter: true,
-                            onSelected: (number) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                _selectedLabel = number.toString();
-                              });
-                            },
-                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
-                              DropdownMenuEntry<int>(
-                                value: 1,
-                                label: '1',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 2,
-                                label: '2',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 3,
-                                label: '3',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 4,
-                                label: '4',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 5,
-                                label: '5',
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            ' ( % / 30s )',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Row(
-                        children: <Widget>[
-                          Text(
-                            AppLocale.args[16].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                          DropdownMenu(
-                            enableFilter: true,
-                            onSelected: (number) {
-                              // This is called when the user selects an item.
-                              setState(() {
-                                _selectedLabel = number.toString();
-                              });
-                            },
-                            dropdownMenuEntries: const <DropdownMenuEntry<int>>[
-                              DropdownMenuEntry<int>(
-                                value: 1,
-                                label: '1',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 2,
-                                label: '2',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 3,
-                                label: '3',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 4,
-                                label: '4',
-                              ),
-                              DropdownMenuEntry<int>(
-                                value: 5,
-                                label: '5',
-                              ),
-                            ],
-                          ),
-                          const Text(
-                            ' ( s )',
-                            textAlign: TextAlign.left,
-                            style: TextStyle(fontSize: 16),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 10), // 添加間距
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            debugPrint('ElevatedButton was pressed!');
-                          },
-                          child: Text(AppLocale.info[5].getString(context)),
-                        ),
+                      SizedBox(height: 5),
+                      Text(
+                        AppLocale.args[4].getString(context) +
+                            '正常\n' +
+                            AppLocale.args[5].getString(context) +
+                            '2024-11-13 22 : 07\n' +
+                            AppLocale.args[6].getString(context) +
+                            '192.168.70.99\n\n' +
+                            AppLocale.args[7].getString(context) +
+                            '100\n' +
+                            AppLocale.args[8].getString(context) +
+                            '43 ug/m3\n' +
+                            AppLocale.args[9].getString(context) +
+                            '29.3 °C\n',
+                        textAlign: TextAlign.left,
+                        style: TextStyle(fontSize: 16, height: 1.5),
                       ),
                     ],
                   ),
                 ),
               ),
-            ],
+            ),
+            Container(
+              margin: const EdgeInsets.all(10),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    buildInputRow(AppLocale.args[10].getString(context), AppLocale.info[4].getString(context)),
+                    buildInputRow(AppLocale.args[11].getString(context), AppLocale.info[4].getString(context)),
+                    buildSwitchRow(AppLocale.args[12].getString(context)),
+                    buildDropdownRow(AppLocale.args[13].getString(context), ' ( μg/m3 )'),
+                    buildDropdownRow(AppLocale.args[14].getString(context), ' ( % / 30s )'),
+                    buildDropdownRow(AppLocale.args[15].getString(context), ' ( ℃ )'),
+                    buildDropdownRow(AppLocale.args[16].getString(context), ' ( % / 30s )'),
+                    buildDropdownRow(AppLocale.args[17].getString(context), ' ( s )'),
+                    const SizedBox(height: 10),
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          debugPrint('ElevatedButton was pressed!');
+                        },
+                        child: Text(AppLocale.info[5].getString(context)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget buildInputRow(String label, String hintText) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: <Widget>[
+          Text(
+            label,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16),
           ),
-        ));
+          SizedBox(width: 10),
+          SizedBox(
+            width: 200,
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: hintText,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildSwitchRow(String label) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: <Widget>[
+          Text(
+            label,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16),
+          ),
+          Switch(
+            value: warning,
+            onChanged: (bool value) {
+              setState(() {
+                warning = value;
+              });
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget buildDropdownRow(String label, String unit) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: <Widget>[
+          Text(
+            label,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16),
+          ),
+          SizedBox(width: 10),
+          DropdownMenu<int>(
+            enableFilter: true,
+            width: 100,
+            onSelected: (number) {
+              setState(() {
+                _selectedLabel = number.toString();
+              });
+            },
+            dropdownMenuEntries: List.generate(
+              5,
+              (index) => DropdownMenuEntry<int>(
+                value: index + 1,
+                label: (index + 1).toString(),
+              ),
+            ),
+          ),
+          Text(
+            unit,
+            textAlign: TextAlign.left,
+            style: TextStyle(fontSize: 16),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -1305,29 +1116,22 @@ class _PageSetting extends State<PageSetting> {
   //   super.initState();
   // }
 
-  int lang = 0;
+  int currentLangIndex = 0;
+  List<String> supportedLanguages = ['zh_TW', 'en']; // 支持的語言列表
 
   void _toggleLanguage() {
     setState(() {
-      if (lang == 0) {
-        lang = 1;
-        localization.translate('en');
-      } else if (lang == 1) {
-        lang = 0;
-        localization.translate('zh_TW');
-      }
+      currentLangIndex = (currentLangIndex + 1) % supportedLanguages.length;
+      localization.translate(supportedLanguages[currentLangIndex]);
     });
   }
 
-  String _getTitle(String zh, String en) {
-    switch (lang) {
-      case 0:
-        return zh;
-      case 1:
-        return en;
-      default:
-        return en;
-    }
+  String _getTitle() {
+    Map<String, String> titles = {
+      'zh_TW': 'Switch Language',
+      'en': '切換語言',
+    };
+    return titles[supportedLanguages[currentLangIndex]] ?? 'Switch Language';
   }
 
   Widget build(BuildContext context) {
@@ -1362,7 +1166,8 @@ class _PageSetting extends State<PageSetting> {
             ),
             ListTile(
               onTap: _toggleLanguage,
-              title: Text(_getTitle('Switch Language', '切換語言')),
+              title: Text(_getTitle()),
+              subtitle: Text('Current: ${supportedLanguages[currentLangIndex]}'),
             ),
             // ListTile(
             //   selected: _selected,
@@ -1463,7 +1268,7 @@ class _PageHistory extends State<PageHistory> {
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
         title: Text(
-          '歷史紀錄',
+          AppLocale.titles[2].getString(context),
           style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
@@ -1481,11 +1286,11 @@ class _PageHistory extends State<PageHistory> {
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(
-              '${record[index].events}\n地點: ${record[index].locations}',
+              '${record[index].events}\n' + AppLocale.args[2].getString(context) + '${record[index].locations}',
               style: const TextStyle(fontSize: 16),
             ),
             subtitle: Text(
-              '更新時間: ${record[index].updatetime}',
+              AppLocale.args[20].getString(context) + '${record[index].updatetime}',
               style: const TextStyle(fontSize: 14),
             ),
           );
@@ -1512,7 +1317,7 @@ class _NextPageState extends State<NextPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('登入'),
+        title: Text(AppLocale.info[7].getString(context)),
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -1521,9 +1326,9 @@ class _NextPageState extends State<NextPage> {
               padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _usernameController,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                   prefixIcon: Icon(Icons.person),
-                  labelText: "使用者名稱 ",
+                  labelText: AppLocale.info[9].getString(context),
                 ),
               ),
             ),
@@ -1545,7 +1350,7 @@ class _NextPageState extends State<NextPage> {
                       });
                     },
                   ),
-                  labelText: "密碼 ",
+                  labelText: AppLocale.info[10].getString(context),
                 ),
               ),
             ),
@@ -1559,8 +1364,8 @@ class _NextPageState extends State<NextPage> {
                     const Color.fromARGB(255, 164, 199, 228),
                   ),
                 ),
-                child: const Text(
-                  "登入",
+                child: Text(
+                  AppLocale.info[7].getString(context),
                   style: TextStyle(fontSize: 20),
                 ),
                 onPressed: () {
@@ -1663,7 +1468,7 @@ class _PageWarn extends State<PageWarn> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text('緊急通報', style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[3].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
@@ -1681,15 +1486,15 @@ class _PageWarn extends State<PageWarn> {
                 onPressed: () {
                   launchPhone('119');
                 },
-                child: const Text(
-                  '通報119',
+                child: Text(
+                  AppLocale.titles[3].getString(context) + ' 119',
                   style: TextStyle(fontSize: 20),
                 ),
               )),
-          ElevatedButton(
-            onPressed: fetchData,
-            child: Text('Fetch Data'),
-          ),
+          // ElevatedButton(
+          //   onPressed: fetchData,
+          //   child: Text('Fetch Data'),
+          // ),
         ],
       ),
     );

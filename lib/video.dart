@@ -6,20 +6,21 @@ import 'package:path_provider/path_provider.dart';
 import 'dart:async';
 import 'dart:io';
 import 'package:dio/dio.dart';
+import 'package:flutt/local.dart';
+import 'package:flutter_localization/flutter_localization.dart';
+
+final FlutterLocalization localization = FlutterLocalization.instance;
 
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 
 class DetailPage extends StatefulWidget {
   final SensorData sensorData_detail;
-  const DetailPage({Key? key, required this.sensorData_detail})
-      : super(key: key);
+  const DetailPage({Key? key, required this.sensorData_detail}) : super(key: key);
   @override
   State<DetailPage> createState() => _VideoPageState();
 }
@@ -41,17 +42,23 @@ class _VideoPageState extends State<DetailPage> {
     super.initState();
     _sensorData.modify(widget.sensorData_detail);
     _startDownloadAndTimer();
+    // localization.init(
+    //   mapLocales: [
+    //     MapLocale('en', AppLocale.EN),
+    //     MapLocale('zh_TW', AppLocale.ZH_TW),
+    //   ],
+    //   initLanguageCode: 'zh_TW',
+    // );
+    // localization.onTranslatedLanguage = _onTranslatedLanguage;
   }
 
   void _startDownloadAndTimer() async {
     // Start immediate download
-    await _downloadVideo(
-        'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
+    await _downloadVideo('https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
 
     // Start periodic download every 14 seconds
     _downloadTimer = Timer.periodic(Duration(seconds: 14), (timer) {
-      _downloadVideo(
-          'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
+      _downloadVideo('https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
     });
   }
 
@@ -110,11 +117,15 @@ class _VideoPageState extends State<DetailPage> {
     super.dispose();
   }
 
+  // void _onTranslatedLanguage(Locale? locale) {
+  // setState(() {});
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text('詳細資料'), // 更改成影片頁面的標題
+          title: Text(AppLocale.titles[7].getString(context)), // 更改成影片頁面的標題
         ),
         body: Column(
           children: <Widget>[
@@ -123,9 +134,7 @@ class _VideoPageState extends State<DetailPage> {
               child: Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.blueGrey[700] ?? Colors.blue,
-                      width: 2), // 添加邊框
+                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2), // 添加邊框
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -133,8 +142,7 @@ class _VideoPageState extends State<DetailPage> {
                     padding: const EdgeInsets.only(top: 5), // 添加間距
                     child: Text(
                       _sensorData.events,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -143,12 +151,26 @@ class _VideoPageState extends State<DetailPage> {
                     children: <Widget>[
                       const SizedBox(height: 5), // 添加間距
                       Text(
-                        '位置: ${_sensorData.locations}\n'
-                        '時間: ${_sensorData.updatetime}\n'
-                        '事件等級: ${_sensorData.levels}\n'
-                        '• 設備編號: ${_sensorData.iot_id}\n'
-                        '• 煙霧參數: ${_sensorData.airQuality} (正常值: 10)\n'
-                        '• 溫度參數: ${_sensorData.temperature}°C\n',
+                        AppLocale.args[2].getString(context) +
+                            _sensorData.locations +
+                            '\n' +
+                            AppLocale.args[18].getString(context) +
+                            _sensorData.updatetime +
+                            '\n' +
+                            AppLocale.args[19].getString(context) +
+                            _sensorData.levels +
+                            '\n' +
+                            AppLocale.args[3].getString(context) +
+                            _sensorData.iot_id +
+                            '\n' +
+                            AppLocale.args[1].getString(context) +
+                            _sensorData.airQuality.toString() +
+                            ' (' +
+                            AppLocale.info[3].getString(context) +
+                            ': 10)\n' +
+                            AppLocale.args[0].getString(context) +
+                            _sensorData.temperature.toString() +
+                            '°C',
                         textAlign: TextAlign.left,
                         style: TextStyle(fontSize: 16, height: 1.5),
                       ),
@@ -229,14 +251,10 @@ class _VideoPageState extends State<DetailPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(_controller!.value.isPlaying
-                            ? Icons.pause
-                            : Icons.play_arrow),
+                        icon: Icon(_controller!.value.isPlaying ? Icons.pause : Icons.play_arrow),
                         onPressed: () {
                           setState(() {
-                            _controller!.value.isPlaying
-                                ? _controller!.pause()
-                                : _controller!.play();
+                            _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
                           });
                         },
                       ),
