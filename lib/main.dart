@@ -461,59 +461,74 @@ class _PageEvent extends State<PageEvent> {
                         SensorData itemData = sensordata[index];
                         //加入顏色變化
                         //判斷event類別
-                        return Card(
-                          elevation: 6,
-                          margin: const EdgeInsets.all(16),
-                          color: const Color.fromARGB(255, 253, 208, 223),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0),
-                            side: const BorderSide(
-                              color: Color.fromARGB(248, 237, 127, 167),
-                              width: 2.0,
+                        return Column(
+                          children: [
+                            Container(
+                              alignment: Alignment.centerLeft,
+                              padding: EdgeInsets.all(16),
+                              child: Text(
+                                'Namespace ID: ' + '\n' + 'Instance ID: ' + '\n' + 'Name: ',
+                                style: TextStyle(fontSize: 16),
+                              ),
                             ),
-                          ),
-                          child: Row(
-                            // crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              SizedBox(
-                                width: 200,
-                                child: ListTile(
-                                  title: Padding(
-                                    padding: const EdgeInsets.only(top: 5), // 添加間距
-                                    child: Text(
-                                      itemData.events,
-                                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                                      textAlign: TextAlign.left,
-                                    ),
-                                  ),
-                                  subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                            Card(
+                              elevation: 6,
+                              margin: const EdgeInsets.all(16),
+                              color: const Color.fromARGB(255, 253, 208, 223),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10.0),
+                                side: const BorderSide(
+                                  color: Color.fromARGB(248, 237, 127, 167),
+                                  width: 2.0,
+                                ),
+                              ),
+                              child: Column(
+                                children: [
+                                  Row(
                                     children: <Widget>[
-                                      const SizedBox(height: 5), // 添加間距
-                                      Text(
-                                        '${itemData.locations}\n'
-                                        '${itemData.updatetime}\n',
-                                        textAlign: TextAlign.left,
-                                        style: const TextStyle(fontSize: 16, height: 1.5),
+                                      SizedBox(
+                                        width: 200,
+                                        child: ListTile(
+                                          title: Padding(
+                                            padding: const EdgeInsets.only(top: 5), // 添加間距
+                                            child: Text(
+                                              itemData.events,
+                                              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                              textAlign: TextAlign.left,
+                                            ),
+                                          ),
+                                          subtitle: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              const SizedBox(height: 5), // 添加間距
+                                              Text(
+                                                '${itemData.locations}\n'
+                                                '${itemData.updatetime}\n',
+                                                textAlign: TextAlign.left,
+                                                style: const TextStyle(fontSize: 16, height: 1.5),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                      IconButton(
+                                        icon: const Icon(Icons.keyboard_arrow_right),
+                                        iconSize: 48,
+                                        color: const Color.fromARGB(248, 241, 102, 153),
+                                        onPressed: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                          );
+                                        },
+                                        alignment: Alignment.centerRight,
                                       ),
                                     ],
                                   ),
-                                ),
+                                ],
                               ),
-                              IconButton(
-                                icon: const Icon(Icons.keyboard_arrow_right),
-                                iconSize: 48,
-                                color: const Color.fromARGB(248, 241, 102, 153),
-                                onPressed: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
-                                  );
-                                },
-                                alignment: Alignment.centerRight,
-                              ),
-                            ],
-                          ),
+                            ),
+                          ],
                         );
                       },
                     ),
@@ -559,59 +574,74 @@ class _PageEvent extends State<PageEvent> {
                   SensorData itemData = sensordata[index];
                   //加入顏色變化
                   //判斷event類別
-                  return Card(
-                    elevation: 6,
-                    margin: const EdgeInsets.all(16),
-                    color: const Color.fromARGB(255, 253, 208, 223),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10.0),
-                      side: const BorderSide(
-                        color: Color.fromARGB(248, 237, 127, 167),
-                        width: 2.0,
+                  return Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.all(16),
+                        child: Text(
+                          'Namespace ID: ' + '\n' + 'Instance ID: ' + '\n' + 'Name: ',
+                          style: TextStyle(fontSize: 16),
+                        ),
                       ),
-                    ),
-                    child: Row(
-                      // crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        SizedBox(
-                          width: 200,
-                          child: ListTile(
-                            title: Padding(
-                              padding: const EdgeInsets.only(top: 5), // 添加間距
-                              child: Text(
-                                itemData.events,
-                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-                                textAlign: TextAlign.left,
-                              ),
-                            ),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
+                      Card(
+                        elevation: 6,
+                        margin: const EdgeInsets.all(16),
+                        color: const Color.fromARGB(255, 253, 208, 223),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.0),
+                          side: const BorderSide(
+                            color: Color.fromARGB(248, 237, 127, 167),
+                            width: 2.0,
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Row(
                               children: <Widget>[
-                                const SizedBox(height: 5), // 添加間距
-                                Text(
-                                  '${itemData.locations}\n'
-                                  '${itemData.updatetime}\n',
-                                  textAlign: TextAlign.left,
-                                  style: const TextStyle(fontSize: 16, height: 1.5),
+                                SizedBox(
+                                  width: 200,
+                                  child: ListTile(
+                                    title: Padding(
+                                      padding: const EdgeInsets.only(top: 5), // 添加間距
+                                      child: Text(
+                                        itemData.events,
+                                        style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ),
+                                    subtitle: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        const SizedBox(height: 5), // 添加間距
+                                        Text(
+                                          '${itemData.locations}\n'
+                                          '${itemData.updatetime}\n',
+                                          textAlign: TextAlign.left,
+                                          style: const TextStyle(fontSize: 16, height: 1.5),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                IconButton(
+                                  icon: const Icon(Icons.keyboard_arrow_right),
+                                  iconSize: 48,
+                                  color: const Color.fromARGB(248, 241, 102, 153),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                    );
+                                  },
+                                  alignment: Alignment.centerRight,
                                 ),
                               ],
                             ),
-                          ),
+                          ],
                         ),
-                        IconButton(
-                          icon: const Icon(Icons.keyboard_arrow_right),
-                          iconSize: 48,
-                          color: const Color.fromARGB(248, 241, 102, 153),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
-                            );
-                          },
-                          alignment: Alignment.centerRight,
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   );
                 },
               );
