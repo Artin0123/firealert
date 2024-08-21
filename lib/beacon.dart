@@ -67,7 +67,7 @@ class EddystoneScanner extends ChangeNotifier {
       // If scan timer is already active, do nothing
       return;
     }
-    scanTimer = Timer.periodic(Duration(seconds: 10), (timer) {
+    scanTimer = Timer.periodic(Duration(seconds: 60), (timer) {
       startScan();
     });
   }
@@ -75,7 +75,7 @@ class EddystoneScanner extends ChangeNotifier {
   void startScan() {
     print('Starting scan...');
     eddystoneUIDs.clear();
-    flutterBlue.startScan(timeout: Duration(seconds: 8));
+    flutterBlue.startScan(timeout: Duration(seconds: 10));
 
     flutterBlue.scanResults.listen((results) {
       for (ScanResult result in results) {
