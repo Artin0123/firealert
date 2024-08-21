@@ -590,18 +590,6 @@ class _PageEvent extends State<PageEvent> {
                   //判斷event類別
                   return Column(
                     children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.all(16),
-                        child: Text(
-                          'Namespace ID: ' +
-                              '\n' +
-                              'Instance ID: ' +
-                              '\n' +
-                              'Name: ',
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      ),
                       Card(
                         elevation: 6,
                         margin: const EdgeInsets.all(16),
