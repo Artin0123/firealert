@@ -73,6 +73,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.18.0"
+  convert:
+    dependency: transitive
+    description:
+      name: convert
+      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.1.1"
   convex_bottom_bar:
     dependency: "direct main"
     description:
@@ -145,6 +153,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "7.0.0"
+  fixnum:
+    dependency: transitive
+    description:
+      name: fixnum
+      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -182,6 +198,22 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "5.1.0"
+  flutter_beacon:
+    dependency: "direct main"
+    description:
+      name: flutter_beacon
+      sha256: c93ee7a2e572a2dba31eb8db9f7a2c514b2b3e22584ea7d78d8cc854fdbded79
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.5.1"
+  flutter_blue:
+    dependency: "direct main"
+    description:
+      name: flutter_blue
+      sha256: f7f76b9b80455b0375693ec96c276fadb01e94d8441fa1740a64980cd1aeda5c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.8.0"
   flutter_launcher_icons:
     dependency: "direct main"
     description:
@@ -485,6 +517,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  protobuf:
+    dependency: transitive
+    description:
+      name: protobuf
+      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   provider:
     dependency: "direct main"
     description:
@@ -497,10 +537,10 @@ packages:
     dependency: "direct main"
     description:
       name: rxdart
-      sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
+      sha256: "2ef8b4e91cb3b55d155e0e34eeae0ac7107974e451495c955ac04ddee8cc21fd"
       url: "https://pub.dev"
     source: hosted
-    version: "0.28.0"
+    version: "0.26.0"
   shared_preferences:
     dependency: "direct main"
     description:
