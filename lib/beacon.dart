@@ -18,14 +18,8 @@ class EddystoneUID {
   });
 
   factory EddystoneUID.fromAdvertisment(Uint8List data, String name, int rssi) {
-    String namespaceId = data
-        .sublist(2, 12)
-        .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-        .join();
-    String instanceId = data
-        .sublist(12, 18)
-        .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-        .join();
+    String namespaceId = data.sublist(2, 12).map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+    String instanceId = data.sublist(12, 18).map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
 
     return EddystoneUID(
       namespaceId: namespaceId,
@@ -52,11 +46,10 @@ class EddystoneScanner extends ChangeNotifier {
     await Permission.bluetoothScan.request();
     await Permission.bluetoothConnect.request();
 
-    if (await Permission.locationWhenInUse.isGranted &&
-        await Permission.bluetoothScan.isGranted &&
-        await Permission.bluetoothConnect.isGranted) {
+    if (await Permission.locationWhenInUse.isGranted && await Permission.bluetoothScan.isGranted && await Permission.bluetoothConnect.isGranted) {
       refresh = true;
-      startPeriodicScan();
+      // 暫時先關
+      // startPeriodicScan();
     } else {
       print('Necessary permissions not granted');
     }
@@ -85,14 +78,11 @@ class EddystoneScanner extends ChangeNotifier {
 
         serviceData.forEach((uuid, data) {
           if (data.isNotEmpty) {
-            String hexData = data
-                .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-                .join();
+            String hexData = data.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
             print('Hex data: $hexData');
 
             try {
-              var uid = EddystoneUID.fromAdvertisment(
-                  Uint8List.fromList(data), deviceName, rssi);
+              var uid = EddystoneUID.fromAdvertisment(Uint8List.fromList(data), deviceName, rssi);
 
               if (uid.namespaceId == "ffffffff00000000ffff") {
                 eddystoneUIDs[uid.namespaceId] = uid;

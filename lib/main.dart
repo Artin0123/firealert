@@ -50,8 +50,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 初始化本地通知
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -88,9 +87,7 @@ void main() async {
 
 void startTimer() {
   int timestamp = 1714472686;
-  DateTime then =
-      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
-          .toUtc();
+  DateTime then = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true).toUtc();
   DateTime now = DateTime.now().toUtc();
   Duration delay = then.difference(now);
   Timer(delay, () {
@@ -147,14 +144,12 @@ class _MyAppState extends State<MyApp> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController =
-      StreamController<bool>();
+  final StreamController<bool> _updateNotificationController = StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream =>
-      _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -184,8 +179,6 @@ class _MyHomePageState extends State<MyHomePage> {
   // 定义底部导航栏中的每个页面
   final List<Widget> pages = [
     const PageEvent(),
-    const PageHistory(),
-    const PageWarn(),
     const PageUtil(),
     const PageSetting(),
   ];
@@ -229,14 +222,6 @@ class _MyHomePageState extends State<MyHomePage> {
             TabItem(
               icon: Icons.home,
               title: AppLocale.titles[1].getString(context),
-            ),
-            TabItem(
-              icon: Icons.history,
-              title: AppLocale.titles[2].getString(context),
-            ),
-            TabItem(
-              icon: Icons.warning,
-              title: AppLocale.titles[3].getString(context),
             ),
             TabItem(
               icon: Icons.smart_toy,
@@ -327,8 +312,7 @@ class _PageEvent extends State<PageEvent> {
   void initState() {
     super.initState();
     try {
-      _streamControllerJson =
-          Provider.of<WebSocketService>(context, listen: false);
+      _streamControllerJson = Provider.of<WebSocketService>(context, listen: false);
     } catch (e) {
       print('Error initializing WebSocketService: $e');
     }
@@ -361,11 +345,7 @@ class _PageEvent extends State<PageEvent> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text(AppLocale.titles[0].getString(context),
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[0].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
@@ -379,289 +359,378 @@ class _PageEvent extends State<PageEvent> {
       body: StreamBuilder<Map<String, dynamic>>(
         stream: _streamControllerJson.messageStream,
         builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            // Data is available, extract and display it
-            Map<String, dynamic> datas = snapshot.data!;
-            if (datas.containsKey('details')) {
-              dynamic data = datas['details'];
-              if (data.isNotEmpty) {
-                // Data is present in datas['data']
-                // Do something with the data
-                locations = data['location'];
-                levels = data['level'].toString();
-                temperatures = data['temperature'].toString();
-                timestamps = data['o_time_stamp'].toString();
-                airqualitys = data['smoke'].toString();
-                events = data['event'].toString();
-                event_id = data['event_id'].toString();
-                big_location = data['group_name'];
-                String iot_id = data['iot_id'].toString();
-                sensorData = SensorData(
-                    airqualitys,
-                    temperatures,
-                    event_id,
-                    iot_id,
-                    big_location + ' ' + locations,
-                    events,
-                    isAlert,
-                    levels,
-                    timestamps);
-                int spi = 0;
-                sensorData.fixcolorRed();
-                for (var i = 0; i < sensordata.length; i++) {
-                  if (sensordata[i].iot_id == iot_id) {
-                    sensordata[i].modify(sensorData);
-                    spi = 1;
-                    break;
-                  }
+          // if (snapshot.hasData) {
+          // Data is available, extract and display it
+          Map<String, dynamic> datas = snapshot.data ?? {};
+          if (datas.containsKey('details')) {
+            dynamic data = datas['details'];
+            if (data.isNotEmpty) {
+              // Data is present in datas['data']
+              // Do something with the data
+              locations = data['location'];
+              levels = data['level'].toString();
+              temperatures = data['temperature'].toString();
+              timestamps = data['o_time_stamp'].toString();
+              airqualitys = data['smoke'].toString();
+              events = data['event'].toString();
+              event_id = data['event_id'].toString();
+              big_location = data['group_name'];
+              String iot_id = data['iot_id'].toString();
+              sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
+              int spi = 0;
+              sensorData.fixcolorRed();
+              for (var i = 0; i < sensordata.length; i++) {
+                if (sensordata[i].iot_id == iot_id) {
+                  sensordata[i].modify(sensorData);
+                  spi = 1;
+                  break;
                 }
-                if (spi == 0) {
-                  sensordata.add(sensorData);
-                }
-                record.add(sensorData);
-                // button_signal = 1;
-                // print(button_signal);
-                // sensordata.sort(SensorData.compareByLevel);
               }
+              if (spi == 0) {
+                sensordata.add(sensorData);
+              }
+              record.add(sensorData);
+              // button_signal = 1;
+              // print(button_signal);
+              // sensordata.sort(SensorData.compareByLevel);
             }
-            return SingleChildScrollView(
-              child: sensordata.isEmpty
-                  ? Container(
-                      width: 400, // 设置固定宽度
-                      height: 100, // 设置固定高度
-                      child: Card(
-                        elevation: 6,
-                        margin: EdgeInsets.all(16),
-                        color: Colors.white, // 设置白色背景
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                          side: BorderSide(
-                              color: Colors.black, width: 2.0), // 设置黑色边框
-                        ),
-                        child: Padding(
-                          padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
-                          child: Text(
-                            AppLocale.info[0].getString(context),
-                            textAlign: TextAlign.left,
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
+          }
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                ListTile(
+                  title: Row(
+                    mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
+                    children: [
+                      Icon(Icons.history), // 新增圖示
+                      SizedBox(width: 8), // 圖示和文字之間的間距
+                      Text(
+                        AppLocale.titles[2].getString(context),
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                      ), // 新增文字
+                    ],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => PageHistory()),
+                    );
+                  },
+                ),
+                sensordata.isEmpty
+                    ? Container(
+                        width: double.infinity, // 设置宽度
+                        child: Card(
+                          elevation: 6,
+                          margin: EdgeInsets.all(16),
+                          color: Colors.white, // 设置白色背景
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10.0), // 设置圆角
+                            side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
+                            child: Text(
+                              AppLocale.info[0].getString(context),
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    )
-                  : ListView.builder(
-                      shrinkWrap:
-                          true, // Ensures that the ListView.builder takes up only the necessary space
-                      itemCount: sensordata.length,
-                      itemBuilder: (context, index) {
-                        SensorData itemData = sensordata[index];
-                        //加入顏色變化
-                        //判斷event類別
-                        return Column(
-                          children: [
-                            // Container(
-                            //   alignment: Alignment.centerLeft,
-                            //   padding: EdgeInsets.all(16),
-                            //   child: Text(
-                            //     'Namespace ID: ' +
-                            //         '\n' +
-                            //         'Instance ID: ' +
-                            //         '\n' +
-                            //         'Name: ',
-                            //     style: TextStyle(fontSize: 16),
-                            //   ),
-                            // ),
-                            Card(
-                              elevation: 6,
-                              margin: const EdgeInsets.all(16),
-                              color: const Color.fromARGB(255, 253, 208, 223),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10.0),
-                                side: const BorderSide(
-                                  color: Color.fromARGB(248, 237, 127, 167),
-                                  width: 2.0,
-                                ),
-                              ),
-                              child: Column(
-                                children: [
-                                  Row(
-                                    children: <Widget>[
-                                      SizedBox(
-                                        width: 200,
-                                        child: ListTile(
-                                          title: Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 5), // 添加間距
-                                            child: Text(
-                                              itemData.events,
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 20),
-                                              textAlign: TextAlign.left,
-                                            ),
+                      )
+                    : ListView.builder(
+                        shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
+                        itemCount: sensordata.length,
+                        itemBuilder: (context, index) {
+                          SensorData itemData = sensordata[index];
+                          //加入顏色變化
+                          //判斷event類別
+                          return Column(
+                            children: [
+                              // Container(
+                              //   alignment: Alignment.centerLeft,
+                              //   padding: EdgeInsets.all(16),
+                              //   child: Text(
+                              //     'Namespace ID: ' + '\n' + 'Instance ID: ' + '\n' + 'Name: ',
+                              //     style: TextStyle(fontSize: 16),
+                              //   ),
+                              // ),
+                              Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 75, // 設定按鈕的高度
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                                            side: BorderSide(color: Colors.deepOrangeAccent, width: 2.0), // 設定邊框顏色
+                                            backgroundColor: Colors.red, // 設定背景顏色
                                           ),
-                                          subtitle: Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              const SizedBox(height: 5), // 添加間距
-                                              Text(
-                                                '${itemData.locations}\n'
-                                                '${itemData.updatetime}\n',
-                                                textAlign: TextAlign.left,
-                                                style: const TextStyle(
-                                                    fontSize: 16, height: 1.5),
-                                              ),
-                                            ],
-                                          ),
+                                          onPressed: () {
+                                            launchPhone('119');
+                                          },
+                                          child: Text(AppLocale.titles[3].getString(context) + ' 119', style: TextStyle(fontSize: 24, color: Colors.white)),
                                         ),
                                       ),
-                                      IconButton(
-                                        icon: const Icon(
-                                            Icons.keyboard_arrow_right),
-                                        iconSize: 48,
-                                        color: const Color.fromARGB(
-                                            248, 241, 102, 153),
-                                        onPressed: () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    DetailPage(
-                                                        sensorData_detail:
-                                                            itemData)),
-                                          );
-                                        },
-                                        alignment: Alignment.centerRight,
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        );
-                      },
-                    ),
-            );
-          } else if (snapshot.hasError) {
-            // Error occurred while fetching data
-            return Center(
-              child: Text('WebSocket Error: ${snapshot.error}'),
-            );
-          } else {
-            // Data is not available yet
-            if (sensordata.isEmpty) {
-              //return (Text('無事件資料'));
-              return Container(
-                width: 400, // 设置固定宽度
-                height: 100, // 设置固定高度
-                child: Card(
-                  elevation: 6,
-                  margin: EdgeInsets.all(16),
-                  color: Colors.white, // 设置白色背景
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                    side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
-                    child: Text(
-                      AppLocale.info[0].getString(context),
-                      textAlign: TextAlign.left,
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return ListView.builder(
-                shrinkWrap:
-                    true, // Ensures that the ListView.builder takes up only the necessary space
-                itemCount: sensordata.length,
-                itemBuilder: (context, index) {
-                  SensorData itemData = sensordata[index];
-                  //加入顏色變化
-                  //判斷event類別
-                  return Column(
-                    children: [
-                      Card(
-                        elevation: 6,
-                        margin: const EdgeInsets.all(16),
-                        color: const Color.fromARGB(255, 253, 208, 223),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10.0),
-                          side: const BorderSide(
-                            color: Color.fromARGB(248, 237, 127, 167),
-                            width: 2.0,
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            Row(
-                              children: <Widget>[
-                                SizedBox(
-                                  width: 200,
-                                  child: ListTile(
-                                    title: Padding(
-                                      padding:
-                                          const EdgeInsets.only(top: 5), // 添加間距
-                                      child: Text(
-                                        itemData.events,
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 20),
-                                        textAlign: TextAlign.left,
+                                    ),
+                                    SizedBox(width: 16), // 設置兩個按鈕之間的間隔
+                                    Expanded(
+                                      child: SizedBox(
+                                        height: 75, // 設定按鈕的高度
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                                            side: BorderSide(color: Colors.yellow, width: 2.0), // 設定邊框顏色
+                                            backgroundColor: Colors.orange, // 設定背景顏色
+                                          ),
+                                          onPressed: () {},
+                                          child: Text(AppLocale.info[11].getString(context) + AppLocale.titles[3].getString(context),
+                                              style: TextStyle(fontSize: 24, color: Colors.white)),
+                                        ),
                                       ),
                                     ),
-                                    subtitle: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                  ],
+                                ),
+                              ),
+                              Card(
+                                elevation: 6,
+                                margin: const EdgeInsets.all(16),
+                                color: const Color.fromARGB(255, 253, 208, 223),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  side: const BorderSide(
+                                    color: Color.fromARGB(248, 237, 127, 167),
+                                    width: 2.0,
+                                  ),
+                                ),
+                                child: Column(
+                                  children: [
+                                    Row(
                                       children: <Widget>[
-                                        const SizedBox(height: 5), // 添加間距
-                                        Text(
-                                          '${itemData.locations}\n'
-                                          '${itemData.updatetime}\n',
-                                          textAlign: TextAlign.left,
-                                          style: const TextStyle(
-                                              fontSize: 16, height: 1.5),
+                                        SizedBox(
+                                          width: 200,
+                                          child: ListTile(
+                                            title: Padding(
+                                              padding: const EdgeInsets.only(top: 5), // 添加間距
+                                              child: Text(
+                                                itemData.events,
+                                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                textAlign: TextAlign.left,
+                                              ),
+                                            ),
+                                            subtitle: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                const SizedBox(height: 5), // 添加間距
+                                                Text(
+                                                  '${itemData.locations}\n'
+                                                  '${itemData.updatetime}\n',
+                                                  textAlign: TextAlign.left,
+                                                  style: const TextStyle(fontSize: 16, height: 1.5),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.keyboard_arrow_right),
+                                          iconSize: 48,
+                                          color: const Color.fromARGB(248, 241, 102, 153),
+                                          onPressed: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                            );
+                                          },
+                                          alignment: Alignment.centerRight,
                                         ),
                                       ],
                                     ),
-                                  ),
+                                  ],
                                 ),
-                                IconButton(
-                                  icon: const Icon(Icons.keyboard_arrow_right),
-                                  iconSize: 48,
-                                  color:
-                                      const Color.fromARGB(248, 241, 102, 153),
-                                  onPressed: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => DetailPage(
-                                              sensorData_detail: itemData)),
-                                    );
-                                  },
-                                  alignment: Alignment.centerRight,
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
-                    ],
-                  );
-                },
-              );
-            }
-            // Or any other loading indicator
-          }
+              ],
+            ),
+          );
+          // } else if (snapshot.hasError) {
+          //   // Error occurred while fetching data
+          //   return Center(
+          //     child: Text('WebSocket Error: ${snapshot.error}'),
+          //   );
+          // } else {
+          //   return SingleChildScrollView(
+          //     child: Column(
+          //       children: [
+          //         ListTile(
+          //           title: Row(
+          //             mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
+          //             children: [
+          //               Icon(Icons.history), // 新增圖示
+          //               SizedBox(width: 8), // 圖示和文字之間的間距
+          //               Text('歷史', style: TextStyle(fontSize: 16)), // 新增文字
+          //             ],
+          //           ),
+          //           onTap: () {
+          //             Navigator.push(
+          //               context,
+          //               MaterialPageRoute(builder: (context) => PageHistory()),
+          //             );
+          //           },
+          //         ),
+          //         // Data is not available yet
+          //         sensordata.isEmpty
+          //             ? Container(
+          //                 width: double.infinity, // 设置宽度
+          //                 child: Card(
+          //                   elevation: 6,
+          //                   margin: EdgeInsets.all(16),
+          //                   color: Colors.white, // 设置白色背景
+          //                   shape: RoundedRectangleBorder(
+          //                     borderRadius: BorderRadius.circular(10.0), // 设置圆角
+          //                     side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
+          //                   ),
+          //                   child: Padding(
+          //                     padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
+          //                     child: Text(
+          //                       AppLocale.info[0].getString(context),
+          //                       textAlign: TextAlign.left,
+          //                       style: TextStyle(
+          //                         fontSize: 20,
+          //                         fontWeight: FontWeight.bold,
+          //                       ),
+          //                     ),
+          //                   ),
+          //                 ),
+          //               )
+          //             : ListView.builder(
+          //                 shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
+          //                 itemCount: sensordata.length,
+          //                 itemBuilder: (context, index) {
+          //                   SensorData itemData = sensordata[index];
+          //                   //加入顏色變化
+          //                   //判斷event類別
+          //                   return Column(
+          //                     children: [
+          //                       // Container(
+          //                       //   alignment: Alignment.centerLeft,
+          //                       //   padding: EdgeInsets.all(16),
+          //                       //   child: Text(
+          //                       //     'Namespace ID: ' + '\n' + 'Instance ID: ' + '\n' + 'Name: ',
+          //                       //     style: TextStyle(fontSize: 16),
+          //                       //   ),
+          //                       // ),
+          //                       Container(
+          //                         margin: const EdgeInsets.only(top: 16),
+          //                         child: Row(
+          //                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          //                           children: [
+          //                             SizedBox(
+          //                               height: 75, // 設定按鈕的高度
+          //                               child: OutlinedButton(
+          //                                 style: OutlinedButton.styleFrom(
+          //                                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          //                                   side: BorderSide(color: Colors.deepOrangeAccent, width: 2.0), // 設定邊框顏色
+          //                                   backgroundColor: Colors.red, // 設定背景顏色
+          //                                 ),
+          //                                 onPressed: () {
+          //                                   launchPhone('119');
+          //                                 },
+          //                                 child: Text(AppLocale.titles[3].getString(context) + ' 119', style: TextStyle(fontSize: 24, color: Colors.white)),
+          //                               ),
+          //                             ),
+          //                             SizedBox(
+          //                               height: 75, // 設定按鈕的高度
+          //                               child: OutlinedButton(
+          //                                 style: OutlinedButton.styleFrom(
+          //                                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+          //                                   side: BorderSide(color: Colors.yellow, width: 2.0), // 設定邊框顏色
+          //                                   backgroundColor: Colors.orange, // 設定背景顏色
+          //                                 ),
+          //                                 onPressed: () {},
+          //                                 child: Text(AppLocale.info[11].getString(context) + AppLocale.titles[3].getString(context),
+          //                                     style: TextStyle(fontSize: 24, color: Colors.white)),
+          //                               ),
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ),
+          //                       Card(
+          //                         elevation: 6,
+          //                         margin: const EdgeInsets.all(16),
+          //                         color: const Color.fromARGB(255, 253, 208, 223),
+          //                         shape: RoundedRectangleBorder(
+          //                           borderRadius: BorderRadius.circular(10.0),
+          //                           side: const BorderSide(
+          //                             color: Color.fromARGB(248, 237, 127, 167),
+          //                             width: 2.0,
+          //                           ),
+          //                         ),
+          //                         child: Column(
+          //                           children: [
+          //                             Row(
+          //                               children: <Widget>[
+          //                                 SizedBox(
+          //                                   width: 200,
+          //                                   child: ListTile(
+          //                                     title: Padding(
+          //                                       padding: const EdgeInsets.only(top: 5), // 添加間距
+          //                                       child: Text(
+          //                                         itemData.events,
+          //                                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+          //                                         textAlign: TextAlign.left,
+          //                                       ),
+          //                                     ),
+          //                                     subtitle: Column(
+          //                                       crossAxisAlignment: CrossAxisAlignment.start,
+          //                                       children: <Widget>[
+          //                                         const SizedBox(height: 5), // 添加間距
+          //                                         Text(
+          //                                           '${itemData.locations}\n'
+          //                                           '${itemData.updatetime}\n',
+          //                                           textAlign: TextAlign.left,
+          //                                           style: const TextStyle(fontSize: 16, height: 1.5),
+          //                                         ),
+          //                                       ],
+          //                                     ),
+          //                                   ),
+          //                                 ),
+          //                                 IconButton(
+          //                                   icon: const Icon(Icons.keyboard_arrow_right),
+          //                                   iconSize: 48,
+          //                                   color: const Color.fromARGB(248, 241, 102, 153),
+          //                                   onPressed: () {
+          //                                     Navigator.push(
+          //                                       context,
+          //                                       MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+          //                                     );
+          //                                   },
+          //                                   alignment: Alignment.centerRight,
+          //                                 ),
+          //                               ],
+          //                             ),
+          //                           ],
+          //                         ),
+          //                       ),
+          //                     ],
+          //                   );
+          //                 },
+          //               ),
+          //       ],
+          //     ),
+          //   );
+          // }
+          // Or any other loading indicator
         },
       ),
     );
@@ -701,12 +770,8 @@ class _PageUtil extends State<PageUtil> {
     setState(() {
       items = sensordata
           .where((sensordata) =>
-              sensordata.airQuality
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
-              sensordata.temperature
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
+              sensordata.airQuality.toLowerCase().contains(query.toLowerCase()) ||
+              sensordata.temperature.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.id.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.iot_id.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -718,16 +783,7 @@ class _PageUtil extends State<PageUtil> {
     for (var i = 0; i < sensordata.length; i++) {
       var item = sensordata[i];
       // 将 SensorData 对象的属性添加到 buffer 中
-      buffer[item.iot_id] = SensorData(
-          item.airQuality,
-          item.temperature,
-          item.id,
-          item.iot_id,
-          item.locations,
-          item.events,
-          'yes',
-          levels,
-          item.updatetime);
+      buffer[item.iot_id] = SensorData(item.airQuality, item.temperature, item.id, item.iot_id, item.locations, item.events, 'yes', levels, item.updatetime);
     }
 
     return Scaffold(
@@ -791,8 +847,7 @@ class _PageUtil extends State<PageUtil> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageArgs()),
+                                  MaterialPageRoute(builder: (context) => PageArgs()),
                                 );
                               },
                             ),
@@ -848,8 +903,7 @@ class _PageArgs extends State<PageArgs> {
               child: Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
+                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -857,8 +911,7 @@ class _PageArgs extends State<PageArgs> {
                     padding: EdgeInsets.only(top: 5),
                     child: Text(
                       "元智一館 七樓 1705A實驗室",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -894,21 +947,14 @@ class _PageArgs extends State<PageArgs> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    buildInputRow(AppLocale.args[10].getString(context),
-                        AppLocale.info[4].getString(context)),
-                    buildInputRow(AppLocale.args[11].getString(context),
-                        AppLocale.info[4].getString(context)),
+                    buildInputRow(AppLocale.args[10].getString(context), AppLocale.info[4].getString(context)),
+                    buildInputRow(AppLocale.args[11].getString(context), AppLocale.info[4].getString(context)),
                     buildSwitchRow(AppLocale.args[12].getString(context)),
-                    buildDropdownRow(
-                        AppLocale.args[13].getString(context), ' ( μg/m3 )'),
-                    buildDropdownRow(
-                        AppLocale.args[14].getString(context), ' ( % / 30s )'),
-                    buildDropdownRow(
-                        AppLocale.args[15].getString(context), ' ( ℃ )'),
-                    buildDropdownRow(
-                        AppLocale.args[16].getString(context), ' ( % / 30s )'),
-                    buildDropdownRow(
-                        AppLocale.args[17].getString(context), ' ( s )'),
+                    buildDropdownRow(AppLocale.args[13].getString(context), ' ( μg/m3 )'),
+                    buildDropdownRow(AppLocale.args[14].getString(context), ' ( % / 30s )'),
+                    buildDropdownRow(AppLocale.args[15].getString(context), ' ( ℃ )'),
+                    buildDropdownRow(AppLocale.args[16].getString(context), ' ( % / 30s )'),
+                    buildDropdownRow(AppLocale.args[17].getString(context), ' ( s )'),
                     const SizedBox(height: 10),
                     Center(
                       child: ElevatedButton(
@@ -1206,19 +1252,14 @@ class _PageSetting extends State<PageSetting> {
 
     List<EddystoneUID> _getTopThreeUIDs() {
       var uids = scanner.eddystoneUIDs.values.toList();
-      uids.sort(
-          (a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
+      uids.sort((a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
       return uids.take(3).toList();
     }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
-        title: Text(AppLocale.titles[5].getString(context),
-            style: TextStyle(
-                color: Colors.grey[50],
-                fontSize: 28,
-                fontWeight: FontWeight.bold)),
+        title: Text(AppLocale.titles[5].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3.0),
@@ -1240,13 +1281,9 @@ class _PageSetting extends State<PageSetting> {
                 _handleLogin();
               }
             },
-            leading:
-                Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
-            title: Text(_isLoggedIn
-                ? username
-                : AppLocale.info[7].getString(context)), // 根据登录状态显示不同的文本
-            subtitle:
-                Text(_isLoggedIn ? AppLocale.info[8].getString(context) : ''),
+            leading: Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
+            title: Text(_isLoggedIn ? username : AppLocale.info[7].getString(context)), // 根据登录状态显示不同的文本
+            subtitle: Text(_isLoggedIn ? AppLocale.info[8].getString(context) : ''),
           ),
           ListTile(
             onTap: _toggleLanguage,
@@ -1262,8 +1299,7 @@ class _PageSetting extends State<PageSetting> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
-                    List<EddystoneUID> topThreeUIDs =
-                        snapshot.data as List<EddystoneUID>;
+                    List<EddystoneUID> topThreeUIDs = snapshot.data as List<EddystoneUID>;
                     return ListView.builder(
                       itemCount: topThreeUIDs.length,
                       itemBuilder: (context, index) {
@@ -1389,10 +1425,7 @@ class _PageHistory extends State<PageHistory> {
         backgroundColor: Colors.blue[400],
         title: Text(
           AppLocale.titles[2].getString(context),
-          style: TextStyle(
-              color: Colors.grey[50],
-              fontSize: 28,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -1405,19 +1438,15 @@ class _PageHistory extends State<PageHistory> {
       ),
       body: ListView.separated(
         separatorBuilder: (context, index) => Divider(color: Colors.black),
-        itemCount:
-            record.length, // replace 'record' with your actual record array
+        itemCount: record.length, // replace 'record' with your actual record array
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(
-              '${record[index].events}\n' +
-                  AppLocale.args[2].getString(context) +
-                  '${record[index].locations}',
+              '${record[index].events}\n' + AppLocale.args[2].getString(context) + '${record[index].locations}',
               style: const TextStyle(fontSize: 16),
             ),
             subtitle: Text(
-              AppLocale.args[20].getString(context) +
-                  '${record[index].updatetime}',
+              AppLocale.args[20].getString(context) + '${record[index].updatetime}',
               style: const TextStyle(fontSize: 14),
             ),
           );
@@ -1450,8 +1479,7 @@ class _NextPageState extends State<NextPage> {
         child: Column(
           children: <Widget>[
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
@@ -1461,12 +1489,10 @@ class _NextPageState extends State<NextPage> {
               ),
             ),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText:
-                    !_obscureText, // Fix: Use !_obscureText to invert the value
+                obscureText: !_obscureText, // Fix: Use !_obscureText to invert the value
                 decoration: InputDecoration(
                   // No need for const here
                   prefixIcon: Icon(Icons.lock),
@@ -1559,8 +1585,7 @@ Future<int> _sendDataToServer(String username, String password) async {
 }
 
 void fetchData() async {
-  final response =
-      await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
+  final response = await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response,
@@ -1599,11 +1624,7 @@ class _PageWarn extends State<PageWarn> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text(AppLocale.titles[3].getString(context),
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[3].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),

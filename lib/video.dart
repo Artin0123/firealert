@@ -127,7 +127,8 @@ class _VideoPageState extends State<DetailPage> {
         appBar: AppBar(
           title: Text(AppLocale.titles[7].getString(context)), // 更改成影片頁面的標題
         ),
-        body: Column(
+        body: SingleChildScrollView(
+            child: Column(
           children: <Widget>[
             Container(
               margin: EdgeInsets.all(10), // 添加間距
@@ -270,6 +271,6 @@ class _VideoPageState extends State<DetailPage> {
                   )
                 : Container(),
           ],
-        ));
+        )));
   }
 }

@@ -9,7 +9,7 @@ mixin AppLocale {
     'title6',
     'title7',
   ];
-  static const List<String> info = ['info', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9', 'info10'];
+  static const List<String> info = ['info', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9', 'info10', 'info11'];
   static const List<String> args = [
     'args',
     'args1',
@@ -56,6 +56,7 @@ mixin AppLocale {
     info[8]: 'Logout',
     info[9]: 'User name ',
     info[10]: 'Password ',
+    info[11]: 'Fire',
     args[0]: 'Temperature parameter: ',
     args[1]: 'Smoke parameter: ',
     args[2]: 'Location: ',
@@ -84,7 +85,7 @@ mixin AppLocale {
   static Map<String, dynamic> ZH_TW = {
     titles[0]: '火燒報哩災',
     titles[1]: '事件',
-    titles[2]: '歷史',
+    titles[2]: '歷史紀錄',
     titles[3]: '通報',
     titles[4]: '設備',
     titles[5]: '設定',
@@ -101,6 +102,7 @@ mixin AppLocale {
     info[8]: '登出',
     info[9]: '使用者名稱 ',
     info[10]: '密碼 ',
+    info[11]: '火災',
     args[0]: '溫度參數: ',
     args[1]: '煙霧參數: ',
     args[2]: '位置: ',
