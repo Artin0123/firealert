@@ -7,6 +7,7 @@ import 'package:web_socket_channel/io.dart';
 import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutt/sensor_data.dart';
+import 'package:flutt/usersensor.dart';
 
 SensorData_list sensor_list = SensorData_list();
 
@@ -16,23 +17,25 @@ class WebSocketService with ChangeNotifier {
   bool _isConnected = false;
   bool _bypassWebSocket = false;
 
-  WebSocketService(Map<String, dynamic> token) {
+  WebSocketService(Map<String, dynamic> token, Usersensor usersenser) {
     _messageController = StreamController<Map<String, dynamic>>.broadcast();
     if (!kDebugMode) {
-      _connectToWebSocket(token);
+      _connectToWebSocket(token, usersenser);
     } else {
       _bypassWebSocket = true;
       print('WebSocket bypassed in debug mode');
-      _connectToWebSocket(token); //測試沒有驗證
+      _connectToWebSocket(token, usersenser); //測試沒有驗證
     }
   }
 
   Stream<Map<String, dynamic>> get messageStream => _messageController.stream;
   bool get isConnected => _isConnected;
 
-  void _connectToWebSocket(Map<String, dynamic> token) async {
+  void _connectToWebSocket(
+      Map<String, dynamic> token, Usersensor usersenser) async {
     //if (_bypassWebSocket) return;//測試沒有驗證
 
+    Map<String, dynamic> bufferMessage;
     while (!_isConnected) {
       try {
         final String url = _buildWebSocketUrl(token);
@@ -47,6 +50,22 @@ class WebSocketService with ChangeNotifier {
             }
             print(message);
             _messageController.add(data);
+            print(usersenser);
+            bufferMessage = {
+              'response': 'Macarean received successfully',
+              'data': data,
+              'adjust': {
+                'name': usersenser.name,
+                'group': usersenser.group,
+                'start': usersenser.start,
+                'smoke_limit': usersenser.smoke_limit,
+                'smoke_sensitive': usersenser.smoke_limit,
+                'tem_limit': usersenser.tem_limit,
+                'hot_sensitive': usersenser.hot_sensitive,
+                'video_length': usersenser.video_length
+              }
+            };
+            _channel?.sink.add(json.encode(bufferMessage));
             notifyListeners();
           },
           onError: (error) {
@@ -56,7 +75,7 @@ class WebSocketService with ChangeNotifier {
           onDone: () {
             print('WebSocket connection closed');
             _isConnected = false;
-            _reconnect(token);
+            _reconnect(token, usersenser);
           },
         );
 
@@ -78,16 +97,18 @@ class WebSocketService with ChangeNotifier {
     }
   }
 
-  void _reconnect(Map<String, dynamic> token) {
+  void _reconnect(Map<String, dynamic> token, Usersensor usersenser) {
     if (!_bypassWebSocket) {
-      Future.delayed(Duration(seconds: 5), () => _connectToWebSocket(token));
+      Future.delayed(
+          Duration(seconds: 5), () => _connectToWebSocket(token, usersenser));
     }
   }
 
-  void toggleBypassWebSocket(bool bypass) {
+  void toggleBypassWebSocket(bool bypass, Usersensor usersenser) {
     _bypassWebSocket = bypass;
     if (!_bypassWebSocket && !_isConnected) {
-      _connectToWebSocket({}); // Reconnect with empty token, adjust as needed
+      _connectToWebSocket(
+          {}, usersenser); // Reconnect with empty token, adjust as needed
     }
     notifyListeners();
   }

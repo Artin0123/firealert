@@ -19,6 +19,7 @@ import 'package:flutter_localization/flutter_localization.dart';
 import 'package:flutt/beacon.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutt/usersensor.dart';
 
 final service = FlutterBackgroundService();
 final notifications = FlutterLocalNotificationsPlugin();
@@ -46,11 +47,13 @@ void onStart(ServiceInstance service) async {
 String username = ""; //使用者名稱與密碼
 String password = "";
 Map<String, dynamic> tokenbuffer = Map<String, dynamic>();
+Usersensor _usersensor = Usersensor();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 初始化本地通知
-  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid =
+      AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -72,7 +75,7 @@ void main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (context) => WebSocketService(tokenbuffer),
+          create: (context) => WebSocketService(tokenbuffer, _usersensor),
         ),
         // 添加更多的 providers，每个对应一个不同的 WebSocket 连接
         ChangeNotifierProvider<EddystoneScanner>(
@@ -87,7 +90,9 @@ void main() async {
 
 void startTimer() {
   int timestamp = 1714472686;
-  DateTime then = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true).toUtc();
+  DateTime then =
+      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
+          .toUtc();
   DateTime now = DateTime.now().toUtc();
   Duration delay = then.difference(now);
   Timer(delay, () {
@@ -144,12 +149,14 @@ class _MyAppState extends State<MyApp> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController = StreamController<bool>();
+  final StreamController<bool> _updateNotificationController =
+      StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream =>
+      _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -312,7 +319,8 @@ class _PageEvent extends State<PageEvent> {
   void initState() {
     super.initState();
     try {
-      _streamControllerJson = Provider.of<WebSocketService>(context, listen: false);
+      _streamControllerJson =
+          Provider.of<WebSocketService>(context, listen: false);
     } catch (e) {
       print('Error initializing WebSocketService: $e');
     }
@@ -345,7 +353,11 @@ class _PageEvent extends State<PageEvent> {
       backgroundColor: Colors.grey[50],
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text(AppLocale.titles[0].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[0].getString(context),
+              style: TextStyle(
+                  color: Colors.grey[50],
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
@@ -376,7 +388,16 @@ class _PageEvent extends State<PageEvent> {
               event_id = data['event_id'].toString();
               big_location = data['group_name'];
               String iot_id = data['iot_id'].toString();
-              sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
+              sensorData = SensorData(
+                  airqualitys,
+                  temperatures,
+                  event_id,
+                  iot_id,
+                  big_location + ' ' + locations,
+                  events,
+                  isAlert,
+                  levels,
+                  timestamps);
               int spi = 0;
               sensorData.fixcolorRed();
               for (var i = 0; i < sensordata.length; i++) {
@@ -406,7 +427,8 @@ class _PageEvent extends State<PageEvent> {
                       SizedBox(width: 8), // 圖示和文字之間的間距
                       Text(
                         AppLocale.titles[2].getString(context),
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
                       ), // 新增文字
                     ],
                   ),
@@ -426,7 +448,8 @@ class _PageEvent extends State<PageEvent> {
                           color: Colors.white, // 设置白色背景
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                            side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
+                            side: BorderSide(
+                                color: Colors.black, width: 2.0), // 设置黑色边框
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
@@ -442,7 +465,8 @@ class _PageEvent extends State<PageEvent> {
                         ),
                       )
                     : ListView.builder(
-                        shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
+                        shrinkWrap:
+                            true, // Ensures that the ListView.builder takes up only the necessary space
                         itemCount: sensordata.length,
                         itemBuilder: (context, index) {
                           SensorData itemData = sensordata[index];
@@ -460,23 +484,36 @@ class _PageEvent extends State<PageEvent> {
                               // ),
                               Container(
                                 width: double.infinity,
-                                margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                                margin: const EdgeInsets.only(
+                                    top: 16, left: 16, right: 16),
                                 child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Expanded(
                                       child: SizedBox(
                                         height: 75, // 設定按鈕的高度
                                         child: OutlinedButton(
                                           style: OutlinedButton.styleFrom(
-                                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-                                            side: BorderSide(color: Colors.deepOrangeAccent, width: 2.0), // 設定邊框顏色
-                                            backgroundColor: Colors.red, // 設定背景顏色
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(8))),
+                                            side: BorderSide(
+                                                color: Colors.deepOrangeAccent,
+                                                width: 2.0), // 設定邊框顏色
+                                            backgroundColor:
+                                                Colors.red, // 設定背景顏色
                                           ),
                                           onPressed: () {
                                             launchPhone('119');
                                           },
-                                          child: Text(AppLocale.titles[3].getString(context) + ' 119', style: TextStyle(fontSize: 24, color: Colors.white)),
+                                          child: Text(
+                                              AppLocale.titles[3]
+                                                      .getString(context) +
+                                                  ' 119',
+                                              style: TextStyle(
+                                                  fontSize: 24,
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                     ),
@@ -486,13 +523,24 @@ class _PageEvent extends State<PageEvent> {
                                         height: 75, // 設定按鈕的高度
                                         child: OutlinedButton(
                                           style: OutlinedButton.styleFrom(
-                                            shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-                                            side: BorderSide(color: Colors.yellow, width: 2.0), // 設定邊框顏色
-                                            backgroundColor: Colors.orange, // 設定背景顏色
+                                            shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.all(
+                                                    Radius.circular(8))),
+                                            side: BorderSide(
+                                                color: Colors.yellow,
+                                                width: 2.0), // 設定邊框顏色
+                                            backgroundColor:
+                                                Colors.orange, // 設定背景顏色
                                           ),
                                           onPressed: () {},
-                                          child: Text(AppLocale.info[11].getString(context) + AppLocale.titles[3].getString(context),
-                                              style: TextStyle(fontSize: 24, color: Colors.white)),
+                                          child: Text(
+                                              AppLocale.info[11]
+                                                      .getString(context) +
+                                                  AppLocale.titles[3]
+                                                      .getString(context),
+                                              style: TextStyle(
+                                                  fontSize: 24,
+                                                  color: Colors.white)),
                                         ),
                                       ),
                                     ),
@@ -518,35 +566,48 @@ class _PageEvent extends State<PageEvent> {
                                           width: 200,
                                           child: ListTile(
                                             title: Padding(
-                                              padding: const EdgeInsets.only(top: 5), // 添加間距
+                                              padding: const EdgeInsets.only(
+                                                  top: 5), // 添加間距
                                               child: Text(
                                                 itemData.events,
-                                                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                style: const TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20),
                                                 textAlign: TextAlign.left,
                                               ),
                                             ),
                                             subtitle: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: <Widget>[
-                                                const SizedBox(height: 5), // 添加間距
+                                                const SizedBox(
+                                                    height: 5), // 添加間距
                                                 Text(
                                                   '${itemData.locations}\n'
                                                   '${itemData.updatetime}\n',
                                                   textAlign: TextAlign.left,
-                                                  style: const TextStyle(fontSize: 16, height: 1.5),
+                                                  style: const TextStyle(
+                                                      fontSize: 16,
+                                                      height: 1.5),
                                                 ),
                                               ],
                                             ),
                                           ),
                                         ),
                                         IconButton(
-                                          icon: const Icon(Icons.keyboard_arrow_right),
+                                          icon: const Icon(
+                                              Icons.keyboard_arrow_right),
                                           iconSize: 48,
-                                          color: const Color.fromARGB(248, 241, 102, 153),
+                                          color: const Color.fromARGB(
+                                              248, 241, 102, 153),
                                           onPressed: () {
                                             Navigator.push(
                                               context,
-                                              MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      DetailPage(
+                                                          sensorData_detail:
+                                                              itemData)),
                                             );
                                           },
                                           alignment: Alignment.centerRight,
@@ -770,8 +831,12 @@ class _PageUtil extends State<PageUtil> {
     setState(() {
       items = sensordata
           .where((sensordata) =>
-              sensordata.airQuality.toLowerCase().contains(query.toLowerCase()) ||
-              sensordata.temperature.toLowerCase().contains(query.toLowerCase()) ||
+              sensordata.airQuality
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
+              sensordata.temperature
+                  .toLowerCase()
+                  .contains(query.toLowerCase()) ||
               sensordata.id.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.iot_id.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -783,7 +848,16 @@ class _PageUtil extends State<PageUtil> {
     for (var i = 0; i < sensordata.length; i++) {
       var item = sensordata[i];
       // 将 SensorData 对象的属性添加到 buffer 中
-      buffer[item.iot_id] = SensorData(item.airQuality, item.temperature, item.id, item.iot_id, item.locations, item.events, 'yes', levels, item.updatetime);
+      buffer[item.iot_id] = SensorData(
+          item.airQuality,
+          item.temperature,
+          item.id,
+          item.iot_id,
+          item.locations,
+          item.events,
+          'yes',
+          levels,
+          item.updatetime);
     }
 
     return Scaffold(
@@ -847,7 +921,8 @@ class _PageUtil extends State<PageUtil> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => PageArgs()),
+                                  MaterialPageRoute(
+                                      builder: (context) => PageArgs()),
                                 );
                               },
                             ),
@@ -888,7 +963,7 @@ class PageArgs extends StatefulWidget {
 class _PageArgs extends State<PageArgs> {
   String _selectedLabel = '1';
   bool warning = true;
-
+  String sensorname = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -903,7 +978,8 @@ class _PageArgs extends State<PageArgs> {
               child: Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
+                  side: BorderSide(
+                      color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -911,7 +987,8 @@ class _PageArgs extends State<PageArgs> {
                     padding: EdgeInsets.only(top: 5),
                     child: Text(
                       "元智一館 七樓 1705A實驗室",
-                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -947,14 +1024,21 @@ class _PageArgs extends State<PageArgs> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    buildInputRow(AppLocale.args[10].getString(context), AppLocale.info[4].getString(context)),
-                    buildInputRow(AppLocale.args[11].getString(context), AppLocale.info[4].getString(context)),
+                    buildInputRow(AppLocale.args[10].getString(context),
+                        AppLocale.info[4].getString(context), 10),
+                    buildInputRow(AppLocale.args[11].getString(context),
+                        AppLocale.info[4].getString(context), 11),
                     buildSwitchRow(AppLocale.args[12].getString(context)),
-                    buildDropdownRow(AppLocale.args[13].getString(context), ' ( μg/m3 )'),
-                    buildDropdownRow(AppLocale.args[14].getString(context), ' ( % / 30s )'),
-                    buildDropdownRow(AppLocale.args[15].getString(context), ' ( ℃ )'),
-                    buildDropdownRow(AppLocale.args[16].getString(context), ' ( % / 30s )'),
-                    buildDropdownRow(AppLocale.args[17].getString(context), ' ( s )'),
+                    buildDropdownRow(AppLocale.args[13].getString(context),
+                        ' ( μg/m3 )', 13),
+                    buildDropdownRow(AppLocale.args[14].getString(context),
+                        ' ( % / 30s )', 14),
+                    buildDropdownRow(
+                        AppLocale.args[15].getString(context), ' ( ℃ )', 15),
+                    buildDropdownRow(AppLocale.args[16].getString(context),
+                        ' ( % / 30s )', 16),
+                    buildDropdownRow(
+                        AppLocale.args[17].getString(context), ' ( s )', 17),
                     const SizedBox(height: 10),
                     Center(
                       child: ElevatedButton(
@@ -974,7 +1058,9 @@ class _PageArgs extends State<PageArgs> {
     );
   }
 
-  Widget buildInputRow(String label, String hintText) {
+  Widget buildInputRow(String label, String hintText, int num) {
+    final TextEditingController nameController = new TextEditingController();
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -991,6 +1077,9 @@ class _PageArgs extends State<PageArgs> {
               decoration: InputDecoration(
                 hintText: hintText,
               ),
+              controller: nameController,
+              onSubmitted: (value) => setState(
+                  () => _usersensor.modifyName(num, nameController.text)),
             ),
           ),
         ],
@@ -1013,6 +1102,7 @@ class _PageArgs extends State<PageArgs> {
             onChanged: (bool value) {
               setState(() {
                 warning = value;
+                _usersensor.modifystart(value);
               });
             },
           ),
@@ -1021,7 +1111,7 @@ class _PageArgs extends State<PageArgs> {
     );
   }
 
-  Widget buildDropdownRow(String label, String unit) {
+  Widget buildDropdownRow(String label, String unit, int num) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Row(
@@ -1038,6 +1128,7 @@ class _PageArgs extends State<PageArgs> {
             onSelected: (number) {
               setState(() {
                 _selectedLabel = number.toString();
+                _usersensor.modiy(_selectedLabel, num);
               });
             },
             dropdownMenuEntries: List.generate(
@@ -1252,14 +1343,19 @@ class _PageSetting extends State<PageSetting> {
 
     List<EddystoneUID> _getTopThreeUIDs() {
       var uids = scanner.eddystoneUIDs.values.toList();
-      uids.sort((a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
+      uids.sort(
+          (a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
       return uids.take(3).toList();
     }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
-        title: Text(AppLocale.titles[5].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+        title: Text(AppLocale.titles[5].getString(context),
+            style: TextStyle(
+                color: Colors.grey[50],
+                fontSize: 28,
+                fontWeight: FontWeight.bold)),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3.0),
@@ -1281,9 +1377,13 @@ class _PageSetting extends State<PageSetting> {
                 _handleLogin();
               }
             },
-            leading: Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
-            title: Text(_isLoggedIn ? username : AppLocale.info[7].getString(context)), // 根据登录状态显示不同的文本
-            subtitle: Text(_isLoggedIn ? AppLocale.info[8].getString(context) : ''),
+            leading:
+                Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
+            title: Text(_isLoggedIn
+                ? username
+                : AppLocale.info[7].getString(context)), // 根据登录状态显示不同的文本
+            subtitle:
+                Text(_isLoggedIn ? AppLocale.info[8].getString(context) : ''),
           ),
           ListTile(
             onTap: _toggleLanguage,
@@ -1299,7 +1399,8 @@ class _PageSetting extends State<PageSetting> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
-                    List<EddystoneUID> topThreeUIDs = snapshot.data as List<EddystoneUID>;
+                    List<EddystoneUID> topThreeUIDs =
+                        snapshot.data as List<EddystoneUID>;
                     return ListView.builder(
                       itemCount: topThreeUIDs.length,
                       itemBuilder: (context, index) {
@@ -1425,7 +1526,10 @@ class _PageHistory extends State<PageHistory> {
         backgroundColor: Colors.blue[400],
         title: Text(
           AppLocale.titles[2].getString(context),
-          style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold),
+          style: TextStyle(
+              color: Colors.grey[50],
+              fontSize: 28,
+              fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -1438,15 +1542,19 @@ class _PageHistory extends State<PageHistory> {
       ),
       body: ListView.separated(
         separatorBuilder: (context, index) => Divider(color: Colors.black),
-        itemCount: record.length, // replace 'record' with your actual record array
+        itemCount:
+            record.length, // replace 'record' with your actual record array
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(
-              '${record[index].events}\n' + AppLocale.args[2].getString(context) + '${record[index].locations}',
+              '${record[index].events}\n' +
+                  AppLocale.args[2].getString(context) +
+                  '${record[index].locations}',
               style: const TextStyle(fontSize: 16),
             ),
             subtitle: Text(
-              AppLocale.args[20].getString(context) + '${record[index].updatetime}',
+              AppLocale.args[20].getString(context) +
+                  '${record[index].updatetime}',
               style: const TextStyle(fontSize: 14),
             ),
           );
@@ -1479,7 +1587,8 @@ class _NextPageState extends State<NextPage> {
         child: Column(
           children: <Widget>[
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
@@ -1489,10 +1598,12 @@ class _NextPageState extends State<NextPage> {
               ),
             ),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText: !_obscureText, // Fix: Use !_obscureText to invert the value
+                obscureText:
+                    !_obscureText, // Fix: Use !_obscureText to invert the value
                 decoration: InputDecoration(
                   // No need for const here
                   prefixIcon: Icon(Icons.lock),
@@ -1585,7 +1696,8 @@ Future<int> _sendDataToServer(String username, String password) async {
 }
 
 void fetchData() async {
-  final response = await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
+  final response =
+      await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response,
@@ -1624,7 +1736,11 @@ class _PageWarn extends State<PageWarn> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text(AppLocale.titles[3].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[3].getString(context),
+              style: TextStyle(
+                  color: Colors.grey[50],
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
