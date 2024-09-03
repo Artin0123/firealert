@@ -98,7 +98,7 @@ class WebSocketService with ChangeNotifier {
   }
 
   void _reconnect(Map<String, dynamic> token, Usersensor usersenser) {
-    if (!_bypassWebSocket) {
+    if (!_isConnected) {
       Future.delayed(
           Duration(seconds: 5), () => _connectToWebSocket(token, usersenser));
     }
