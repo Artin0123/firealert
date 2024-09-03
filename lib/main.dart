@@ -137,6 +137,8 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
+    //修改websocket使其同步資料
+
     return MaterialApp(
       title: '火燒報哩災',
       debugShowCheckedModeBanner: false,
@@ -174,6 +176,8 @@ class AppDataProvider extends ChangeNotifier {
 }
 
 class MyHomePage extends StatefulWidget {
+  //final Map<String, dynamic>? data; // 可以是其他类型或使用 `SensorData` 类型
+
   const MyHomePage({super.key});
 
   @override
@@ -207,39 +211,96 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    SensorData sensorData = SensorData.defaults();
     return Scaffold(
-        body: pages[currentIndex],
-        bottomNavigationBar: ConvexAppBar(
-          // selectedItemColor: Color.fromARGB(255, 51, 66, 80),
-          // unselectedItemColor: Colors.grey,
-          // showUnselectedLabels: true,
-          // currentIndex: currentIndex,
-          style: TabStyle.react,
-          // cornerRadius: 20,
-          backgroundColor: Colors.blue[400],
-          elevation: 3,
-          color: Colors.grey[100],
-          activeColor: Colors.blue[900],
-          onTap: (int index) {
-            setState(() {
-              currentIndex = index;
-            });
-          },
-          items: [
-            TabItem(
-              icon: Icons.home,
-              title: AppLocale.titles[1].getString(context),
-            ),
-            TabItem(
-              icon: Icons.smart_toy,
-              title: AppLocale.titles[4].getString(context),
-            ),
-            TabItem(
-              icon: Icons.settings,
-              title: AppLocale.titles[5].getString(context),
-            ),
-          ],
-        ));
+      body: StreamBuilder<Map<String, dynamic>>(
+        stream: Provider.of<WebSocketService>(context).messageStream,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            //return Center(child: CircularProgressIndicator());
+            return PageEvent();
+          } else if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          } else if (snapshot.hasData) {
+            Map<String, dynamic> datas = snapshot.data ?? {};
+            if (datas.containsKey('details')) {
+              dynamic data = datas['details'];
+              if (data.isNotEmpty) {
+                // Process the data
+                locations = data['location'];
+                levels = data['level'].toString();
+                temperatures = data['temperature'].toString();
+                timestamps = data['o_time_stamp'].toString();
+                airqualitys = data['smoke'].toString();
+                events = data['event'].toString();
+                event_id = data['event_id'].toString();
+                big_location = data['group_name'];
+                String iot_id = data['iot_id'].toString();
+                sensorData = SensorData(
+                    airqualitys,
+                    temperatures,
+                    event_id,
+                    iot_id,
+                    big_location + ' ' + locations,
+                    events,
+                    isAlert,
+                    levels,
+                    timestamps);
+                int spi = 0;
+                sensorData.fixcolorRed();
+                for (var i = 0; i < sensordata.length; i++) {
+                  if (sensordata[i].iot_id == iot_id) {
+                    sensordata[i].modify(sensorData);
+                    spi = 1;
+                    break;
+                  }
+                }
+                if (spi == 0) {
+                  sensordata.add(sensorData);
+                }
+                record.add(sensorData);
+                return pages[
+                    currentIndex]; // Display the current page based on index
+              } else {
+                print("No data");
+                return Center();
+              }
+            } else {
+              print("No details");
+              return Center();
+            }
+          } else {
+            return Center();
+          }
+        },
+      ),
+      bottomNavigationBar: ConvexAppBar(
+        style: TabStyle.react,
+        backgroundColor: Colors.blue[400],
+        elevation: 3,
+        color: Colors.grey[100],
+        activeColor: Colors.blue[900],
+        onTap: (int index) {
+          setState(() {
+            currentIndex = index;
+          });
+        },
+        items: [
+          TabItem(
+            icon: Icons.home,
+            title: AppLocale.titles[1].getString(context),
+          ),
+          TabItem(
+            icon: Icons.smart_toy,
+            title: AppLocale.titles[4].getString(context),
+          ),
+          TabItem(
+            icon: Icons.settings,
+            title: AppLocale.titles[5].getString(context),
+          ),
+        ],
+      ),
+    );
   }
 }
 
@@ -318,6 +379,17 @@ class _PageEvent extends State<PageEvent> {
   @override
   void initState() {
     super.initState();
+    // try {
+    //   _streamControllerJson =
+    //       Provider.of<WebSocketService>(context, listen: false);
+    // } catch (e) {
+    //   print('Error initializing WebSocketService: $e');
+    // }
+  }
+
+  void didChangeDependencies() {
+    //初始websocket
+    super.didChangeDependencies();
     try {
       _streamControllerJson =
           Provider.of<WebSocketService>(context, listen: false);
@@ -347,7 +419,7 @@ class _PageEvent extends State<PageEvent> {
     // var _streamController =
     //     Provider.of<WebSocketService>(context, listen: false);
     // var _streamController_json = Provider.of<WebSocketService>(context, listen: false);
-    SensorData sensorData = SensorData.defaults();
+    //SensorData sensorData = SensorData.defaults();
     bool detailButtonPressed = false;
     return Scaffold(
       backgroundColor: Colors.grey[50],
@@ -373,49 +445,49 @@ class _PageEvent extends State<PageEvent> {
         builder: (context, snapshot) {
           // if (snapshot.hasData) {
           // Data is available, extract and display it
-          Map<String, dynamic> datas = snapshot.data ?? {};
-          if (datas.containsKey('details')) {
-            dynamic data = datas['details'];
-            if (data.isNotEmpty) {
-              // Data is present in datas['data']
-              // Do something with the data
-              locations = data['location'];
-              levels = data['level'].toString();
-              temperatures = data['temperature'].toString();
-              timestamps = data['o_time_stamp'].toString();
-              airqualitys = data['smoke'].toString();
-              events = data['event'].toString();
-              event_id = data['event_id'].toString();
-              big_location = data['group_name'];
-              String iot_id = data['iot_id'].toString();
-              sensorData = SensorData(
-                  airqualitys,
-                  temperatures,
-                  event_id,
-                  iot_id,
-                  big_location + ' ' + locations,
-                  events,
-                  isAlert,
-                  levels,
-                  timestamps);
-              int spi = 0;
-              sensorData.fixcolorRed();
-              for (var i = 0; i < sensordata.length; i++) {
-                if (sensordata[i].iot_id == iot_id) {
-                  sensordata[i].modify(sensorData);
-                  spi = 1;
-                  break;
-                }
-              }
-              if (spi == 0) {
-                sensordata.add(sensorData);
-              }
-              record.add(sensorData);
-              // button_signal = 1;
-              // print(button_signal);
-              // sensordata.sort(SensorData.compareByLevel);
-            }
-          }
+          //Map<String, dynamic> datas = snapshot.data ?? {};
+          // if (datas.containsKey('details')) {
+          //   dynamic data = datas['details'];
+          //   if (data.isNotEmpty) {
+          //     // Data is present in datas['data']
+          //     // Do something with the data
+          //     locations = data['location'];
+          //     levels = data['level'].toString();
+          //     temperatures = data['temperature'].toString();
+          //     timestamps = data['o_time_stamp'].toString();
+          //     airqualitys = data['smoke'].toString();
+          //     events = data['event'].toString();
+          //     event_id = data['event_id'].toString();
+          //     big_location = data['group_name'];
+          //     String iot_id = data['iot_id'].toString();
+          //     sensorData = SensorData(
+          //         airqualitys,
+          //         temperatures,
+          //         event_id,
+          //         iot_id,
+          //         big_location + ' ' + locations,
+          //         events,
+          //         isAlert,
+          //         levels,
+          //         timestamps);
+          //     int spi = 0;
+          //     sensorData.fixcolorRed();
+          //     for (var i = 0; i < sensordata.length; i++) {
+          //       if (sensordata[i].iot_id == iot_id) {
+          //         sensordata[i].modify(sensorData);
+          //         spi = 1;
+          //         break;
+          //       }
+          //     }
+          //     if (spi == 0) {
+          //       sensordata.add(sensorData);
+          //     }
+          //     record.add(sensorData);
+          //     // button_signal = 1;
+          //     // print(button_signal);
+          //     // sensordata.sort(SensorData.compareByLevel);
+          //   }
+          // }
           return SingleChildScrollView(
             child: Column(
               children: [
@@ -624,174 +696,6 @@ class _PageEvent extends State<PageEvent> {
               ],
             ),
           );
-          // } else if (snapshot.hasError) {
-          //   // Error occurred while fetching data
-          //   return Center(
-          //     child: Text('WebSocket Error: ${snapshot.error}'),
-          //   );
-          // } else {
-          //   return SingleChildScrollView(
-          //     child: Column(
-          //       children: [
-          //         ListTile(
-          //           title: Row(
-          //             mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
-          //             children: [
-          //               Icon(Icons.history), // 新增圖示
-          //               SizedBox(width: 8), // 圖示和文字之間的間距
-          //               Text('歷史', style: TextStyle(fontSize: 16)), // 新增文字
-          //             ],
-          //           ),
-          //           onTap: () {
-          //             Navigator.push(
-          //               context,
-          //               MaterialPageRoute(builder: (context) => PageHistory()),
-          //             );
-          //           },
-          //         ),
-          //         // Data is not available yet
-          //         sensordata.isEmpty
-          //             ? Container(
-          //                 width: double.infinity, // 设置宽度
-          //                 child: Card(
-          //                   elevation: 6,
-          //                   margin: EdgeInsets.all(16),
-          //                   color: Colors.white, // 设置白色背景
-          //                   shape: RoundedRectangleBorder(
-          //                     borderRadius: BorderRadius.circular(10.0), // 设置圆角
-          //                     side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
-          //                   ),
-          //                   child: Padding(
-          //                     padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
-          //                     child: Text(
-          //                       AppLocale.info[0].getString(context),
-          //                       textAlign: TextAlign.left,
-          //                       style: TextStyle(
-          //                         fontSize: 20,
-          //                         fontWeight: FontWeight.bold,
-          //                       ),
-          //                     ),
-          //                   ),
-          //                 ),
-          //               )
-          //             : ListView.builder(
-          //                 shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
-          //                 itemCount: sensordata.length,
-          //                 itemBuilder: (context, index) {
-          //                   SensorData itemData = sensordata[index];
-          //                   //加入顏色變化
-          //                   //判斷event類別
-          //                   return Column(
-          //                     children: [
-          //                       // Container(
-          //                       //   alignment: Alignment.centerLeft,
-          //                       //   padding: EdgeInsets.all(16),
-          //                       //   child: Text(
-          //                       //     'Namespace ID: ' + '\n' + 'Instance ID: ' + '\n' + 'Name: ',
-          //                       //     style: TextStyle(fontSize: 16),
-          //                       //   ),
-          //                       // ),
-          //                       Container(
-          //                         margin: const EdgeInsets.only(top: 16),
-          //                         child: Row(
-          //                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //                           children: [
-          //                             SizedBox(
-          //                               height: 75, // 設定按鈕的高度
-          //                               child: OutlinedButton(
-          //                                 style: OutlinedButton.styleFrom(
-          //                                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-          //                                   side: BorderSide(color: Colors.deepOrangeAccent, width: 2.0), // 設定邊框顏色
-          //                                   backgroundColor: Colors.red, // 設定背景顏色
-          //                                 ),
-          //                                 onPressed: () {
-          //                                   launchPhone('119');
-          //                                 },
-          //                                 child: Text(AppLocale.titles[3].getString(context) + ' 119', style: TextStyle(fontSize: 24, color: Colors.white)),
-          //                               ),
-          //                             ),
-          //                             SizedBox(
-          //                               height: 75, // 設定按鈕的高度
-          //                               child: OutlinedButton(
-          //                                 style: OutlinedButton.styleFrom(
-          //                                   shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
-          //                                   side: BorderSide(color: Colors.yellow, width: 2.0), // 設定邊框顏色
-          //                                   backgroundColor: Colors.orange, // 設定背景顏色
-          //                                 ),
-          //                                 onPressed: () {},
-          //                                 child: Text(AppLocale.info[11].getString(context) + AppLocale.titles[3].getString(context),
-          //                                     style: TextStyle(fontSize: 24, color: Colors.white)),
-          //                               ),
-          //                             ),
-          //                           ],
-          //                         ),
-          //                       ),
-          //                       Card(
-          //                         elevation: 6,
-          //                         margin: const EdgeInsets.all(16),
-          //                         color: const Color.fromARGB(255, 253, 208, 223),
-          //                         shape: RoundedRectangleBorder(
-          //                           borderRadius: BorderRadius.circular(10.0),
-          //                           side: const BorderSide(
-          //                             color: Color.fromARGB(248, 237, 127, 167),
-          //                             width: 2.0,
-          //                           ),
-          //                         ),
-          //                         child: Column(
-          //                           children: [
-          //                             Row(
-          //                               children: <Widget>[
-          //                                 SizedBox(
-          //                                   width: 200,
-          //                                   child: ListTile(
-          //                                     title: Padding(
-          //                                       padding: const EdgeInsets.only(top: 5), // 添加間距
-          //                                       child: Text(
-          //                                         itemData.events,
-          //                                         style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
-          //                                         textAlign: TextAlign.left,
-          //                                       ),
-          //                                     ),
-          //                                     subtitle: Column(
-          //                                       crossAxisAlignment: CrossAxisAlignment.start,
-          //                                       children: <Widget>[
-          //                                         const SizedBox(height: 5), // 添加間距
-          //                                         Text(
-          //                                           '${itemData.locations}\n'
-          //                                           '${itemData.updatetime}\n',
-          //                                           textAlign: TextAlign.left,
-          //                                           style: const TextStyle(fontSize: 16, height: 1.5),
-          //                                         ),
-          //                                       ],
-          //                                     ),
-          //                                   ),
-          //                                 ),
-          //                                 IconButton(
-          //                                   icon: const Icon(Icons.keyboard_arrow_right),
-          //                                   iconSize: 48,
-          //                                   color: const Color.fromARGB(248, 241, 102, 153),
-          //                                   onPressed: () {
-          //                                     Navigator.push(
-          //                                       context,
-          //                                       MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
-          //                                     );
-          //                                   },
-          //                                   alignment: Alignment.centerRight,
-          //                                 ),
-          //                               ],
-          //                             ),
-          //                           ],
-          //                         ),
-          //                       ),
-          //                     ],
-          //                   );
-          //                 },
-          //               ),
-          //       ],
-          //     ),
-          //   );
-          // }
-          // Or any other loading indicator
         },
       ),
     );
