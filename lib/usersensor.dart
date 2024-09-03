@@ -14,7 +14,7 @@ class Usersensor {
     this.start = "true",
     this.smoke_limit = "1",
     this.smoke_sensitive = "1",
-    this.tem_limit = "70",
+    this.tem_limit = "1000",
     this.hot_sensitive = "1",
     this.video_length = "1",
   });
