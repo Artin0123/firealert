@@ -52,8 +52,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // 初始化本地通知
-  const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('@mipmap/ic_launcher');
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
 
   const InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -90,9 +89,7 @@ void main() async {
 
 void startTimer() {
   int timestamp = 1714472686;
-  DateTime then =
-      DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true)
-          .toUtc();
+  DateTime then = DateTime.fromMillisecondsSinceEpoch(timestamp * 1000, isUtc: true).toUtc();
   DateTime now = DateTime.now().toUtc();
   Duration delay = then.difference(now);
   Timer(delay, () {
@@ -144,6 +141,14 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       supportedLocales: localization.supportedLocales,
       localizationsDelegates: localization.localizationsDelegates,
+      theme: ThemeData(
+        useMaterial3: true,
+        // Define the default brightness and colors.
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          background: Colors.white,
+        ),
+      ),
       home: const MyHomePage(),
     );
   }
@@ -151,14 +156,12 @@ class _MyAppState extends State<MyApp> {
 
 class AppDataProvider extends ChangeNotifier {
   //共用記憶體
-  final StreamController<bool> _updateNotificationController =
-      StreamController<bool>();
+  final StreamController<bool> _updateNotificationController = StreamController<bool>();
 
   bool _selection = true;
   bool get selection => _selection;
 
-  Stream<bool> get updateNotificationStream =>
-      _updateNotificationController.stream;
+  Stream<bool> get updateNotificationStream => _updateNotificationController.stream;
 
   void setNotification(bool newValue) {
     _selection = newValue;
@@ -236,16 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 event_id = data['event_id'].toString();
                 big_location = data['group_name'];
                 String iot_id = data['iot_id'].toString();
-                sensorData = SensorData(
-                    airqualitys,
-                    temperatures,
-                    event_id,
-                    iot_id,
-                    big_location + ' ' + locations,
-                    events,
-                    isAlert,
-                    levels,
-                    timestamps);
+                sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
                 int spi = 0;
                 sensorData.fixcolorRed();
                 for (var i = 0; i < sensordata.length; i++) {
@@ -259,8 +253,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   sensordata.add(sensorData);
                 }
                 record.add(sensorData);
-                return pages[
-                    currentIndex]; // Display the current page based on index
+                return pages[currentIndex]; // Display the current page based on index
               } else {
                 print("No data");
                 return Center();
@@ -391,8 +384,7 @@ class _PageEvent extends State<PageEvent> {
     //初始websocket
     super.didChangeDependencies();
     try {
-      _streamControllerJson =
-          Provider.of<WebSocketService>(context, listen: false);
+      _streamControllerJson = Provider.of<WebSocketService>(context, listen: false);
     } catch (e) {
       print('Error initializing WebSocketService: $e');
     }
@@ -422,14 +414,9 @@ class _PageEvent extends State<PageEvent> {
     //SensorData sensorData = SensorData.defaults();
     bool detailButtonPressed = false;
     return Scaffold(
-      backgroundColor: Colors.grey[50],
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text(AppLocale.titles[0].getString(context),
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[0].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),
@@ -491,26 +478,115 @@ class _PageEvent extends State<PageEvent> {
           return SingleChildScrollView(
             child: Column(
               children: [
-                ListTile(
-                  title: Row(
-                    mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
+                Container(
+                  margin: EdgeInsets.only(left: 16, right: 16, top: 16), // 設置邊框離主畫面的 margin
+                  child: Material(
+                    elevation: 4.0, // 設置陰影的高度
+                    shadowColor: Colors.grey, // 設置陰影的顏色
+                    color: Colors.grey[50], // 設置白色背景
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8.0), // 設置圓角邊框
+                    ),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => PageHistory()),
+                        );
+                      },
+                      child: ListTile(
+                        title: Row(
+                          mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
+                          children: [
+                            Icon(Icons.history), // 新增圖示
+                            SizedBox(width: 8), // 圖示和文字之間的間距
+                            Text(
+                              AppLocale.titles[2].getString(context),
+                              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ), // 新增文字
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(top: 16, left: 16, right: 16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Icon(Icons.history), // 新增圖示
-                      SizedBox(width: 8), // 圖示和文字之間的間距
-                      Text(
-                        AppLocale.titles[2].getString(context),
-                        style: TextStyle(
-                            fontSize: 18, fontWeight: FontWeight.bold),
-                      ), // 新增文字
+                      Flexible(
+                        flex: 1, // 設置第一個按鈕的比例為 1
+                        child: SizedBox(
+                          height: 80, // 設定按鈕的高度
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                              backgroundColor: Color.fromARGB(255, 253, 241, 241),
+                              elevation: 4, // 移除 ElevatedButton 的陰影
+                            ),
+                            onPressed: () {
+                              launchPhone('119');
+                            },
+                            child: Text(
+                              AppLocale.titles[3].getString(context) + ' 119',
+                              style: TextStyle(
+                                fontSize: 20,
+                                color: Color.fromARGB(255, 248, 75, 32),
+                                fontWeight: FontWeight.bold, // 設置文字為粗體
+                              ),
+                              textAlign: TextAlign.center, // 置中對齊
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 16), // 設置兩個按鈕之間的間隔
+                      Flexible(
+                        flex: 2, // 設置第一個按鈕的比例為 1
+                        child: SizedBox(
+                          height: 80, // 設定按鈕的高度
+                          width: double.infinity,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              shape: const RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(8))),
+                              backgroundColor: Color.fromARGB(255, 255, 246, 239),
+                              elevation: 4, // 移除 ElevatedButton 的陰影
+                            ),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(builder: (context) => PageReport()),
+                              );
+                            },
+                            child: Text(AppLocale.info[11].getString(context) + AppLocale.titles[3].getString(context),
+                                style: TextStyle(fontSize: 20, color: Color.fromARGB(255, 255, 137, 26), fontWeight: FontWeight.bold), textAlign: TextAlign.center),
+                          ),
+                        ),
+                      ),
                     ],
                   ),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => PageHistory()),
-                    );
-                  },
                 ),
+                // ListTile(
+                //   title: Row(
+                //     mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
+                //     children: [
+                //       Icon(Icons.history), // 新增圖示
+                //       SizedBox(width: 8), // 圖示和文字之間的間距
+                //       Text(
+                //         AppLocale.titles[2].getString(context),
+                //         style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                //       ), // 新增文字
+                //     ],
+                //   ),
+                //   onTap: () {
+                //     Navigator.push(
+                //       context,
+                //       MaterialPageRoute(builder: (context) => PageHistory()),
+                //     );
+                //   },
+                // ),
                 sensordata.isEmpty
                     ? Container(
                         width: double.infinity, // 设置宽度
@@ -519,9 +595,8 @@ class _PageEvent extends State<PageEvent> {
                           margin: EdgeInsets.all(16),
                           color: Colors.white, // 设置白色背景
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10.0), // 设置圆角
-                            side: BorderSide(
-                                color: Colors.black, width: 2.0), // 设置黑色边框
+                            borderRadius: BorderRadius.circular(8.0), // 设置圆角
+                            side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
                           ),
                           child: Padding(
                             padding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
@@ -537,8 +612,7 @@ class _PageEvent extends State<PageEvent> {
                         ),
                       )
                     : ListView.builder(
-                        shrinkWrap:
-                            true, // Ensures that the ListView.builder takes up only the necessary space
+                        shrinkWrap: true, // Ensures that the ListView.builder takes up only the necessary space
                         itemCount: sensordata.length,
                         itemBuilder: (context, index) {
                           SensorData itemData = sensordata[index];
@@ -554,139 +628,66 @@ class _PageEvent extends State<PageEvent> {
                               //     style: TextStyle(fontSize: 16),
                               //   ),
                               // ),
-                              Container(
-                                width: double.infinity,
-                                margin: const EdgeInsets.only(
-                                    top: 16, left: 16, right: 16),
-                                child: Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Expanded(
-                                      child: SizedBox(
-                                        height: 75, // 設定按鈕的高度
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(8))),
-                                            side: BorderSide(
-                                                color: Colors.deepOrangeAccent,
-                                                width: 2.0), // 設定邊框顏色
-                                            backgroundColor:
-                                                Colors.red, // 設定背景顏色
-                                          ),
-                                          onPressed: () {
-                                            launchPhone('119');
-                                          },
-                                          child: Text(
-                                              AppLocale.titles[3]
-                                                      .getString(context) +
-                                                  ' 119',
-                                              style: TextStyle(
-                                                  fontSize: 24,
-                                                  color: Colors.white)),
-                                        ),
-                                      ),
+                              InkWell(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(builder: (context) => DetailPage(sensorData_detail: itemData)),
+                                  );
+                                },
+                                child: Card(
+                                  elevation: 6,
+                                  margin: const EdgeInsets.all(16),
+                                  color: const Color.fromARGB(255, 253, 208, 223),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10.0),
+                                    side: const BorderSide(
+                                      color: Color.fromARGB(248, 237, 127, 167),
+                                      width: 2.0,
                                     ),
-                                    SizedBox(width: 16), // 設置兩個按鈕之間的間隔
-                                    Expanded(
-                                      child: SizedBox(
-                                        height: 75, // 設定按鈕的高度
-                                        child: OutlinedButton(
-                                          style: OutlinedButton.styleFrom(
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.all(
-                                                    Radius.circular(8))),
-                                            side: BorderSide(
-                                                color: Colors.yellow,
-                                                width: 2.0), // 設定邊框顏色
-                                            backgroundColor:
-                                                Colors.orange, // 設定背景顏色
-                                          ),
-                                          onPressed: () {},
-                                          child: Text(
-                                              AppLocale.info[11]
-                                                      .getString(context) +
-                                                  AppLocale.titles[3]
-                                                      .getString(context),
-                                              style: TextStyle(
-                                                  fontSize: 24,
-                                                  color: Colors.white)),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              Card(
-                                elevation: 6,
-                                margin: const EdgeInsets.all(16),
-                                color: const Color.fromARGB(255, 253, 208, 223),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.0),
-                                  side: const BorderSide(
-                                    color: Color.fromARGB(248, 237, 127, 167),
-                                    width: 2.0,
                                   ),
-                                ),
-                                child: Column(
-                                  children: [
-                                    Row(
-                                      children: <Widget>[
-                                        SizedBox(
-                                          width: 200,
-                                          child: ListTile(
-                                            title: Padding(
-                                              padding: const EdgeInsets.only(
-                                                  top: 5), // 添加間距
-                                              child: Text(
-                                                itemData.events,
-                                                style: const TextStyle(
-                                                    fontWeight: FontWeight.bold,
-                                                    fontSize: 20),
-                                                textAlign: TextAlign.left,
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: <Widget>[
+                                          SizedBox(
+                                            width: 200,
+                                            child: ListTile(
+                                              title: Padding(
+                                                padding: const EdgeInsets.only(top: 5), // 添加間距
+                                                child: Text(
+                                                  itemData.events,
+                                                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                                                  textAlign: TextAlign.left,
+                                                ),
+                                              ),
+                                              subtitle: Column(
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: <Widget>[
+                                                  const SizedBox(height: 5), // 添加間距
+                                                  Text(
+                                                    '${itemData.locations}\n'
+                                                    '${itemData.updatetime}\n',
+                                                    textAlign: TextAlign.left,
+                                                    style: const TextStyle(fontSize: 16, height: 1.5),
+                                                  ),
+                                                ],
                                               ),
                                             ),
-                                            subtitle: Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                const SizedBox(
-                                                    height: 5), // 添加間距
-                                                Text(
-                                                  '${itemData.locations}\n'
-                                                  '${itemData.updatetime}\n',
-                                                  textAlign: TextAlign.left,
-                                                  style: const TextStyle(
-                                                      fontSize: 16,
-                                                      height: 1.5),
-                                                ),
-                                              ],
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.only(right: 16.0), // 設置右邊的 margin
+                                            child: Icon(
+                                              Icons.keyboard_arrow_right,
+                                              size: 64,
+                                              color: const Color.fromARGB(248, 241, 102, 153),
                                             ),
                                           ),
-                                        ),
-                                        IconButton(
-                                          icon: const Icon(
-                                              Icons.keyboard_arrow_right),
-                                          iconSize: 48,
-                                          color: const Color.fromARGB(
-                                              248, 241, 102, 153),
-                                          onPressed: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      DetailPage(
-                                                          sensorData_detail:
-                                                              itemData)),
-                                            );
-                                          },
-                                          alignment: Alignment.centerRight,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -697,6 +698,132 @@ class _PageEvent extends State<PageEvent> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class PageReport extends StatefulWidget {
+  @override
+  _PageReportState createState() => _PageReportState();
+}
+
+class _PageReportState extends State<PageReport> {
+  String? _selectedEventType; // 定義一個變數來保存選定的值
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Colors.blue[400],
+          title: Text(AppLocale.info[11].getString(context) + AppLocale.titles[3].getString(context),
+              style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+          centerTitle: true,
+          bottom: PreferredSize(
+            preferredSize: const Size.fromHeight(3.0),
+            child: Container(
+              color: Colors.blue[700],
+              height: 3.0,
+            ),
+          )),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(
+                AppLocale.info[14].getString(context) + ": " + "F173",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            Container(
+              width: double.infinity, // 设置宽度
+              child: Card(
+                elevation: 6,
+                margin: EdgeInsets.all(16),
+                color: Colors.white, // 设置白色背景
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0), // 设置圆角
+                  side: BorderSide(color: Colors.black, width: 2.0), // 设置黑色边框
+                ),
+                child: ListTile(
+                  contentPadding: EdgeInsets.all(16), // 調整這個值以增加或減少距離
+                  title: Text(
+                    "元智一館 R1201B",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  subtitle: Text(
+                    "桃園市中壢區遠東路135號",
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center, // 置中對齊
+              children: [
+                Text(
+                  AppLocale.titles[3].getString(context) + AppLocale.info[13].getString(context) + ": ",
+                  style: TextStyle(fontSize: 16),
+                ),
+                SizedBox(
+                  width: 16,
+                ),
+                DropdownButton<String>(
+                  value: _selectedEventType ?? AppLocale.info[11].getString(context), // 預設選取的值為 "火災"
+                  items: <String>[AppLocale.info[11].getString(context), AppLocale.info[12].getString(context)].map((String value) {
+                    return DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(value),
+                    );
+                  }).toList(),
+                  onChanged: (String? newValue) {
+                    setState(() {
+                      _selectedEventType = newValue; // 更新選定的值
+                    });
+                  },
+                ),
+              ],
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: TextField(
+                decoration: InputDecoration(
+                  hintText: AppLocale.info[15].getString(context), // 設置提示詞
+                  border: OutlineInputBorder(), // 設置邊框
+                ),
+                maxLines: 3, // 設置最大行數為 3
+                minLines: 3, // 設置最小行數為 3
+              ),
+            ),
+            SizedBox(
+              height: 16,
+            ),
+            SizedBox(
+              height: 60, // 設定按鈕的高度
+              width: 120, // 設定按鈕的寬度
+              child: OutlinedButton(
+                style: OutlinedButton.styleFrom(
+                  shape: const RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(8)),
+                  ),
+                  side: BorderSide(color: Colors.yellow, width: 2.0), // 設定邊框顏色
+                  backgroundColor: Colors.orange, // 設定背景顏色
+                ),
+                onPressed: () {},
+                child: Text(
+                  AppLocale.titles[3].getString(context),
+                  style: TextStyle(fontSize: 24, color: Colors.white),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -735,12 +862,8 @@ class _PageUtil extends State<PageUtil> {
     setState(() {
       items = sensordata
           .where((sensordata) =>
-              sensordata.airQuality
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
-              sensordata.temperature
-                  .toLowerCase()
-                  .contains(query.toLowerCase()) ||
+              sensordata.airQuality.toLowerCase().contains(query.toLowerCase()) ||
+              sensordata.temperature.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.id.toLowerCase().contains(query.toLowerCase()) ||
               sensordata.iot_id.toLowerCase().contains(query.toLowerCase()))
           .toList();
@@ -752,16 +875,7 @@ class _PageUtil extends State<PageUtil> {
     for (var i = 0; i < sensordata.length; i++) {
       var item = sensordata[i];
       // 将 SensorData 对象的属性添加到 buffer 中
-      buffer[item.iot_id] = SensorData(
-          item.airQuality,
-          item.temperature,
-          item.id,
-          item.iot_id,
-          item.locations,
-          item.events,
-          'yes',
-          levels,
-          item.updatetime);
+      buffer[item.iot_id] = SensorData(item.airQuality, item.temperature, item.id, item.iot_id, item.locations, item.events, 'yes', levels, item.updatetime);
     }
 
     return Scaffold(
@@ -825,8 +939,7 @@ class _PageUtil extends State<PageUtil> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (context) => PageArgs()),
+                                  MaterialPageRoute(builder: (context) => PageArgs()),
                                 );
                               },
                             ),
@@ -882,8 +995,7 @@ class _PageArgs extends State<PageArgs> {
               child: Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
+                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2),
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -891,8 +1003,7 @@ class _PageArgs extends State<PageArgs> {
                     padding: EdgeInsets.only(top: 5),
                     child: Text(
                       "元智一館 七樓 1705A實驗室",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                      style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -928,21 +1039,14 @@ class _PageArgs extends State<PageArgs> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    buildInputRow(AppLocale.args[10].getString(context),
-                        AppLocale.info[4].getString(context), 10),
-                    buildInputRow(AppLocale.args[11].getString(context),
-                        AppLocale.info[4].getString(context), 11),
+                    buildInputRow(AppLocale.args[10].getString(context), AppLocale.info[4].getString(context), 10),
+                    buildInputRow(AppLocale.args[11].getString(context), AppLocale.info[4].getString(context), 11),
                     buildSwitchRow(AppLocale.args[12].getString(context)),
-                    buildDropdownRow(AppLocale.args[13].getString(context),
-                        ' ( μg/m3 )', 13),
-                    buildDropdownRow(AppLocale.args[14].getString(context),
-                        ' ( % / 30s )', 14),
-                    buildDropdownRow(
-                        AppLocale.args[15].getString(context), ' ( ℃ )', 15),
-                    buildDropdownRow(AppLocale.args[16].getString(context),
-                        ' ( % / 30s )', 16),
-                    buildDropdownRow(
-                        AppLocale.args[17].getString(context), ' ( s )', 17),
+                    buildDropdownRow(AppLocale.args[13].getString(context), ' ( μg/m3 )', 13),
+                    buildDropdownRow(AppLocale.args[14].getString(context), ' ( % / 30s )', 14),
+                    buildDropdownRow(AppLocale.args[15].getString(context), ' ( ℃ )', 15),
+                    buildDropdownRow(AppLocale.args[16].getString(context), ' ( % / 30s )', 16),
+                    buildDropdownRow(AppLocale.args[17].getString(context), ' ( s )', 17),
                     const SizedBox(height: 10),
                     Center(
                       child: ElevatedButton(
@@ -982,8 +1086,7 @@ class _PageArgs extends State<PageArgs> {
                 hintText: hintText,
               ),
               controller: nameController,
-              onSubmitted: (value) => setState(
-                  () => _usersensor.modifyName(num, nameController.text)),
+              onSubmitted: (value) => setState(() => _usersensor.modifyName(num, nameController.text)),
             ),
           ),
         ],
@@ -1247,19 +1350,14 @@ class _PageSetting extends State<PageSetting> {
 
     List<EddystoneUID> _getTopThreeUIDs() {
       var uids = scanner.eddystoneUIDs.values.toList();
-      uids.sort(
-          (a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
+      uids.sort((a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
       return uids.take(3).toList();
     }
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.blue[400],
-        title: Text(AppLocale.titles[5].getString(context),
-            style: TextStyle(
-                color: Colors.grey[50],
-                fontSize: 28,
-                fontWeight: FontWeight.bold)),
+        title: Text(AppLocale.titles[5].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
         centerTitle: true,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(3.0),
@@ -1281,13 +1379,9 @@ class _PageSetting extends State<PageSetting> {
                 _handleLogin();
               }
             },
-            leading:
-                Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
-            title: Text(_isLoggedIn
-                ? username
-                : AppLocale.info[7].getString(context)), // 根据登录状态显示不同的文本
-            subtitle:
-                Text(_isLoggedIn ? AppLocale.info[8].getString(context) : ''),
+            leading: Icon(_isLoggedIn ? Icons.logout : Icons.login), // 根据登录状态显示不同的图标
+            title: Text(_isLoggedIn ? username : AppLocale.info[7].getString(context)), // 根据登录状态显示不同的文本
+            subtitle: Text(_isLoggedIn ? AppLocale.info[8].getString(context) : ''),
           ),
           ListTile(
             onTap: _toggleLanguage,
@@ -1303,8 +1397,7 @@ class _PageSetting extends State<PageSetting> {
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
-                    List<EddystoneUID> topThreeUIDs =
-                        snapshot.data as List<EddystoneUID>;
+                    List<EddystoneUID> topThreeUIDs = snapshot.data as List<EddystoneUID>;
                     return ListView.builder(
                       itemCount: topThreeUIDs.length,
                       itemBuilder: (context, index) {
@@ -1430,10 +1523,7 @@ class _PageHistory extends State<PageHistory> {
         backgroundColor: Colors.blue[400],
         title: Text(
           AppLocale.titles[2].getString(context),
-          style: TextStyle(
-              color: Colors.grey[50],
-              fontSize: 28,
-              fontWeight: FontWeight.bold),
+          style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
         bottom: PreferredSize(
@@ -1446,19 +1536,15 @@ class _PageHistory extends State<PageHistory> {
       ),
       body: ListView.separated(
         separatorBuilder: (context, index) => Divider(color: Colors.black),
-        itemCount:
-            record.length, // replace 'record' with your actual record array
+        itemCount: record.length, // replace 'record' with your actual record array
         itemBuilder: (BuildContext context, int index) {
           return ListTile(
             title: Text(
-              '${record[index].events}\n' +
-                  AppLocale.args[2].getString(context) +
-                  '${record[index].locations}',
+              '${record[index].events}\n' + AppLocale.args[2].getString(context) + '${record[index].locations}',
               style: const TextStyle(fontSize: 16),
             ),
             subtitle: Text(
-              AppLocale.args[20].getString(context) +
-                  '${record[index].updatetime}',
+              AppLocale.args[20].getString(context) + '${record[index].updatetime}',
               style: const TextStyle(fontSize: 14),
             ),
           );
@@ -1491,8 +1577,7 @@ class _NextPageState extends State<NextPage> {
         child: Column(
           children: <Widget>[
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _usernameController,
                 decoration: InputDecoration(
@@ -1502,12 +1587,10 @@ class _NextPageState extends State<NextPage> {
               ),
             ),
             Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
               child: TextFormField(
                 controller: _passwordController,
-                obscureText:
-                    !_obscureText, // Fix: Use !_obscureText to invert the value
+                obscureText: !_obscureText, // Fix: Use !_obscureText to invert the value
                 decoration: InputDecoration(
                   // No need for const here
                   prefixIcon: Icon(Icons.lock),
@@ -1600,8 +1683,7 @@ Future<int> _sendDataToServer(String username, String password) async {
 }
 
 void fetchData() async {
-  final response =
-      await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
+  final response = await http.get(Uri.http('firealert.waziwazi.top:8880', 'device-list'));
 
   if (response.statusCode == 200) {
     // If the server returns a 200 OK response,
@@ -1640,11 +1722,7 @@ class _PageWarn extends State<PageWarn> {
     return Scaffold(
       appBar: AppBar(
           backgroundColor: Colors.blue[400],
-          title: Text(AppLocale.titles[3].getString(context),
-              style: TextStyle(
-                  color: Colors.grey[50],
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold)),
+          title: Text(AppLocale.titles[3].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
           centerTitle: true,
           bottom: PreferredSize(
             preferredSize: const Size.fromHeight(3.0),

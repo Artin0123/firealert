@@ -9,7 +9,7 @@ mixin AppLocale {
     'title6',
     'title7',
   ];
-  static const List<String> info = ['info', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9', 'info10', 'info11'];
+  static const List<String> info = ['info', 'info1', 'info2', 'info3', 'info4', 'info5', 'info6', 'info7', 'info8', 'info9', 'info10', 'info11', 'info12', 'info13', 'info14', 'info15'];
   static const List<String> args = [
     'args',
     'args1',
@@ -57,6 +57,10 @@ mixin AppLocale {
     info[9]: 'User name ',
     info[10]: 'Password ',
     info[11]: 'Fire',
+    info[12]: 'Person trapped',
+    info[13]: 'Type',
+    info[14]: 'Current location',
+    info[15]: 'Additional description',
     args[0]: 'Temperature parameter: ',
     args[1]: 'Smoke parameter: ',
     args[2]: 'Location: ',
@@ -103,6 +107,10 @@ mixin AppLocale {
     info[9]: '使用者名稱 ',
     info[10]: '密碼 ',
     info[11]: '火災',
+    info[12]: '人員受困',
+    info[13]: '類型',
+    info[14]: '目前定位點',
+    info[15]: '額外描述',
     args[0]: '溫度參數: ',
     args[1]: '煙霧參數: ',
     args[2]: '位置: ',

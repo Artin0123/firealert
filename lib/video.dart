@@ -124,6 +124,7 @@ class _VideoPageState extends State<DetailPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
         appBar: AppBar(
           title: Text(AppLocale.titles[7].getString(context)), // 更改成影片頁面的標題
         ),
