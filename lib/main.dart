@@ -651,8 +651,7 @@ class _PageEvent extends State<PageEvent> {
                                       Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                         children: <Widget>[
-                                          SizedBox(
-                                            width: 200,
+                                          Expanded(
                                             child: ListTile(
                                               title: Padding(
                                                 padding: const EdgeInsets.only(top: 5), // 添加間距
