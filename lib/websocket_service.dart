@@ -8,12 +8,14 @@ import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'package:flutt/sensor_data.dart';
 import 'package:flutt/usersensor.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 SensorData_list sensor_list = SensorData_list();
 
 class WebSocketService with ChangeNotifier {
   late IOWebSocketChannel? _channel;
   late StreamController<Map<String, dynamic>> _messageController;
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool _isConnected = false;
   bool _bypassWebSocket = false;
 
@@ -21,10 +23,12 @@ class WebSocketService with ChangeNotifier {
     _messageController = StreamController<Map<String, dynamic>>.broadcast();
     if (!kDebugMode) {
       _connectToWebSocket(token, usersenser);
+      _initializeNotifications();
     } else {
       _bypassWebSocket = true;
       print('WebSocket bypassed in debug mode');
       _connectToWebSocket(token, usersenser); //測試沒有驗證
+      _initializeNotifications();
     }
   }
 
@@ -66,6 +70,7 @@ class WebSocketService with ChangeNotifier {
               }
             };
             _channel?.sink.add(json.encode(bufferMessage));
+            _showNotification(data);
             notifyListeners();
           },
           onError: (error) {
@@ -117,5 +122,29 @@ class WebSocketService with ChangeNotifier {
     _channel?.sink.close();
     _messageController.close();
     super.dispose();
+  }
+
+  Future<void> _initializeNotifications() async {
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  Future<void> _showNotification(Map<String, dynamic> data) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+      'channel_id',
+      'channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+    );
+
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    await _flutterLocalNotificationsPlugin.show(
+      0,
+      'New Message',
+      data.toString(),
+      platformChannelSpecifics,
+    );
   }
 }
