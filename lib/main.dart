@@ -225,43 +225,43 @@ class _MyHomePageState extends State<MyHomePage> {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
-            // Map<String, dynamic> datas = snapshot.data ?? {};
-            // if (datas.containsKey('details')) {
-            //   dynamic data = datas['details'];
-            //   if (data.isNotEmpty) {
-            //     // Process the data
-            //     locations = data['location'];
-            //     levels = data['level'].toString();
-            //     temperatures = data['temperature'].toString();
-            //     timestamps = data['o_time_stamp'].toString();
-            //     airqualitys = data['smoke'].toString();
-            //     events = data['event'].toString();
-            //     event_id = data['event_id'].toString();
-            //     big_location = data['group_name'];
-            //     String iot_id = data['iot_id'].toString();
-            //     sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
-            //     int spi = 0;
-            //     sensorData.fixcolorRed();
-            //     for (var i = 0; i < sensordata.length; i++) {
-            //       if (sensordata[i].iot_id == iot_id) {
-            //         sensordata[i].modify(sensorData);
-            //         spi = 1;
-            //         break;
-            //       }
-            //     }
-            //     if (spi == 0) {
-            //       sensordata.add(sensorData);
-            //     }
-            //     record.add(sensorData);
+            Map<String, dynamic> datas = snapshot.data ?? {};
+            if (datas.containsKey('details')) {
+              dynamic data = datas['details'];
+              if (data.isNotEmpty) {
+                // Process the data
+                locations = data['location'];
+                levels = data['level'].toString();
+                temperatures = data['temperature'].toString();
+                timestamps = data['o_time_stamp'].toString();
+                airqualitys = data['smoke'].toString();
+                events = data['event'].toString();
+                event_id = data['event_id'].toString();
+                big_location = data['group_name'];
+                String iot_id = data['iot_id'].toString();
+                sensorData = SensorData(airqualitys, temperatures, event_id, iot_id, big_location + ' ' + locations, events, isAlert, levels, timestamps);
+                int spi = 0;
+                sensorData.fixcolorRed();
+                for (var i = 0; i < sensordata.length; i++) {
+                  if (sensordata[i].iot_id == iot_id) {
+                    sensordata[i].modify(sensorData);
+                    spi = 1;
+                    break;
+                  }
+                }
+                if (spi == 0) {
+                  sensordata.add(sensorData);
+                }
+                record.add(sensorData);
                 return pages[currentIndex]; // Display the current page based on index
-            //   } else {
-            //     print("No data");
-            //     return Center();
-            //   }
-            // } else {
-            //   print("No details");
-            //   return Center();
-            // }
+              } else {
+                print("No data");
+                return Center();
+              }
+            } else {
+              print("No details");
+              return pages[currentIndex];
+            }
           } else {
             return Center();
           }
