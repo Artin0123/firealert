@@ -14,16 +14,13 @@ final FlutterLocalization localization = FlutterLocalization.instance;
 class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
+    return super.createHttpClient(context)..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
   }
 }
 
 class DetailPage extends StatefulWidget {
   final SensorData sensorData_detail;
-  const DetailPage({Key? key, required this.sensorData_detail})
-      : super(key: key);
+  const DetailPage({Key? key, required this.sensorData_detail}) : super(key: key);
   @override
   State<DetailPage> createState() => _VideoPageState();
 }
@@ -57,13 +54,11 @@ class _VideoPageState extends State<DetailPage> {
 
   void _startDownloadAndTimer() async {
     // Start immediate download
-    await _downloadVideo(
-        'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
+    await _downloadVideo('https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
 
     // Start periodic download every 14 seconds
     _downloadTimer = Timer.periodic(Duration(seconds: 14), (timer) {
-      _downloadVideo(
-          'https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
+      _downloadVideo('https://yzulab1.waziwazi.top/getlastVideo?terminal_id=0001&iot_id=101');
     });
   }
 
@@ -131,8 +126,16 @@ class _VideoPageState extends State<DetailPage> {
     return Scaffold(
         backgroundColor: Colors.white,
         appBar: AppBar(
-          title: Text(AppLocale.titles[7].getString(context)), // 更改成影片頁面的標題
-        ),
+            backgroundColor: Colors.blue[400],
+            title: Text(AppLocale.titles[7].getString(context), style: TextStyle(color: Colors.grey[50], fontSize: 28, fontWeight: FontWeight.bold)),
+            centerTitle: true,
+            bottom: PreferredSize(
+              preferredSize: const Size.fromHeight(3.0),
+              child: Container(
+                color: Colors.blue[700],
+                height: 3.0,
+              ),
+            )),
         body: SingleChildScrollView(
             child: Column(
           children: <Widget>[
@@ -141,9 +144,7 @@ class _VideoPageState extends State<DetailPage> {
               child: Card(
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
-                  side: BorderSide(
-                      color: Colors.blueGrey[700] ?? Colors.blue,
-                      width: 2), // 添加邊框
+                  side: BorderSide(color: Colors.blueGrey[700] ?? Colors.blue, width: 2), // 添加邊框
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: ListTile(
@@ -151,8 +152,7 @@ class _VideoPageState extends State<DetailPage> {
                     padding: const EdgeInsets.only(top: 5), // 添加間距
                     child: Text(
                       _sensorData.events,
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 20),
+                      style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                       textAlign: TextAlign.left,
                     ),
                   ),
@@ -261,14 +261,10 @@ class _VideoPageState extends State<DetailPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       IconButton(
-                        icon: Icon(_controller!.value.isPlaying
-                            ? Icons.pause
-                            : Icons.play_arrow),
+                        icon: Icon(_controller!.value.isPlaying ? Icons.pause : Icons.play_arrow),
                         onPressed: () {
                           setState(() {
-                            _controller!.value.isPlaying
-                                ? _controller!.pause()
-                                : _controller!.play();
+                            _controller!.value.isPlaying ? _controller!.pause() : _controller!.play();
                           });
                         },
                       ),
