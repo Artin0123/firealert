@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 import 'dart:async';
 import 'package:flutter/material.dart'; // Import for ChangeNotifier
-import 'package:flutter_blue/flutter_blue.dart';
+// import 'package:flutter_blue/flutter_blue.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class EddystoneUID {
@@ -31,7 +31,7 @@ class EddystoneUID {
 }
 
 class EddystoneScanner extends ChangeNotifier {
-  FlutterBlue flutterBlue = FlutterBlue.instance;
+  // FlutterBlue flutterBlue = FlutterBlue.instance;
   Map<String, EddystoneUID> eddystoneUIDs = {};
   Timer? scanTimer;
   bool refresh = false;
@@ -68,33 +68,33 @@ class EddystoneScanner extends ChangeNotifier {
   void startScan() {
     print('Starting scan...');
     eddystoneUIDs.clear();
-    flutterBlue.startScan(timeout: Duration(seconds: 10));
+    // flutterBlue.startScan(timeout: Duration(seconds: 10));
 
-    flutterBlue.scanResults.listen((results) {
-      for (ScanResult result in results) {
-        var serviceData = result.advertisementData.serviceData;
-        String deviceName = result.advertisementData.localName ?? 'Unknown';
-        int rssi = result.rssi;
+    // flutterBlue.scanResults.listen((results) {
+    //   for (ScanResult result in results) {
+    //     var serviceData = result.advertisementData.serviceData;
+    //     String deviceName = result.advertisementData.localName ?? 'Unknown';
+    //     int rssi = result.rssi;
 
-        serviceData.forEach((uuid, data) {
-          if (data.isNotEmpty) {
-            String hexData = data.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
-            print('Hex data: $hexData');
+    //     serviceData.forEach((uuid, data) {
+    //       if (data.isNotEmpty) {
+    //         String hexData = data.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+    //         print('Hex data: $hexData');
 
-            try {
-              var uid = EddystoneUID.fromAdvertisment(Uint8List.fromList(data), deviceName, rssi);
+    //         try {
+    //           var uid = EddystoneUID.fromAdvertisment(Uint8List.fromList(data), deviceName, rssi);
 
-              if (uid.namespaceId == "ffffffff00000000ffff") {
-                eddystoneUIDs[uid.namespaceId] = uid;
-                notifyListeners(); // Notify listeners when data is updated
-              }
-            } catch (e) {
-              print('Error decoding Eddystone UID frame: $e');
-            }
-          }
-        });
-      }
-    });
+    //           if (uid.namespaceId == "ffffffff00000000ffff") {
+    //             eddystoneUIDs[uid.namespaceId] = uid;
+    //             notifyListeners(); // Notify listeners when data is updated
+    //           }
+    //         } catch (e) {
+    //           print('Error decoding Eddystone UID frame: $e');
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
   }
 
   void dispose() {
