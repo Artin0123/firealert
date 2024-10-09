@@ -135,13 +135,24 @@ class WebSocketService with ChangeNotifier {
       importance: Importance.max,
       priority: Priority.high,
     );
-
     const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
+
+    String title = 'New Message';
+    String body = 'You have a new message';
+
+    try {
+      if (data.containsKey('details')) {
+        title = data['details']['event']?.toString() ?? 'New Event';
+        body = '${data['details']['group_name'] ?? ''} ${data['details']['location'] ?? ''}';
+      }
+    } catch (e) {
+      print('Error parsing notification data: $e');
+    }
 
     await _flutterLocalNotificationsPlugin.show(
       0,
-      data['details']['event'].toString(),
-      data['details']['group_name'].toString() + ' ' + data['details']['location'].toString(),
+      title,
+      body,
       platformChannelSpecifics,
     );
   }
