@@ -1308,11 +1308,11 @@ class _PageSetting extends State<PageSetting> {
   Widget build(BuildContext context) {
     final scanner = Provider.of<EddystoneScanner>(context);
 
-    List<EddystoneUID> _getTopThreeUIDs() {
-      var uids = scanner.eddystoneUIDs.values.toList();
-      uids.sort((a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
-      return uids.take(3).toList();
-    }
+    // List<EddystoneUID> _getTopThreeUIDs() {
+    //   var uids = scanner.eddystoneUIDs.values.toList();
+    //   uids.sort((a, b) => b.rssi.compareTo(a.rssi)); // Sort by RSSI, highest first
+    //   return uids.take(3).toList();
+    // }
 
     return Scaffold(
       appBar: AppBar(
@@ -1348,39 +1348,39 @@ class _PageSetting extends State<PageSetting> {
             title: Text(_getTitle()),
             subtitle: Text('Current: ${supportedLanguages[currentLangIndex]}'),
           ),
-          Expanded(
-            //顯示Beancon結果
-            child: FutureBuilder(
-              future: Future.delayed(Duration(seconds: 1), () {
-                return _getTopThreeUIDs();
-              }),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  if (snapshot.hasData) {
-                    List<EddystoneUID> topThreeUIDs = snapshot.data as List<EddystoneUID>;
-                    return ListView.builder(
-                      itemCount: topThreeUIDs.length,
-                      itemBuilder: (context, index) {
-                        var uid = topThreeUIDs[index];
-                        return ListTile(
-                          title: Text('Namespace ID: ${uid.namespaceId}'),
-                          subtitle: Text(
-                            'Instance ID: ${uid.instanceId}\nName: ${uid.name}\nRSSI: ${uid.rssi}',
-                          ),
-                        );
-                      },
-                    );
-                  } else {
-                    return Center(child: Text('No data available'));
-                  }
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  return Center(child: CircularProgressIndicator());
-                }
-              },
-            ),
-          ),
+          // Expanded(
+          //   //顯示Beancon結果
+          //   child: FutureBuilder(
+          //     future: Future.delayed(Duration(seconds: 1), () {
+          //       return _getTopThreeUIDs();
+          //     }),
+          //     builder: (context, snapshot) {
+          //       if (snapshot.connectionState == ConnectionState.done) {
+          //         if (snapshot.hasData) {
+          //           List<EddystoneUID> topThreeUIDs = snapshot.data as List<EddystoneUID>;
+          //           return ListView.builder(
+          //             itemCount: topThreeUIDs.length,
+          //             itemBuilder: (context, index) {
+          //               var uid = topThreeUIDs[index];
+          //               return ListTile(
+          //                 title: Text('Namespace ID: ${uid.namespaceId}'),
+          //                 subtitle: Text(
+          //                   'Instance ID: ${uid.instanceId}\nName: ${uid.name}\nRSSI: ${uid.rssi}',
+          //                 ),
+          //               );
+          //             },
+          //           );
+          //         } else {
+          //           return Center(child: Text('No data available'));
+          //         }
+          //       } else if (snapshot.hasError) {
+          //         return Center(child: Text('Error: ${snapshot.error}'));
+          //       } else {
+          //         return Center(child: CircularProgressIndicator());
+          //       }
+          //     },
+          //   ),
+          // ),
         ],
       ),
     );
