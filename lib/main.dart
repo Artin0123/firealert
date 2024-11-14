@@ -210,8 +210,8 @@ class _MyHomePageState extends State<MyHomePage> {
         stream: Provider.of<WebSocketService>(context).messageStream,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            //return Center(child: CircularProgressIndicator());
-            return PageEvent();
+            // return Center(child: CircularProgressIndicator());
+            return pages[currentIndex];
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (snapshot.hasData) {
@@ -478,7 +478,7 @@ class _PageEvent extends State<PageEvent> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
-                        flex: 1, // 設置第一個按鈕的比例為 1
+                        flex: 2, // 設置第一個按鈕的比例為 1
                         child: SizedBox(
                           height: 80, // 設定按鈕的高度
                           width: double.infinity,
@@ -505,7 +505,7 @@ class _PageEvent extends State<PageEvent> {
                       ),
                       SizedBox(width: 16), // 設置兩個按鈕之間的間隔
                       Flexible(
-                        flex: 2, // 設置第一個按鈕的比例為 1
+                        flex: 3, // 設置第一個按鈕的比例為 1
                         child: SizedBox(
                           height: 80, // 設定按鈕的高度
                           width: double.infinity,

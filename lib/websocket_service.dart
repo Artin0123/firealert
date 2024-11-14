@@ -14,8 +14,7 @@ import 'package:flutt/local.dart';
 class WebSocketService with ChangeNotifier {
   late IOWebSocketChannel? _channel;
   late StreamController<Map<String, dynamic>> _messageController;
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   bool _isConnected = false;
   bool _bypassWebSocket = false;
 
@@ -35,9 +34,8 @@ class WebSocketService with ChangeNotifier {
   Stream<Map<String, dynamic>> get messageStream => _messageController.stream;
   bool get isConnected => _isConnected;
 
-  void _connectToWebSocket(
-      Map<String, dynamic> token, Usersensor usersenser) async {
-    //if (_bypassWebSocket) return;//測試沒有驗證
+  void _connectToWebSocket(Map<String, dynamic> token, Usersensor usersenser) async {
+    if (_bypassWebSocket) return; //測試沒有驗證
 
     Map<String, dynamic> bufferMessage;
     while (!_isConnected) {
@@ -104,16 +102,14 @@ class WebSocketService with ChangeNotifier {
 
   void _reconnect(Map<String, dynamic> token, Usersensor usersenser) {
     if (!_isConnected) {
-      Future.delayed(
-          Duration(seconds: 5), () => _connectToWebSocket(token, usersenser));
+      Future.delayed(Duration(seconds: 5), () => _connectToWebSocket(token, usersenser));
     }
   }
 
   void toggleBypassWebSocket(bool bypass, Usersensor usersenser) {
     _bypassWebSocket = bypass;
     if (!_bypassWebSocket && !_isConnected) {
-      _connectToWebSocket(
-          {}, usersenser); // Reconnect with empty token, adjust as needed
+      _connectToWebSocket({}, usersenser); // Reconnect with empty token, adjust as needed
     }
     notifyListeners();
   }
@@ -125,23 +121,19 @@ class WebSocketService with ChangeNotifier {
   }
 
   Future<void> _initializeNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
     await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
   }
 
   Future<void> _showNotification(Map<String, dynamic> data) async {
-    const AndroidNotificationDetails androidPlatformChannelSpecifics =
-        AndroidNotificationDetails(
+    const AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'channel_id',
       'channel_name',
       importance: Importance.max,
       priority: Priority.high,
     );
-    const NotificationDetails platformChannelSpecifics =
-        NotificationDetails(android: androidPlatformChannelSpecifics);
+    const NotificationDetails platformChannelSpecifics = NotificationDetails(android: androidPlatformChannelSpecifics);
 
     String title = 'New Message';
     String body = 'You have a new message';
@@ -149,8 +141,7 @@ class WebSocketService with ChangeNotifier {
     try {
       if (data.containsKey('details')) {
         title = data['details']['event']?.toString() ?? 'New Event';
-        body =
-            '${data['details']['group_name'] ?? ''} ${data['details']['location'] ?? ''}';
+        body = '${data['details']['group_name'] ?? ''} ${data['details']['location'] ?? ''}';
       }
     } catch (e) {
       print('Error parsing notification data: $e');
