@@ -35,7 +35,7 @@ class WebSocketService with ChangeNotifier {
   bool get isConnected => _isConnected;
 
   void _connectToWebSocket(Map<String, dynamic> token, Usersensor usersenser) async {
-    if (_bypassWebSocket) return; //測試沒有驗證
+    // if (_bypassWebSocket) return; //測試沒有驗證
 
     Map<String, dynamic> bufferMessage;
     while (!_isConnected) {
