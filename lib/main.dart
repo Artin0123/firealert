@@ -27,25 +27,6 @@ final notifications = FlutterLocalNotificationsPlugin();
 
 final FlutterLocalization localization = FlutterLocalization.instance;
 
-// void onStart(ServiceInstance service) async {
-//   // 初始化通知插件
-//   final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
-
-//   // 只在服務啟動時顯示一次通知
-//   await notifications.show(
-//     0,
-//     'Background Service Started',
-//     'The service is now running in the background',
-//     const NotificationDetails(
-//       android: AndroidNotificationDetails(
-//         'background_service_channel',
-//         'Background Service',
-//         importance: Importance.max,
-//       ),
-//     ),
-//   );
-// }
-
 Future<void> initializeService() async {
   final service = FlutterBackgroundService();
 
@@ -53,7 +34,7 @@ Future<void> initializeService() async {
     androidConfiguration: AndroidConfiguration(
       onStart: onStart,
       autoStart: true,
-      isForegroundMode: true,
+      isForegroundMode: false,
       notificationChannelId: 'my_foreground',
       initialNotificationTitle: '背景服務執行中',
       initialNotificationContent: 'Preparing...',
@@ -105,7 +86,7 @@ void onStart(ServiceInstance service) async {
         channelDescription: '此頻道用於背景服務通知',
         importance: Importance.max,
         priority: Priority.high,
-        ongoing: true, // 保持通知不可以被滑走
+        // ongoing: true, // 保持通知不可以被滑走
       ),
     ),
   );
@@ -138,14 +119,14 @@ bool onIosBackground(ServiceInstance service) {
 }
 
 // WorkManager 回調函數
-@pragma('vm:entry-point')
-void callbackDispatcher() {
-  Workmanager().executeTask((task, inputData) async {
-    print("原生任務被觸發：$task");
-    // 在這裡執行您的背景任務邏輯
-    return Future.value(true);
-  });
-}
+// @pragma('vm:entry-point')
+// void callbackDispatcher() {
+//   Workmanager().executeTask((task, inputData) async {
+//     print("原生任務被觸發：$task");
+//     // 在這裡執行您的背景任務邏輯
+//     return Future.value(true);
+//   });
+// }
 
 String username = ""; //使用者名稱與密碼
 String password = "";
@@ -166,51 +147,6 @@ void main() async {
 
   // 配置並啟動背景服務
   await initializeService();
-
-  // // 初始化 WorkManager
-  // await Workmanager().initialize(
-  //   callbackDispatcher,
-  //   isInDebugMode: true,
-  // );
-
-  // // 註冊定期任務
-  // await Workmanager().registerPeriodicTask(
-  //   "taskOne",
-  //   "periodicTask",
-  //   frequency: const Duration(minutes: 15),
-  //   constraints: Constraints(
-  //     networkType: NetworkType.connected,
-  //     requiresBatteryNotLow: false,
-  //     requiresCharging: false,
-  //     requiresDeviceIdle: false,
-  //     requiresStorageNotLow: false,
-  //   ),
-  // );
-
-  // 初始化本地通知
-  // const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-
-  // const InitializationSettings initializationSettings = InitializationSettings(
-  //   android: initializationSettingsAndroid,
-  // );
-
-  // final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
-  // await notifications.initialize(initializationSettings);
-
-  // 配置背景服務
-  // final service = FlutterBackgroundService();
-  // await service.configure(
-  //   androidConfiguration: AndroidConfiguration(
-  //     onStart: onStart,
-  //     autoStart: true,
-  //     isForegroundMode: true,
-  //     notificationChannelId: 'background_service_channel',
-  //     initialNotificationTitle: 'Background Service',
-  //     initialNotificationContent: 'Initializing',
-  //     foregroundServiceNotificationId: 888,
-  //   ),
-  //   iosConfiguration: IosConfiguration(),
-  // );
 
   // 其餘的 main 函數代碼保持不變
   runApp(
