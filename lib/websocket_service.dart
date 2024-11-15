@@ -34,6 +34,15 @@ class WebSocketService with ChangeNotifier {
   Stream<Map<String, dynamic>> get messageStream => _messageController.stream;
   bool get isConnected => _isConnected;
 
+  // 初始化 WebSocket 連接
+  void init(Map<String, dynamic> token, Usersensor userSensor) {
+    if (!_bypassWebSocket && (_channel == null || _channel!.closeCode != null)) {
+      _connectToWebSocket(token, userSensor);
+    } else {
+      print('WebSocket 繞過或已連接');
+    }
+  }
+
   void _connectToWebSocket(Map<String, dynamic> token, Usersensor usersenser) async {
     // if (_bypassWebSocket) return; //測試沒有驗證
 

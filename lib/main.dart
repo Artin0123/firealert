@@ -20,29 +20,131 @@ import 'package:flutt/beacon.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutt/usersensor.dart';
+import 'package:workmanager/workmanager.dart';
 
 final service = FlutterBackgroundService();
 final notifications = FlutterLocalNotificationsPlugin();
 
 final FlutterLocalization localization = FlutterLocalization.instance;
 
+// void onStart(ServiceInstance service) async {
+//   // 初始化通知插件
+//   final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
+
+//   // 只在服務啟動時顯示一次通知
+//   await notifications.show(
+//     0,
+//     'Background Service Started',
+//     'The service is now running in the background',
+//     const NotificationDetails(
+//       android: AndroidNotificationDetails(
+//         'background_service_channel',
+//         'Background Service',
+//         importance: Importance.max,
+//       ),
+//     ),
+//   );
+// }
+
+Future<void> initializeService() async {
+  final service = FlutterBackgroundService();
+
+  await service.configure(
+    androidConfiguration: AndroidConfiguration(
+      onStart: onStart,
+      autoStart: true,
+      isForegroundMode: true,
+      notificationChannelId: 'my_foreground',
+      initialNotificationTitle: '背景服務執行中',
+      initialNotificationContent: 'Preparing...',
+      foregroundServiceNotificationId: 888,
+    ),
+    iosConfiguration: IosConfiguration(
+      autoStart: true,
+      onForeground: onStart,
+      onBackground: onIosBackground,
+    ),
+  );
+
+  await service.startService();
+}
+
+// 背景服務執行的主要邏輯
+@pragma('vm:entry-point')
 void onStart(ServiceInstance service) async {
-  // 初始化通知插件
+  WidgetsFlutterBinding.ensureInitialized();
+
   final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
 
-  // 只在服務啟動時顯示一次通知
+  // 初始化通知
+  const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  const InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+
+  await notifications.initialize(initializationSettings);
+
+  if (service is AndroidServiceInstance) {
+    service.on('setAsForeground').listen((event) {
+      service.setAsForegroundService();
+    });
+
+    service.on('setAsBackground').listen((event) {
+      service.setAsBackgroundService();
+    });
+  }
+
+  // 顯示前景服務通知
   await notifications.show(
     0,
-    'Background Service Started',
-    'The service is now running in the background',
+    '背景服務已啟動',
+    '服務正在運行中',
     const NotificationDetails(
       android: AndroidNotificationDetails(
         'background_service_channel',
-        'Background Service',
+        '背景服務',
+        channelDescription: '此頻道用於背景服務通知',
         importance: Importance.max,
+        priority: Priority.high,
+        ongoing: true, // 保持通知不可以被滑走
       ),
     ),
   );
+
+  // 初始化並保持 WebSocket 連接
+  final WebSocketService websocketService = WebSocketService(tokenbuffer, _usersensor);
+  websocketService.init(tokenbuffer, _usersensor);
+
+  // 定期檢查並保持 WebSocket 連接
+  Timer.periodic(const Duration(seconds: 30), (timer) async {
+    if (service is AndroidServiceInstance) {
+      if (await service.isForegroundService()) {
+        service.setForegroundNotificationInfo(
+          title: "背景服務執行中",
+          content: "上次更新: ${DateTime.now()}",
+        );
+      }
+    }
+
+    // 執行需要的背景任務，例如保持 WebSocket 連接
+    websocketService.init(tokenbuffer, _usersensor);
+    print('定期任務執行中 ${DateTime.now()}');
+  });
+}
+
+@pragma('vm:entry-point')
+bool onIosBackground(ServiceInstance service) {
+  WidgetsFlutterBinding.ensureInitialized();
+  return true;
+}
+
+// WorkManager 回調函數
+@pragma('vm:entry-point')
+void callbackDispatcher() {
+  Workmanager().executeTask((task, inputData) async {
+    print("原生任務被觸發：$task");
+    // 在這裡執行您的背景任務邏輯
+    return Future.value(true);
+  });
 }
 
 String username = ""; //使用者名稱與密碼
@@ -62,20 +164,53 @@ void main() async {
   final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
   await notifications.initialize(initializationSettings);
 
+  // 配置並啟動背景服務
+  await initializeService();
+
+  // // 初始化 WorkManager
+  // await Workmanager().initialize(
+  //   callbackDispatcher,
+  //   isInDebugMode: true,
+  // );
+
+  // // 註冊定期任務
+  // await Workmanager().registerPeriodicTask(
+  //   "taskOne",
+  //   "periodicTask",
+  //   frequency: const Duration(minutes: 15),
+  //   constraints: Constraints(
+  //     networkType: NetworkType.connected,
+  //     requiresBatteryNotLow: false,
+  //     requiresCharging: false,
+  //     requiresDeviceIdle: false,
+  //     requiresStorageNotLow: false,
+  //   ),
+  // );
+
+  // 初始化本地通知
+  // const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+
+  // const InitializationSettings initializationSettings = InitializationSettings(
+  //   android: initializationSettingsAndroid,
+  // );
+
+  // final FlutterLocalNotificationsPlugin notifications = FlutterLocalNotificationsPlugin();
+  // await notifications.initialize(initializationSettings);
+
   // 配置背景服務
-  final service = FlutterBackgroundService();
-  await service.configure(
-    androidConfiguration: AndroidConfiguration(
-      onStart: onStart,
-      autoStart: true,
-      isForegroundMode: false,
-      notificationChannelId: 'background_service_channel',
-      initialNotificationTitle: 'Background Service',
-      initialNotificationContent: 'Initializing',
-      foregroundServiceNotificationId: 888,
-    ),
-    iosConfiguration: IosConfiguration(),
-  );
+  // final service = FlutterBackgroundService();
+  // await service.configure(
+  //   androidConfiguration: AndroidConfiguration(
+  //     onStart: onStart,
+  //     autoStart: true,
+  //     isForegroundMode: true,
+  //     notificationChannelId: 'background_service_channel',
+  //     initialNotificationTitle: 'Background Service',
+  //     initialNotificationContent: 'Initializing',
+  //     foregroundServiceNotificationId: 888,
+  //   ),
+  //   iosConfiguration: IosConfiguration(),
+  // );
 
   // 其餘的 main 函數代碼保持不變
   runApp(

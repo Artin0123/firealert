@@ -50,6 +50,8 @@ dependencies:
   flutter_localization: ^0.2.0
   shared_preferences: ^2.3.1
   flutter_blue_plus: ^1.33.4
+  workmanager: ^0.5.2
+  flutter_background_service_android: ^6.2.7
 
 dev_dependencies:
   flutter_test:
